@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="api.controller.estoqueController"
+            style="-fx-background-color: #f0f2f5;">
+
+    <VBox spacing="24" style="-fx-padding: 24;"
+          AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+          AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+
+        <VBox style="-fx-background-color: white; -fx-background-radius: 12;
+                     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 10, 0, 0, 2);
+                     -fx-padding: 24;" VBox.vgrow="ALWAYS">
+
+            <!-- Título -->
+            <VBox spacing="4" style="-fx-padding: 0 0 20 0;">
+                <Label text="Produtos em Estoque"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+                <Label text="Lista completa de produtos disponíveis"
+                       style="-fx-font-size: 13px; -fx-text-fill: #475569;"/>
+            </VBox>
+
+            <!-- Filtros -->
+            <HBox spacing="12" style="-fx-padding: 0 0 20 0;" alignment="CENTER_LEFT">
+                <TextField fx:id="searchCod"
+                           promptText="🔍  Buscar por COD"
+                           prefWidth="180" onKeyReleased="#onSearch"
+                           style="-fx-background-color: #f8fafc; -fx-border-color: #cbd5e1;
+                                  -fx-border-radius: 8; -fx-background-radius: 8;
+                                  -fx-padding: 10 14; -fx-font-size: 13px; -fx-text-fill: #0f172a;"/>
+                <TextField fx:id="searchDescricao"
+                           promptText="🔍  Buscar por descrição"
+                           prefWidth="240" onKeyReleased="#onSearch"
+                           style="-fx-background-color: #f8fafc; -fx-border-color: #cbd5e1;
+                                  -fx-border-radius: 8; -fx-background-radius: 8;
+                                  -fx-padding: 10 14; -fx-font-size: 13px; -fx-text-fill: #0f172a;"/>
+                <ComboBox fx:id="filtroStatus" promptText="Todos os status"
+                          prefWidth="160" onAction="#onFiltroStatus"
+                          style="-fx-background-color: #f8fafc; -fx-border-color: #cbd5e1;
+                                 -fx-border-radius: 8; -fx-background-radius: 8;
+                                 -fx-font-size: 13px;"/>
+            </HBox>
+
+            <!-- Tabela com scroll -->
+            <ScrollPane fitToWidth="true" fitToHeight="true" VBox.vgrow="ALWAYS"
+                        hbarPolicy="AS_NEEDED" vbarPolicy="AS_NEEDED"
+                        style="-fx-background-color: transparent; -fx-background: transparent;
+                               -fx-border-color: transparent;">
+
+                <TableView fx:id="tabelaProdutos" minWidth="750"
+                           style="-fx-background-color: transparent; -fx-border-color: transparent;
+                                  -fx-table-cell-border-color: transparent; -fx-font-size: 13px;">
+                    <columns>
+                        <TableColumn fx:id="colId"          text="COD"        prefWidth="70"/>
+                        <TableColumn fx:id="colProduto"     text="Produto"    prefWidth="180"/>
+                        <TableColumn fx:id="colDescricao"   text="Descrição"  prefWidth="220"/>
+                        <TableColumn fx:id="colUnidade"     text="Un."        prefWidth="60"/>
+                        <TableColumn fx:id="colNivelMinimo" text="Nível Mín." prefWidth="90"/>
+                        <TableColumn fx:id="colValor"       text="Valor Est." prefWidth="100"/>
+                        <TableColumn fx:id="colSaldo"       text="Saldo"      prefWidth="80"/>
+                        <TableColumn fx:id="colStatus"      text="Status"     prefWidth="90"/>
+                    </columns>
+                    <placeholder>
+                        <Label text="Nenhum produto cadastrado."
+                               style="-fx-text-fill: #475569; -fx-font-size: 13px;"/>
+                    </placeholder>
+                </TableView>
+            </ScrollPane>
+        </VBox>
+    </VBox>
+</AnchorPane>
