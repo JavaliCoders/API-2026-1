@@ -1,5 +1,5 @@
 <p align="center">
-      <img src="" alt="Logo JavaliCoders" width="200">
+      <img src="https://github.com/JavaliCoders/API-2026-1/blob/main/src/docs/img/Logo.jpeg" alt="Logo JavaliCoders" width="200">
       <h2 align="center"> JavaliCoders </h2>
 </p>
 
