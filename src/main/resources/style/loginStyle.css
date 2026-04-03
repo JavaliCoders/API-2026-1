@@ -1,0 +1,74 @@
+.root {
+    -fx-background-color: linear-gradient(to bottom right, #161d2b, #0d3d9c, #1e66ff);
+    -fx-font-family: "Segoe UI", "Arial";
+}
+
+/* Card */
+.card {
+    -fx-background-color: rgb(255, 255, 255);
+    -fx-padding: 35;
+    -fx-background-radius: 15;
+    -fx-spacing: 15;
+    -fx-max-width: 320;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 25, 0.2, 0, 8);
+}
+
+/* Ícone */
+.icon {
+    -fx-background-color: #1e66ff;
+    -fx-text-fill: white;
+    -fx-font-size: 22px;
+    -fx-alignment: center;
+    -fx-padding: 12;
+    -fx-background-radius: 12;
+}
+
+/* Título */
+.title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+/* Subtítulo */
+.subtitle {
+    -fx-text-fill: #777;
+    -fx-font-size: 13px;
+    -fx-text-alignment: center;
+}
+
+/* Inputs */
+.text-field, .password-field {
+    -fx-background-color: #f0f2f5;
+    -fx-background-radius: 10;
+    -fx-padding: 10;
+    -fx-border-color: transparent;
+}
+
+.text-field:focused, .password-field:focused {
+    -fx-border-color: #1e66ff;
+    -fx-border-radius: 10;
+}
+
+/* Botão */
+.btn {
+    -fx-background-color: #1e66ff;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 10;
+    -fx-padding: 12;
+    -fx-cursor: hand;
+}
+
+.btn:hover {
+    -fx-background-color: #1553cc;
+}
+
+/* Link */
+.hyperlink {
+    -fx-text-fill: #1e66ff;
+    -fx-underline: false;
+}
+
+.hyperlink:hover {
+    -fx-underline: true;
+}
