@@ -158,6 +158,19 @@ public class indexController implements Initializable {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Node tela = loader.load();
 
+            Object controller = loader.getController();
+
+            // Injeta areaPrincipal conforme o controller carregado
+            if (controller instanceof estoqueController) {
+                ((estoqueController) controller).setAreaPrincipal(areaPrincipal);
+            } else if (controller instanceof cadastroProdutoController) {
+                ((cadastroProdutoController) controller).setAreaPrincipal(areaPrincipal);
+            } else if (controller instanceof fornecedorController) {
+                ((fornecedorController) controller).setAreaPrincipal(areaPrincipal);
+            } else if (controller instanceof cadastroFornecedorController) {
+                ((cadastroFornecedorController) controller).setAreaPrincipal(areaPrincipal);
+            }
+
             AnchorPane.setTopAnchor(tela, 0.0);
             AnchorPane.setBottomAnchor(tela, 0.0);
             AnchorPane.setLeftAnchor(tela, 0.0);
@@ -166,6 +179,8 @@ public class indexController implements Initializable {
             areaPrincipal.getChildren().setAll(tela);
             labelPagina.setText(subtitulo);
             btnAcao.setText(textoBotao);
+
+
 
         } catch (IOException e) {
             System.err.println("Erro ao carregar: " + fxmlPath);
@@ -184,7 +199,7 @@ public class indexController implements Initializable {
     @FXML
     private void onFornecedoresClicked() {
         ativarMenu(menuFornecedores);
-        carregarTela("/view/estoque.fxml", "Gerencie seus fornecedores", "+ Novo Fornecedor");
+        carregarTela("/view/fornecedor.fxml", "Gerencie seus fornecedores", "+ Novo Fornecedor");
     }
 
     @FXML
@@ -205,13 +220,10 @@ public class indexController implements Initializable {
     }
     @FXML
     private void onBtnAcao() {
-        if (btnAcao.getText().equals("Voltar")) {
-            // Se já estiver no formulário, volta para o estoque
-            ativarMenu(menuEstoque);
-            carregarTela("/view/estoque.fxml", "Controle e monitore seu inventário", "+ Novo Produto");
+        if (btnAcao.getText().equals("+ Novo Fornecedor")) {
+            carregarTela("/view/cadastroFornecedor.fxml", "Cadastro de Fornecedor", "+ Novo Fornecedor");
         } else {
-            // Abre o formulário de cadastro
-            carregarTela("/view/cadastroProduto.fxml", "Cadastro de Produto", "Voltar");
+            carregarTela("/view/cadastroProduto.fxml", "Cadastro de Produto", "+ Novo Produto");
         }
     }
 

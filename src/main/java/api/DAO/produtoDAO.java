@@ -4,7 +4,6 @@ import api.connection.ConexaoDB;
 import api.model.Produto;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-
 import java.sql.*;
 
 /**

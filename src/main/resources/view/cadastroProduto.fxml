@@ -20,9 +20,9 @@
 
             <!-- Título -->
             <VBox spacing="4">
-                <Label text="Cadastro de Produto"
+                <Label fx:id="labelTitulo" text="Cadastro de Produto"
                        style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
-                <Label text="Preencha os dados do novo produto"
+                <Label fx:id="labelSubtitulo" text="Preencha os dados do novo produto"
                        style="-fx-font-size: 13px; -fx-text-fill: #475569;"/>
             </VBox>
 
