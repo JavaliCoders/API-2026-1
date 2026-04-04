@@ -25,6 +25,7 @@ public class indexController implements Initializable {
     @FXML private HBox menuEstoque;
     @FXML private HBox menuFornecedores;
     @FXML private HBox menuPedidos;
+    @FXML private HBox menuUsuarios;
 
     // Textos dos menus
     @FXML private Label textoEstoque;
@@ -169,6 +170,10 @@ public class indexController implements Initializable {
                 ((fornecedorController) controller).setAreaPrincipal(areaPrincipal);
             } else if (controller instanceof cadastroFornecedorController) {
                 ((cadastroFornecedorController) controller).setAreaPrincipal(areaPrincipal);
+            } else if (controller instanceof usuarioController) {
+                ((usuarioController) controller).setAreaPrincipal(areaPrincipal);
+            } else if (controller instanceof cadastroUsuarioController) {
+                ((cadastroUsuarioController) controller).setAreaPrincipal(areaPrincipal);
             }
 
             AnchorPane.setTopAnchor(tela, 0.0);
@@ -207,6 +212,11 @@ public class indexController implements Initializable {
         ativarMenu(menuPedidos);
         carregarTela("/view/estoque.fxml", "Acompanhe seus pedidos", "+ Novo Pedido");
     }
+    @FXML
+    private void onUsuariosClicked() {
+        ativarMenu(menuUsuarios);
+        carregarTela("/view/usuario.fxml", "Usuários cadastrados", "+ Novo Usuário");
+    }
 
     @FXML
     private void onSairClicked() {
@@ -218,10 +228,13 @@ public class indexController implements Initializable {
             if (btn == ButtonType.YES) System.exit(0);
         });
     }
+
     @FXML
     private void onBtnAcao() {
         if (btnAcao.getText().equals("+ Novo Fornecedor")) {
             carregarTela("/view/cadastroFornecedor.fxml", "Cadastro de Fornecedor", "+ Novo Fornecedor");
+        } else if (btnAcao.getText().equals("+ Novo Usuário")) {
+            carregarTela("/view/cadastroUsuario.fxml", "Cadastro de Usuário", "+ Novo Usuário");
         } else {
             carregarTela("/view/cadastroProduto.fxml", "Cadastro de Produto", "+ Novo Produto");
         }

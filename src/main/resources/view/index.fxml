@@ -58,17 +58,17 @@
                     <Label text="📋" style="-fx-font-size: 20px;"/>
                     <Label fx:id="textoCotacao" text="Cotação"
                            style="-fx-text-fill: #9999bb; -fx-font-size: 16px;"/>
-                </HBox>
+                </HBox>-->
 
 
-                <HBox fx:id="menuStatus" alignment="CENTER_LEFT" spacing="12"
+                <HBox fx:id="menuUsuarios" alignment="CENTER_LEFT" spacing="12"
                       style="-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 12 16; -fx-cursor: hand;"
-                      onMouseClicked="#onStatusClicked">
-                    <Label text="📄" style="-fx-font-size: 20px;"/>
-                    <Label fx:id="textoStatus" text="Status do Pedido"
-                           style="-fx-text-fill: #9999bb; -fx-font-size: 16px;"/>
+                      onMouseClicked="#onUsuariosClicked">
+                    <Label fx:id="iconUsuarios" text="👤" style="-fx-font-size: 20px; -fx-text-fill: rgb(210,210,216); "/>
+                    <Label fx:id="textoUsuarios" text="Usuários"
+                           style="-fx-text-fill: rgb(210,210,216); -fx-font-size: 16px;"/>
                 </HBox>
-                -->
+
 
             </VBox>
 
