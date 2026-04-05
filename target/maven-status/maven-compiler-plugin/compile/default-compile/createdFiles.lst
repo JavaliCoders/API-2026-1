@@ -1,0 +1,11 @@
+api\model\UsuarioAutenticado.class
+api\controller\LoginController.class
+api\model\Perfil.class
+api\javafx\LoginApp.class
+api\service\PerfilMensagemService.class
+api\desktop\TelaPerfil.class
+api\database\Conexao.class
+api\desktop\Login.class
+api\service\AutenticacaoService.class
+api\desktop\Main.class
+api\javafx\Main.class

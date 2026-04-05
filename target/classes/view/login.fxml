@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="600.0" prefWidth="800.0" stylesheets="@../style/loginStyle.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="api.controller.LoginController">
+    <children>
+        <VBox alignment="CENTER" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <VBox alignment="CENTER" spacing="10.0" styleClass="card">
+                <Label prefHeight="52.0" prefWidth="52.0" styleClass="icon" text="&gt;" />
+                <Label styleClass="title" text="Bem-vindo de volta" />
+                <Label styleClass="subtitle" text="Entre com suas credenciais para acessar o sistema" wrapText="true" />
+
+                <VBox spacing="5.0">
+                    <Label text="Usuario ou e-mail" />
+                    <TextField fx:id="txtIdentificador" onKeyTyped="#aoDigitar" promptText="diretor ou diretor@email.com" />
+                </VBox>
+
+                <VBox spacing="5.0">
+                    <Label text="Senha" />
+                    <PasswordField fx:id="txtSenha" onKeyTyped="#aoDigitar" promptText="********" />
+                </VBox>
+
+                <Label fx:id="lblMensagem" managed="false" text="Erro" visible="false" wrapText="true" />
+
+                <Button defaultButton="true" onAction="#entrar" styleClass="btn" text="Entrar" />
+
+                <HBox alignment="CENTER" spacing="5.0">
+                    <Label alignment="CENTER" text="Problemas com o acesso? Entre em contato com o administrador." textAlignment="CENTER" textFill="#838383" wrapText="true">
+                        <font>
+                            <Font name="System Italic" size="11.0" />
+                        </font>
+                    </Label>
+                </HBox>
+            </VBox>
+        </VBox>
+    </children>
+</AnchorPane>
