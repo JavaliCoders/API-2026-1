@@ -11,6 +11,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import api.util.PermissaoUtil;
 
 import java.io.IOException;
 import java.net.URL;
@@ -33,6 +34,7 @@ public class indexController implements Initializable {
     @FXML private Label textoPedidos;
     @FXML private Label textoSair;
     @FXML private Label labelSistema;
+    @FXML private Label textoUsuarios;
 
     // Ícones dos botões
     @FXML private Label iconEstoque;
@@ -76,6 +78,18 @@ public class indexController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         carregarTela("/view/estoque.fxml", "Controle e monitore seu inventário", "+ Novo Produto");
         configurarHover();
+        if (!PermissaoUtil.temPermissao("DIRETOR")) {
+            menuUsuarios.setVisible(false);
+            menuUsuarios.setManaged(false);
+        }
+
+        // Apenas FINANCEIRO vê Fornecedores
+        if (!PermissaoUtil.temPermissao("FINANCEIRO")) {
+            menuFornecedores.setVisible(false);
+            menuFornecedores.setManaged(false);
+        }
+
+
     }
 
     // ── Toggle da sidebar ─────────────────────────────────────
@@ -95,7 +109,7 @@ public class indexController implements Initializable {
     private void ocultarTextos() {
         // Oculta todos os textos
         Label[] textos = {labelSistema, textoEstoque, textoFornecedores,
-                textoPedidos, textoSair};
+                textoPedidos, textoSair, textoUsuarios};
         for (Label l : textos) {
             l.setVisible(false);
             l.setManaged(false);
@@ -105,7 +119,7 @@ public class indexController implements Initializable {
         hboxTopo.setAlignment(javafx.geometry.Pos.CENTER);
 
         // Ajusta menus: centraliza ícone, zera spacing, reduz padding
-        HBox[] menus = {menuEstoque, menuFornecedores, menuPedidos};
+        HBox[] menus = {menuEstoque, menuFornecedores, menuPedidos, menuUsuarios};
         for (HBox m : menus) {
             m.setAlignment(javafx.geometry.Pos.CENTER);
             m.setSpacing(0);
@@ -125,7 +139,7 @@ public class indexController implements Initializable {
     private void exibirTextos() {
         // Reexibe todos os textos
         Label[] textos = {labelSistema, textoEstoque, textoFornecedores,
-                textoPedidos, textoSair};
+                textoPedidos, textoSair,textoUsuarios};
         for (Label l : textos) {
             l.setVisible(true);
             l.setManaged(true);
@@ -135,7 +149,7 @@ public class indexController implements Initializable {
         hboxTopo.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
 
         // Restaura menus
-        HBox[] menus = {menuEstoque, menuFornecedores, menuPedidos};
+        HBox[] menus = {menuEstoque, menuFornecedores, menuPedidos, menuUsuarios};
         for (HBox m : menus) {
             m.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
             m.setSpacing(12);
@@ -190,6 +204,20 @@ public class indexController implements Initializable {
         areaPrincipal.getChildren().setAll(tela);
         labelPagina.setText(subtitulo);
         btnAcao.setText(textoBotao);
+            if (fxmlPath.contains("estoque.fxml")) {
+                // Só FINANCEIRO pode ver o botão no estoque
+                if (!PermissaoUtil.temPermissao("FINANCEIRO")) {
+                    btnAcao.setVisible(false);
+                    btnAcao.setManaged(false);
+                } else {
+                    btnAcao.setVisible(true);
+                    btnAcao.setManaged(true);
+                }
+            } else {
+                // Em outras telas o botão aparece normalmente
+                btnAcao.setVisible(true);
+                btnAcao.setManaged(true);
+            }
 
 
 
@@ -251,7 +279,7 @@ private void onBtnAcao() {
     // ── Utilitários ───────────────────────────────────────────
 
     private void ativarMenu(HBox menuAtivo) {
-        HBox[] menus = {menuEstoque, menuFornecedores, menuPedidos};
+        HBox[] menus = {menuEstoque, menuFornecedores, menuPedidos, menuUsuarios};
         for (HBox m : menus) {
             m.setStyle(sidebarExpandida ? MENU_INATIVO : MENU_INATIVO_MINI);
         }
@@ -259,7 +287,7 @@ private void onBtnAcao() {
     }
 
     private void configurarHover() {
-        HBox[] menus = {menuFornecedores, menuPedidos};
+        HBox[] menus = {menuFornecedores, menuPedidos, menuEstoque, menuUsuarios};
         for (HBox menu : menus) {
             menu.setOnMouseEntered(e -> {
                 if (!menu.getStyle().contains("#2563eb")) {

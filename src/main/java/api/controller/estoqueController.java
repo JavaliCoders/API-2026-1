@@ -2,6 +2,7 @@ package api.controller;
 
 import api.DAO.produtoDAO;
 import api.model.Produto;
+import api.util.PermissaoUtil;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
