@@ -1,10 +1,9 @@
 <div align="center">
-  <img src="src/docs/img/Logo.jpeg" alt="Logo JavaliCoders" width="200px">
+  <img src="src/docs/img/Logo.jpeg" alt="Logo JavaliCoders" width="500px">
+  <h2>JavaliCoders</h2>
+
+  | [Desafio](#desafio) | [Solução](#solucao) | [Backlog do Produto](#backlog) | [DoR e DoD](#dor-dod) | [Evolução do Projeto](#evolucao) | [Cronograma de Sprints](#sprint) | [Tecnologias](#tecnologias) | [Estrutura do Projeto](#estrutura) | [Como Executar](#execucao) | [Documentação](#documentacao) | [Equipe](#equipe) |
 </div>
-
-## JavaliCoders
-
-| [Desafio](#desafio) | [Solução](#solucao) | [Backlog do Produto](#backlog) | [DoR e DoD](#dor-dod) | [Evolução do Projeto](#evolucao) | [Cronograma de Sprints](#sprint) | [Tecnologias](#tecnologias) | [Estrutura do Projeto](#estrutura) | [Como Executar](#execucao) | [Documentação](#documentacao) | [Equipe](#equipe) |
 
 Status do Projeto: 🚧 Em andamento
 
@@ -258,13 +257,49 @@ mvnw.cmd spring-boot:run
 
 ## 🎓 Equipe <a name="equipe"></a>
 
-<!-- TODO: Preencher nome, foto (URL da foto do GitHub ou outra), função e links reais de cada membro -->
-
-| Membro | Função | GitHub | LinkedIn |
-| --- | --- | --- | --- |
-| <!-- Nome Completo --> | Product Owner | <!-- [![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white)](link) --> | <!-- [![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=flat&logo=linkedin&logoColor=white)](link) --> |
-| <!-- Nome Completo --> | Scrum Master | <!-- [![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white)](link) --> | <!-- [![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=flat&logo=linkedin&logoColor=white)](link) --> |
-| <!-- Nome Completo --> | Developer | <!-- [![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white)](link) --> | <!-- [![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=flat&logo=linkedin&logoColor=white)](link) --> |
-| <!-- Nome Completo --> | Developer | <!-- [![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white)](link) --> | <!-- [![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=flat&logo=linkedin&logoColor=white)](link) --> |
-| <!-- Nome Completo --> | Developer | <!-- [![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white)](link) --> | <!-- [![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=flat&logo=linkedin&logoColor=white)](link) --> |
-| <!-- Nome Completo --> | Developer | <!-- [![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white)](link) --> | <!-- [![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=flat&logo=linkedin&logoColor=white)](link) --> |
+<div align="center">
+  <table>
+    <tr>
+      <th>Membro</th>
+      <th>Função</th>
+      <th>GitHub</th>
+      <th>LinkedIn</th>
+    </tr>
+    <tr>
+      <td><!-- TODO: Nome Completo --></td>
+      <td>Product Owner</td>
+      <td><a href="link"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
+      <td><a href="link"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
+    </tr>
+    <tr>
+      <td><!-- TODO: Nome Completo --></td>
+      <td>Scrum Master</td>
+      <td><a href="link"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
+      <td><a href="link"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
+    </tr>
+    <tr>
+      <td>Daniel Nathan</td>
+      <td>Developer</td>
+      <td><a href="https://github.com/Danithan"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
+      <td><a href="https://www.linkedin.com/in/daniel-nathan-621b623aa/"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
+    </tr>
+    <tr>
+      <td><!-- TODO: Nome Completo --></td>
+      <td>Developer</td>
+      <td><a href="link"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
+      <td><a href="link"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
+    </tr>
+    <tr>
+      <td><!-- TODO: Nome Completo --></td>
+      <td>Developer</td>
+      <td><a href="link"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
+      <td><a href="link"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
+    </tr>
+    <tr>
+      <td><!-- TODO: Nome Completo --></td>
+      <td>Developer</td>
+      <td><a href="link"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
+      <td><a href="link"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
+    </tr>
+  </table>
+</div>
