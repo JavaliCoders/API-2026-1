@@ -1,4 +1,6 @@
-[![Logo JavaliCoders](src/docs/img/Logo.jpeg)](src/docs/img/Logo.jpeg)
+<div align="center">
+  <img src="src/docs/img/Logo.jpeg" alt="Logo JavaliCoders" width="200px">
+</div>
 
 ## JavaliCoders
 
