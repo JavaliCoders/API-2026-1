@@ -11,6 +11,7 @@
         <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <javafx.version>17.0.2</javafx.version>
+        <app.main.class>api.javafx.Main</app.main.class>
         <desktop.main.class>api.desktop.Main</desktop.main.class>
         <javafx.main.class>api.javafx.Main</javafx.main.class>
     </properties>
@@ -51,7 +52,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>${desktop.main.class}</mainClass>
+                            <mainClass>${app.main.class}</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -64,7 +65,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>${desktop.main.class}</mainClass>
+                            <mainClass>${app.main.class}</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

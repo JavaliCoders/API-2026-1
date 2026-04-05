@@ -6,6 +6,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.net.URL;
+
 public class LoginApp extends Application {
 
     @Override
@@ -15,6 +17,11 @@ public class LoginApp extends Application {
             Parent root = loader.load();
 
             Scene scene = new Scene(root);
+            URL stylesheet = LoginApp.class.getResource("/style/loginStyle.css");
+            if (stylesheet == null) {
+                throw new IllegalStateException("Nao foi possivel localizar /style/loginStyle.css");
+            }
+            scene.getStylesheets().add(stylesheet.toExternalForm());
 
             stage.setTitle("Sistema de Compras - Login");
             stage.setScene(scene);
