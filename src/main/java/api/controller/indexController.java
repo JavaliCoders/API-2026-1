@@ -174,16 +174,22 @@ public class indexController implements Initializable {
                 ((usuarioController) controller).setAreaPrincipal(areaPrincipal);
             } else if (controller instanceof cadastroUsuarioController) {
                 ((cadastroUsuarioController) controller).setAreaPrincipal(areaPrincipal);
+            }else if (controller instanceof pedidoController) {
+            ((pedidoController) controller).setAreaPrincipal(areaPrincipal);
+            } else if (controller instanceof cadastroPedidoController) {
+            ((cadastroPedidoController) controller).setAreaPrincipal(areaPrincipal);
+            }else if (controller instanceof editarPedidoController) {
+            ((editarPedidoController) controller).setAreaPrincipal(areaPrincipal);
             }
 
-            AnchorPane.setTopAnchor(tela, 0.0);
-            AnchorPane.setBottomAnchor(tela, 0.0);
-            AnchorPane.setLeftAnchor(tela, 0.0);
-            AnchorPane.setRightAnchor(tela, 0.0);
+        AnchorPane.setTopAnchor(tela, 0.0);
+        AnchorPane.setBottomAnchor(tela, 0.0);
+        AnchorPane.setLeftAnchor(tela, 0.0);
+        AnchorPane.setRightAnchor(tela, 0.0);
 
-            areaPrincipal.getChildren().setAll(tela);
-            labelPagina.setText(subtitulo);
-            btnAcao.setText(textoBotao);
+        areaPrincipal.getChildren().setAll(tela);
+        labelPagina.setText(subtitulo);
+        btnAcao.setText(textoBotao);
 
 
 
@@ -210,7 +216,7 @@ public class indexController implements Initializable {
     @FXML
     private void onPedidosClicked() {
         ativarMenu(menuPedidos);
-        carregarTela("/view/estoque.fxml", "Acompanhe seus pedidos", "+ Novo Pedido");
+        carregarTela("/view/pedido.fxml", "Acompanhe seus pedidos", "+ Novo Pedido");
     }
     @FXML
     private void onUsuariosClicked() {
@@ -229,16 +235,18 @@ public class indexController implements Initializable {
         });
     }
 
-    @FXML
-    private void onBtnAcao() {
-        if (btnAcao.getText().equals("+ Novo Fornecedor")) {
-            carregarTela("/view/cadastroFornecedor.fxml", "Cadastro de Fornecedor", "+ Novo Fornecedor");
-        } else if (btnAcao.getText().equals("+ Novo Usuário")) {
-            carregarTela("/view/cadastroUsuario.fxml", "Cadastro de Usuário", "+ Novo Usuário");
-        } else {
-            carregarTela("/view/cadastroProduto.fxml", "Cadastro de Produto", "+ Novo Produto");
-        }
+@FXML
+private void onBtnAcao() {
+    if (btnAcao.getText().equals("+ Novo Fornecedor")) {
+        carregarTela("/view/cadastroFornecedor.fxml", "Cadastro de Fornecedor", "+ Novo Fornecedor");
+    } else if (btnAcao.getText().equals("+ Novo Usuário")) {
+        carregarTela("/view/cadastroUsuario.fxml", "Cadastro de Usuário", "+ Novo Usuário");
+    } else if (btnAcao.getText().equals("+ Novo Pedido")) {
+        carregarTela("/view/cadastroPedido.fxml", "Novo Pedido", "+ Novo Pedido");
+    } else {
+        carregarTela("/view/cadastroProduto.fxml", "Cadastro de Produto", "+ Novo Produto");
     }
+}
 
     // ── Utilitários ───────────────────────────────────────────
 

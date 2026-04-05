@@ -13,6 +13,7 @@ public class Produto {
     private final StringProperty  status;
     private final IntegerProperty saldo;
 
+
     // Construtor para busca do banco (com ID)
     public Produto(int idProduto, String produto, String descricao,
                    String unidadeMedida, int nivelMinimo, double valorEstimado,
