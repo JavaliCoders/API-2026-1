@@ -171,4 +171,41 @@ public class UsuarioDAO {
         }
         return false;
     }
+    public static Usuario buscarPorLoginESenha(String usuario, String senha) {
+        String sql = """
+            SELECT u.id_usuario, u.nome, u.usuario, u.email, u.status,
+                   p.id_perfil, p.perfil
+            FROM tb_usuario u
+            JOIN tb_perfil p ON u.id_perfil = p.id_perfil
+            WHERE u.usuario = ? AND u.senha = ?
+            """;
+
+        try (Connection con = ConexaoDB.getConexao();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, usuario);
+            ps.setString(2, senha);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                Perfil p = new Perfil(
+                        rs.getInt("id_perfil"),
+                        rs.getString("perfil")
+                );
+                return new Usuario(
+                        rs.getInt   ("id_usuario"),
+                        rs.getString("nome"),
+                        rs.getString("usuario"),
+                        senha,
+                        rs.getString("email"),
+                        rs.getString("status"),
+                        p
+                );
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao buscar usuário: " + e.getMessage());
+        }
+        return null;
+    }
 }

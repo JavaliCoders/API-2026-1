@@ -121,20 +121,18 @@ public class cadastroUsuarioController implements Initializable {
         // ── Verificações de duplicidade no banco ──────────────
 
         // ID a ignorar: 0 para novo cadastro, ID real para edição
+        // Para novo cadastro: idIgnorar = 0 (compara com todos)
+        // Para edição: idIgnorar = id real do usuário (ignora o próprio)
         int idIgnorar = usuarioEdicao == null ? 0 : usuarioEdicao.getIdUsuario();
 
-        // Verifica se o login já existe
         if (UsuarioDAO.usuarioJaExiste(fieldUsuario.getText().trim(), idIgnorar)) {
             erroUsuario.setText("Este usuário já está cadastrado no sistema.");
-            destacarCampo(fieldUsuario, true);
-            return; // Para aqui, não salva
+            // ↑ Só aparece se OUTRO registro tiver o mesmo login
         }
 
-        // Verifica se o email já existe
         if (UsuarioDAO.emailJaExiste(fieldEmail.getText().trim(), idIgnorar)) {
             erroEmail.setText("Este email já está cadastrado no sistema.");
-            destacarCampo(fieldEmail, true);
-            return; // Para aqui, não salva
+            // ↑ Só aparece se OUTRO registro tiver o mesmo email
         }
 
         // ── Salva no banco ────────────────────────────────────

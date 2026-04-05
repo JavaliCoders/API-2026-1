@@ -3,30 +3,37 @@ package api;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 public class MainApp extends Application {
 
-
     @Override
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/view/index.fxml")
-        );
+                getClass().getResource("/view/login.fxml"));
+        AnchorPane root = loader.load(); // ← AnchorPane, não StackPane
 
-        Scene scene = new Scene(loader.load(), 1100, 650);
+        Scene scene = new Scene(root, 900, 600);
 
-        primaryStage.setTitle("Gestão de compras");
+        // Aplica CSS do login se existir
+        try {
+            scene.getStylesheets().add(
+                    getClass().getResource("/style/loginStyle.css").toExternalForm());
+        } catch (Exception e) {
+            System.out.println("CSS não encontrado, usando estilos inline.");
+        }
+        try {
+            Image icone = new Image(
+                    getClass().getResourceAsStream("/images/N.png"));
+            primaryStage.getIcons().add(icone);
+        } catch (Exception e) {
+            System.out.println("Ícone não encontrado.");
+        }
 
-        // 👇 AQUI você adiciona o ícone
-        primaryStage.getIcons().add(
-                new Image(getClass().getResourceAsStream("/images/N.png"))
-        );
-
+        primaryStage.setTitle("Gestão de Compras - Login");
         primaryStage.setScene(scene);
-        primaryStage.setMinWidth(900);
-        primaryStage.setMinHeight(550);
+        primaryStage.setResizable(false);
         primaryStage.show();
     }
 
