@@ -1,16 +1,17 @@
 .root {
-    -fx-background-color: linear-gradient(to bottom right, #161d2b, #0d3d9c, #1e66ff);
-    -fx-font-family: "Segoe UI", "Arial";
+    -fx-background-color: linear-gradient(to bottom right, #161d2b 0%, #0d3d9c 50%, #1e66ff 100%);
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
 }
 
 /* Card */
 .card {
-    -fx-background-color: rgb(255, 255, 255);
+    -fx-background-color: white;
     -fx-padding: 35;
     -fx-background-radius: 15;
     -fx-spacing: 15;
     -fx-max-width: 320;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 25, 0.2, 0, 8);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 25, 0.2, 0, 8);
+    -fx-background-insets: 0;
 }
 
 /* Ícone */
@@ -27,6 +28,7 @@
 .title {
     -fx-font-size: 20px;
     -fx-font-weight: bold;
+    -fx-text-fill: #182033;
 }
 
 /* Subtítulo */
@@ -40,12 +42,15 @@
 .text-field, .password-field {
     -fx-background-color: #f0f2f5;
     -fx-background-radius: 10;
-    -fx-padding: 10;
+    -fx-padding: 11 12 11 12;
     -fx-border-color: transparent;
+    -fx-border-radius: 10;
+    -fx-background-insets: 0;
 }
 
 .text-field:focused, .password-field:focused {
     -fx-border-color: #1e66ff;
+    -fx-border-width: 1.2;
     -fx-border-radius: 10;
 }
 
