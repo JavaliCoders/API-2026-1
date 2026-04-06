@@ -35,13 +35,14 @@
 .subtitle {
     -fx-text-fill: #777;
     -fx-font-size: 13px;
+    -fx-text-alignment: center;
 }
 
 /* Inputs */
 .text-field, .password-field {
     -fx-background-color: #f0f2f5;
     -fx-background-radius: 10;
-    -fx-padding: 11 12 11 12;
+    -fx-padding: 10 12;
     -fx-border-color: transparent;
     -fx-border-radius: 10;
     -fx-background-insets: 0;
@@ -49,7 +50,7 @@
 
 .text-field:focused, .password-field:focused {
     -fx-border-color: #1e66ff;
-    -fx-border-width: 1.2;
+    -fx-border-width: 2;
     -fx-border-radius: 10;
 }
 
