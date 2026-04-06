@@ -249,10 +249,9 @@ mvnw.cmd spring-boot:run
 >
 > Padrão de Commits: <!-- TODO: [Commits](documents/processo/padrao-de-commit.md) -->
 >
-> Manual de Usuário: <!-- TODO: [Manual](documents/cliente/manual_de_usuario.pdf) -->
+>[Manual de Instalação](docs/installation.md)
 >
-> Manual de Instalação: <!-- TODO: [Manual](documents/cliente/manual_de_instalacao.pdf) -->
-
+>[Manual do Usuário](docs/user_manual.md)
 ---
 
 ## 🎓 Equipe <a name="equipe"></a>
