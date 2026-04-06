@@ -1,6 +1,7 @@
 package api.database;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,7 +24,11 @@ public final class Conexao {
             "jdbc:mysql://" + HOST + ":" + PORT + "/" + DATABASE_NAME
                     + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
     private static final String USER = env("API2026_DB_USER", "root");
-    private static final String PASSWORD = env("API2026_DB_PASSWORD", "159TnS!b");
+    private static final String PASSWORD = env("API2026_DB_PASSWORD", "");
+    private static final String[] SCRIPT_RESOURCES = {
+            "/bd_api.sql",
+            "/database/bd_api.sql"
+    };
     private static final String[] SCRIPT_PATHS = {
             "bd_api.sql",
             "src/database/bd_api.sql"
@@ -126,6 +131,11 @@ public final class Conexao {
     }
 
     private static String carregarScriptInicial() {
+        String scriptDoClasspath = carregarScriptDoClasspath();
+        if (scriptDoClasspath != null) {
+            return scriptDoClasspath;
+        }
+
         for (String scriptPath : SCRIPT_PATHS) {
             Path caminho = Path.of(scriptPath);
             if (!Files.exists(caminho)) {
@@ -140,6 +150,25 @@ public final class Conexao {
         }
 
         throw new RuntimeException("Nenhum script de banco foi encontrado. Verifique bd_api.sql.");
+    }
+
+    private static String carregarScriptDoClasspath() {
+        for (String scriptResource : SCRIPT_RESOURCES) {
+            try (InputStream inputStream = Conexao.class.getResourceAsStream(scriptResource)) {
+                if (inputStream == null) {
+                    continue;
+                }
+
+                return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+            } catch (IOException e) {
+                throw new RuntimeException(
+                        "Nao foi possivel ler o recurso " + scriptResource + ": " + e.getMessage(),
+                        e
+                );
+            }
+        }
+
+        return null;
     }
 
     private static void garantirUsuariosPadrao(Connection connection) {
