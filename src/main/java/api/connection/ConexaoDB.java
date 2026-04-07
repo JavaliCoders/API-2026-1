@@ -1,51 +1,64 @@
 package api.connection;
 
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 
-/**
- * Classe responsável por gerenciar a conexão com o banco MySQL.
- * Usa o padrão Singleton para garantir uma única instância de conexão.
- */
 public class ConexaoDB {
 
-
-    private static final String URL      = "jdbc:mysql://localhost:3306/bd_api";
-    private static final String USUARIO  = "root";
-    private static final String SENHA    = "0511";
-    // Instância única da conexão
     private static Connection conexao = null;
+    private static String url;
+    private static String usuario;
+    private static String senha;
 
-    // Construtor privado: ninguém cria instância diretamente
-    private ConexaoDB() {}
+    static {
+        Properties props = new Properties();
+        Path configExterno = Paths.get("config.properties");
 
-    /**
-     * Retorna a conexão ativa.
-     * Se não existir ou estiver fechada, cria uma nova.
-     */
+        if (Files.exists(configExterno)) {
+            try (InputStream input = Files.newInputStream(configExterno)) {
+                props.load(input);
+                System.out.println("Config externa carregada.");
+            } catch (Exception e) {
+                System.err.println("Erro config externo: " + e.getMessage());
+            }
+        } else {
+            try (InputStream input = ConexaoDB.class
+                    .getResourceAsStream("/distribuicao/config.properties")) {
+                if (input != null) {
+                    props.load(input);
+                    System.out.println("Config interna carregada.");
+                }
+            } catch (Exception e) {
+                System.err.println("Erro config interno: " + e.getMessage());
+            }
+        }
+
+        url     = props.getProperty("db.url");
+        usuario = props.getProperty("db.usuario");
+        senha   = props.getProperty("db.senha");
+    }
+
     public static Connection getConexao() {
         try {
             if (conexao == null || conexao.isClosed()) {
-                conexao = DriverManager.getConnection(URL, USUARIO, SENHA);
-                System.out.println("✅ Conexão com banco estabelecida!");
+                conexao = DriverManager.getConnection(url, usuario, senha);
             }
         } catch (SQLException e) {
-            System.err.println("❌ Erro ao conectar ao banco: " + e.getMessage());
-            e.printStackTrace();
+            throw new RuntimeException("Erro ao conectar com o banco: " + e.getMessage());
         }
         return conexao;
     }
 
-    /**
-     * Fecha a conexão com o banco.
-     * Chame ao fechar a aplicação.
-     */
     public static void fecharConexao() {
         try {
             if (conexao != null && !conexao.isClosed()) {
                 conexao.close();
-                System.out.println("🔒 Conexão encerrada.");
             }
         } catch (SQLException e) {
             e.printStackTrace();

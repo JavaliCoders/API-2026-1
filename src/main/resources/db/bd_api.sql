@@ -24,6 +24,15 @@ CREATE TABLE tb_usuario(
   REFERENCES tb_perfil (id_perfil)
   );
   
+  select*from tb_usuario;
+  
+  insert into tb_usuario (nome,usuario,senha,email,id_perfil) values
+  ('Kamille','kamille','1234','kamille@gmail.com',1),
+  ('João','joao','1234','joao@gmail.com',2),
+  ('Daniel','daniel','1234','daniel@gmail.com',3),
+  ('Nicolas','nicolas','1234','nicolas@gmail.com',4);
+
+
   
 
 CREATE TABLE tb_setor (
@@ -50,7 +59,7 @@ Insert into tb_centrocusto (centro_custo) values
 ('Informática'),
 ('Infraestrutura');
 
-
+insert into tb_centrocusto (centro_custo) values ('Escritório');
 CREATE TABLE tb_produto (
   id_produto INT auto_increment NOT NULL,
   produto VARCHAR(60) NOT NULL,
