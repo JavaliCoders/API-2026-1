@@ -47,6 +47,7 @@ public class LoginController implements Initializable {
             fieldSenha.clear();
             return;
         }
+        
 
         // Verifica se está ATIVO
         if (usuarioEncontrado.getStatus().equals("INATIVO")) {

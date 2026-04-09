@@ -1,0 +1,31 @@
+## 📊 Backlog do Sprint 1
+
+### SPRINT 1 - Fundação Operacional
+
+| Rank | Prioridade | User Story                                                                                                                          | Story Points | Sprint | Status |
+|------| --- |-------------------------------------------------------------------------------------------------------------------------------------| --- | --- | --- |
+| 1    | Alta | Como diretor, quero cadastrar novos usuários no sistema, para permitir que eles acessem a plataforma conforme seu perfil de acesso. | 3 | 1 | ✅ |
+| 2    | Alta | Como funcionário, quero fazer login no sistema, para acessar as funcionalidades conforme meu perfil.                                | 5 | 1 | ✅ |
+| 3    | Alta | Como financeiro, quero cadastrar produtos, para utilizá-los em pedidos e cotações.                                                  | 3 | 1 | ✅ |
+| 4    | Alta | Como usuário, quero visualizar o estoque, para acompanhar a disponibilidade de produtos.                                            | 3 | 1 | ✅ |
+| 5    | Alta | Como financeiro, quero cadastrar fornecedores, para realizar cotações e analisar opções mais viáveis.                               | 3 | 1 | ✅ |
+| 6    | Alta | Como financeiro, quero visualizar os fornecedores, para analisar suas informações e escolher fornecedor viável para as cotações.    | 3 | 1 | ✅ |
+| 7    | Alta | Como funcionário, quero criar um pedido de compra, para solicitar materiais ou produtos necessários para o setor.                   | 5 | 1 | ✅ |
+| 8    | Alta | Como funcionário, quero visualizar pedidos feitos, para consultar informações, histórico e alterações de status.                    | 1 | 1 | ✅ |
+
+## 📝 DoR e DoD <a name="dor-dod"></a>
+
+### DoR - Definition of Ready
+
+- User Stories escritas no formato "Como [persona], quero [ação] para que [objetivo]"
+- As US contêm critérios de aceitação definidos
+- Subtarefas divididas a partir das US
+- Priorização atribuída (Alta, Média, Baixa)
+- Story Points estimados
+
+### DoD - Definition of Done
+
+- Funcionalidade implementada e testada
+- Código revisado via Pull Request
+- Documentação atualizada
+- Vídeo demonstrativo do incremento entregue
