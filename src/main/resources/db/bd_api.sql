@@ -12,6 +12,10 @@ INSERT INTO tb_perfil (perfil) VALUES
 ('ESTOQUE'),
 ('OPERACIONAL');
 
+select*from tb_usuario; 
+insert into tb_usuario (nome,usuario,senha,email,id_perfil) values
+('Kamille','kamille',1234,'kamillefds2005@gmail.com',1);
+
 CREATE TABLE tb_usuario(
   id_usuario INT auto_increment PRIMARY KEY NOT NULL,
   nome VARCHAR(150) NOT NULL,
