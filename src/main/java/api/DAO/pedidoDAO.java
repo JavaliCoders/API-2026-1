@@ -74,11 +74,13 @@ public class pedidoDAO {
         ObservableList<Pedido> lista = FXCollections.observableArrayList();
         String sql = """
                 SELECT p.*, u.nome AS nome_usuario,
-                       cc.centro_custo, s.setor
+                       cc.centro_custo, s.setor,
+                       ap.nome AS nome_aprovador
                 FROM tb_pedido p
                 JOIN tb_usuario u      ON p.id_solicitante  = u.id_usuario
                 JOIN tb_centrocusto cc ON p.id_centrocusto  = cc.id_centrocusto
                 JOIN tb_setor s        ON p.id_setor        = s.id_setor
+                LEFT JOIN tb_usuario ap ON p.id_aprovador   = ap.id_usuario
                 ORDER BY p.id_pedido ASC
                 """;
 
@@ -171,7 +173,7 @@ public class pedidoDAO {
                 rs.getInt("id_setor"),
                 rs.getString("setor")
         );
-        return new Pedido(
+        Pedido pedido = new Pedido(
                 rs.getInt      ("id_pedido"),
                 rs.getString   ("num_pedido"),
                 rs.getTimestamp("data_abertura").toLocalDateTime(),
@@ -179,6 +181,19 @@ public class pedidoDAO {
                 rs.getDouble   ("valor_total_estimado"),
                 solicitante, cc, setor
         );
+
+        int idAprovador = rs.getInt("id_aprovador");
+        if (!rs.wasNull()) {
+            pedido.setAprovador(new Usuario(
+                    idAprovador, rs.getString("nome_aprovador"),
+                    "", "", "", "ATIVO", new Perfil()
+            ));
+        }
+        Timestamp tsAprovacao = rs.getTimestamp("data_aprovacao");
+        if (tsAprovacao != null) pedido.setDataAprovacao(tsAprovacao.toLocalDateTime());
+        pedido.setParecer(rs.getString("parecer"));
+
+        return pedido;
     }
     // Atualiza setor e centro de custo do pedido
     public static boolean atualizar(Pedido pedido) {
@@ -219,6 +234,30 @@ public class pedidoDAO {
 
         } catch (SQLException e) {
             System.err.println("Erro ao remover itens: " + e.getMessage());
+            return false;
+        }
+    }
+    public static boolean negar(int idPedido, int idAprovador, String parecer) {
+        String sql = """
+            UPDATE tb_pedido
+            SET status = 'NEGADO',
+                id_aprovador = ?,
+                data_aprovacao = NOW(),
+                parecer = ?
+            WHERE id_pedido = ?
+            """;
+
+        try (Connection con = ConexaoDB.getConexao();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt   (1, idAprovador);
+            ps.setString(2, parecer);
+            ps.setInt   (3, idPedido);
+            ps.executeUpdate();
+            return true;
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao negar pedido: " + e.getMessage());
             return false;
         }
     }

@@ -18,6 +18,12 @@ public class Pedido {
     private final ObjectProperty<CentroCusto>  centroCusto;
     private final ObjectProperty<Setor>        setor;
 
+    // campos de negação
+    private Usuario     aprovador;
+    private LocalDateTime dataAprovacao;
+    private String      parecer;
+
+
     public Pedido(int idPedido, String numPedido, LocalDateTime dataAbertura,
                   String status, double valorTotalEstimado,
                   Usuario solicitante, CentroCusto centroCusto, Setor setor) {
@@ -48,6 +54,17 @@ public class Pedido {
     public Usuario       getSolicitante()         { return solicitante.get(); }
     public CentroCusto   getCentroCusto()         { return centroCusto.get(); }
     public Setor         getSetor()               { return setor.get(); }
+
+    // Getters e setters para negação
+    public Usuario        getAprovador()     { return aprovador; }
+    public void           setAprovador(Usuario aprovador) { this.aprovador = aprovador; }
+
+    public LocalDateTime  getDataAprovacao() { return dataAprovacao; }
+    public void           setDataAprovacao(LocalDateTime dataAprovacao) { this.dataAprovacao = dataAprovacao; }
+
+    public String         getParecer()       { return parecer; }
+    public void           setParecer(String parecer) { this.parecer = parecer; }
+
 
     // Getters auxiliares para a TableView
     public String getDataAberturaFormatada() {
