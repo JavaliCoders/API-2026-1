@@ -2,6 +2,7 @@ package api.controller;
 
 import api.DAO.fornecedorDAO;
 import api.model.Fornecedor;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -25,31 +26,28 @@ import java.util.ResourceBundle;
 
 public class fornecedorController implements Initializable {
 
-    // Filtros
-    @FXML private TextField searchCod;
-    @FXML private TextField searchNome;
+    @FXML private TextField        searchCod;
+    @FXML private TextField        searchNome;
     @FXML private ComboBox<String> filtroStatus;
 
-    // Tabela
     @FXML private TableView<Fornecedor>            tabelaFornecedores;
     @FXML private TableColumn<Fornecedor, Integer> colId;
     @FXML private TableColumn<Fornecedor, String>  colNome;
     @FXML private TableColumn<Fornecedor, String>  colCnpj;
-    @FXML private TableColumn<Fornecedor, String>  colTipoPagamento;
+    @FXML private TableColumn<Fornecedor, String>  colFormasPagamento;
     @FXML private TableColumn<Fornecedor, Double>  colPedidoMinimo;
     @FXML private TableColumn<Fornecedor, String>  colStatus;
     @FXML private TableColumn<Fornecedor, Void>    colAcoes;
 
-    // Overlay de detalhes
     @FXML private StackPane overlayDetalhes;
     @FXML private Label     detalheNome;
     @FXML private Label     detalheCod;
     @FXML private Label     detalheCnpj;
-    @FXML private Label     detalheTipoPagamento;
+    @FXML private Label     detalheFormasPagamento;
     @FXML private Label     detalhePedidoMinimo;
     @FXML private Label     detalheStatus;
 
-    private AnchorPane areaPrincipal;
+    private AnchorPane             areaPrincipal;
     private ObservableList<Fornecedor> todosFornecedores;
     private FilteredList<Fornecedor>   fornecedoresFiltrados;
 
@@ -76,9 +74,37 @@ public class fornecedorController implements Initializable {
         colId.setCellValueFactory(new PropertyValueFactory<>("idFornecedor"));
         colNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colCnpj.setCellValueFactory(new PropertyValueFactory<>("cnpj"));
-        colTipoPagamento.setCellValueFactory(new PropertyValueFactory<>("tipoPagamento"));
 
-        // Pedido mínimo formatado como moeda
+        // Formas de pagamento como texto simples
+        colFormasPagamento.setCellValueFactory(data ->
+                new SimpleStringProperty(data.getValue().getFormasPagamentoTexto()));
+
+        // Badge azul para formas de pagamento
+        colFormasPagamento.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null || item.equals("-")) {
+                    setGraphic(null);
+                    setText("-");
+                    return;
+                }
+                // Cria um badge para cada forma
+                HBox box = new HBox(6);
+                box.setAlignment(Pos.CENTER_LEFT);
+                for (String forma : item.split(", ")) {
+                    Label badge = new Label(forma.trim());
+                    badge.setFont(Font.font("Segoe UI", FontWeight.BOLD, 10));
+                    badge.setStyle("-fx-background-color: #dbeafe; -fx-text-fill: #1d4ed8; " +
+                            "-fx-background-radius: 6; -fx-padding: 3 8;");
+                    box.getChildren().add(badge);
+                }
+                setGraphic(box);
+                setText(null);
+            }
+        });
+
+        // Pedido mínimo formatado
         colPedidoMinimo.setCellValueFactory(new PropertyValueFactory<>("pedidoMinimo"));
         colPedidoMinimo.setCellFactory(col -> new TableCell<>() {
             @Override
@@ -90,7 +116,7 @@ public class fornecedorController implements Initializable {
             }
         });
 
-        // Badge de Status
+        // Badge de status
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
         colStatus.setCellFactory(col -> new TableCell<>() {
             @Override
@@ -109,24 +135,7 @@ public class fornecedorController implements Initializable {
             }
         });
 
-        // Badge de Tipo Pagamento
-        colTipoPagamento.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) { setGraphic(null); return; }
-                Label badge = new Label(item);
-                badge.setFont(Font.font("Segoe UI", FontWeight.BOLD, 11));
-                badge.setAlignment(Pos.CENTER);
-                badge.setPrefWidth(110);
-                badge.setStyle("-fx-background-color: #dbeafe; -fx-text-fill: #1d4ed8; " +
-                        "-fx-background-radius: 6; -fx-padding: 4 10;");
-                setGraphic(badge);
-                setText(null);
-            }
-        });
-
-        // Botão de editar
+        // Botão editar
         colAcoes.setCellFactory(col -> new TableCell<>() {
             private final Button btnEditar = new Button("✏");
 
@@ -135,17 +144,14 @@ public class fornecedorController implements Initializable {
                         "-fx-background-color: #dbeafe; -fx-text-fill: #2563eb; " +
                                 "-fx-background-radius: 6; -fx-font-size: 14px; " +
                                 "-fx-cursor: hand; -fx-border-color: transparent; -fx-padding: 4 8;");
-
                 btnEditar.setOnMouseEntered(e -> btnEditar.setStyle(
                         "-fx-background-color: #2563eb; -fx-text-fill: white; " +
                                 "-fx-background-radius: 6; -fx-font-size: 14px; " +
                                 "-fx-cursor: hand; -fx-border-color: transparent; -fx-padding: 4 8;"));
-
                 btnEditar.setOnMouseExited(e -> btnEditar.setStyle(
                         "-fx-background-color: #dbeafe; -fx-text-fill: #2563eb; " +
                                 "-fx-background-radius: 6; -fx-font-size: 14px; " +
                                 "-fx-cursor: hand; -fx-border-color: transparent; -fx-padding: 4 8;"));
-
                 btnEditar.setOnAction(e -> {
                     Fornecedor f = getTableView().getItems().get(getIndex());
                     abrirEdicao(f);
@@ -155,13 +161,10 @@ public class fornecedorController implements Initializable {
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                } else {
-                    HBox box = new HBox(btnEditar);
-                    box.setAlignment(Pos.CENTER);
-                    setGraphic(box);
-                }
+                if (empty) { setGraphic(null); return; }
+                HBox box = new HBox(btnEditar);
+                box.setAlignment(Pos.CENTER);
+                setGraphic(box);
             }
         });
 
@@ -192,7 +195,7 @@ public class fornecedorController implements Initializable {
         detalheNome.setText(f.getNome());
         detalheCod.setText(String.valueOf(f.getIdFornecedor()));
         detalheCnpj.setText(f.getCnpj());
-        detalheTipoPagamento.setText(f.getTipoPagamento());
+        detalheFormasPagamento.setText(f.getFormasPagamentoTexto());
         detalhePedidoMinimo.setText(f.getPedidoMinimo() == 0.0 ? "Não definido"
                 : String.format("R$ %.2f", f.getPedidoMinimo()).replace(".", ","));
 

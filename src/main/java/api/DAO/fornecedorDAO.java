@@ -1,6 +1,7 @@
 package api.DAO;
 
 import api.connection.ConexaoDB;
+import api.model.FormaPagamento;
 import api.model.Fornecedor;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -9,21 +10,27 @@ import java.sql.*;
 
 public class fornecedorDAO {
 
-    public static boolean inserir(Fornecedor f) {
+    public static boolean inserir(Fornecedor f,
+                                  ObservableList<FormaPagamento> formas) {
         String sql = """
-                INSERT INTO tb_fornecedor
-                    (nome, cnpj, tipo_pagamento, pedido_minimo, status)
-                VALUES (?, ?, ?, ?, ?)
+                INSERT INTO tb_fornecedor (nome, cnpj, pedido_minimo, status)
+                VALUES (?, ?, ?, ?)
                 """;
         try (Connection con = ConexaoDB.getConexao();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+             PreparedStatement ps = con.prepareStatement(sql,
+                     Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setString(1, f.getNome());
             ps.setString(2, f.getCnpj());
-            ps.setString(3, f.getTipoPagamento());
-            ps.setDouble(4, f.getPedidoMinimo());
-            ps.setString(5, f.getStatus());
+            ps.setDouble(3, f.getPedidoMinimo());
+            ps.setString(4, f.getStatus());
             ps.executeUpdate();
+
+            ResultSet keys = ps.getGeneratedKeys();
+            if (keys.next()) {
+                int idGerado = keys.getInt(1);
+                FormaPagamentoDAO.inserirParaFornecedor(idGerado, formas);
+            }
             return true;
 
         } catch (SQLException e) {
@@ -48,14 +55,14 @@ public class fornecedorDAO {
         return lista;
     }
 
-    public static boolean atualizar(Fornecedor f) {
+    public static boolean atualizar(Fornecedor f,
+                                    ObservableList<FormaPagamento> formas) {
         String sql = """
                 UPDATE tb_fornecedor SET
-                    nome           = ?,
-                    cnpj           = ?,
-                    tipo_pagamento = ?,
-                    pedido_minimo  = ?,
-                    status         = ?
+                    nome          = ?,
+                    cnpj          = ?,
+                    pedido_minimo = ?,
+                    status        = ?
                 WHERE id_fornecedor = ?
                 """;
         try (Connection con = ConexaoDB.getConexao();
@@ -63,11 +70,13 @@ public class fornecedorDAO {
 
             ps.setString(1, f.getNome());
             ps.setString(2, f.getCnpj());
-            ps.setString(3, f.getTipoPagamento());
-            ps.setDouble(4, f.getPedidoMinimo());
-            ps.setString(5, f.getStatus());
-            ps.setInt   (6, f.getIdFornecedor());
+            ps.setDouble(3, f.getPedidoMinimo());
+            ps.setString(4, f.getStatus());
+            ps.setInt   (5, f.getIdFornecedor());
             ps.executeUpdate();
+
+            FormaPagamentoDAO.removerPorFornecedor(f.getIdFornecedor());
+            FormaPagamentoDAO.inserirParaFornecedor(f.getIdFornecedor(), formas);
             return true;
 
         } catch (SQLException e) {
@@ -77,13 +86,15 @@ public class fornecedorDAO {
     }
 
     private static Fornecedor mapear(ResultSet rs) throws SQLException {
-        return new Fornecedor(
+        Fornecedor f = new Fornecedor(
                 rs.getInt   ("id_fornecedor"),
                 rs.getString("nome"),
                 rs.getString("cnpj"),
-                rs.getString("tipo_pagamento"),
                 rs.getDouble("pedido_minimo"),
                 rs.getString("status")
         );
+        f.setFormasPagamento(
+                FormaPagamentoDAO.listarPorFornecedor(f.getIdFornecedor()));
+        return f;
     }
 }

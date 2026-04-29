@@ -50,13 +50,13 @@
                            style="-fx-background-color: transparent; -fx-border-color: transparent;
                                   -fx-table-cell-border-color: transparent; -fx-font-size: 13px;">
                     <columns>
-                        <TableColumn fx:id="colId"            text="COD"            prefWidth="65"/>
-                        <TableColumn fx:id="colNome"          text="Nome"           prefWidth="200"/>
-                        <TableColumn fx:id="colCnpj"          text="CNPJ"           prefWidth="150"/>
-                        <TableColumn fx:id="colTipoPagamento" text="Tipo Pagamento" prefWidth="140"/>
-                        <TableColumn fx:id="colPedidoMinimo"  text="Pedido Mín."    prefWidth="110"/>
-                        <TableColumn fx:id="colStatus"        text="Status"         prefWidth="90"/>
-                        <TableColumn fx:id="colAcoes"         text="Ações"          prefWidth="65"/>
+                        <TableColumn fx:id="colId"              text="COD"              prefWidth="65"/>
+                        <TableColumn fx:id="colNome"            text="Nome"             prefWidth="180"/>
+                        <TableColumn fx:id="colCnpj"            text="CNPJ"             prefWidth="140"/>
+                        <TableColumn fx:id="colFormasPagamento" text="Formas Pagamento" prefWidth="200"/>
+                        <TableColumn fx:id="colPedidoMinimo"    text="Pedido Mín."      prefWidth="110"/>
+                        <TableColumn fx:id="colStatus"          text="Status"           prefWidth="90"/>
+                        <TableColumn fx:id="colAcoes"           text="Ações"            prefWidth="65"/>
                     </columns>
                     <placeholder>
                         <Label text="Nenhum fornecedor cadastrado."
@@ -72,7 +72,7 @@
                visible="false" managed="false"
                style="-fx-background-color: rgba(0,0,0,0.45);">
 
-        <VBox spacing="0" maxWidth="520" maxHeight="480"
+        <VBox spacing="0" maxWidth="520" maxHeight="500"
               style="-fx-background-color: white; -fx-background-radius: 16;
                      -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 20, 0, 0, 4);">
 
@@ -116,15 +116,15 @@
                         </VBox>
                     </HBox>
 
-                    <!-- Linha 2: Tipo Pagamento + Pedido Mínimo -->
+                    <!-- Linha 2: Formas de Pagamento + Pedido Mínimo -->
                     <HBox spacing="24" style="-fx-padding: 16 0;
                           -fx-border-color: transparent transparent #f1f5f9 transparent;
                           -fx-border-width: 1;">
                         <VBox spacing="3" HBox.hgrow="ALWAYS">
-                            <Label text="TIPO DE PAGAMENTO"
+                            <Label text="FORMAS DE PAGAMENTO"
                                    style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #94a3b8;"/>
-                            <Label fx:id="detalheTipoPagamento"
-                                   style="-fx-font-size: 14px; -fx-text-fill: #0f172a;"/>
+                            <Label fx:id="detalheFormasPagamento"
+                                   style="-fx-font-size: 14px; -fx-text-fill: #0f172a; -fx-wrap-text: true;"/>
                         </VBox>
                         <VBox spacing="3" HBox.hgrow="ALWAYS">
                             <Label text="PEDIDO MÍNIMO"

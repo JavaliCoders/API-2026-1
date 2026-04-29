@@ -104,12 +104,26 @@ CREATE TABLE tb_fornecedor (
   id_fornecedor INT auto_increment NOT NULL,
   nome VARCHAR(45) NOT NULL,
   cnpj VARCHAR(14) NOT NULL,
-  tipo_pagamento ENUM('PIX', 'CARTAO', 'TRANSFERENCIA', 'BOLETO', 'FATURADO') NOT NULL,
   pedido_minimo DECIMAL(8,2) NULL,
   status ENUM('ATIVO', 'INATIVO') NOT NULL,
   PRIMARY KEY (id_fornecedor)
   );
 
+CREATE TABLE tb_forma_pagamento (
+  id_forma_pagamento INT AUTO_INCREMENT PRIMARY KEY,
+  forma VARCHAR(30) NOT NULL
+);
+
+INSERT INTO tb_forma_pagamento (forma) VALUES
+('PIX'), ('CARTÃO DE DÉBITO'), ('CARTÃO DE CRÉDITO'), ('TRANSFERÊNCIA'), ('BOLETO'), ('FATURADO');
+
+CREATE TABLE tb_fornecedor_pagamento (
+  id_fornecedor      INT NOT NULL,
+  id_forma_pagamento INT NOT NULL,
+  PRIMARY KEY (id_fornecedor, id_forma_pagamento),
+  FOREIGN KEY (id_fornecedor)      REFERENCES tb_fornecedor (id_fornecedor),
+  FOREIGN KEY (id_forma_pagamento) REFERENCES tb_forma_pagamento (id_forma_pagamento)
+);
 
 CREATE TABLE tb_anexo (
   id_anexo INT auto_increment NOT NULL,
