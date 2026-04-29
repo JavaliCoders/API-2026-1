@@ -237,6 +237,7 @@ public class pedidoDAO {
             return false;
         }
     }
+  
     // método de aprovar pedido
     public static boolean aprovar(int idPedido, int idAprovador, String parecer) {
         String sql = """
