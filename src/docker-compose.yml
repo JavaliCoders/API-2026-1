@@ -12,7 +12,7 @@ services:
     ports:
       - "3307:3306"
     volumes:
-      #- ./docs/banco.sql:/docker-entrypoint-initdb.d/banco.sql
+      - ./main/resources/db/bd_api.sql:/docker-entrypoint-initdb.d/bd_api.sql
       - dados_mysql:/var/lib/mysql
 
 volumes:

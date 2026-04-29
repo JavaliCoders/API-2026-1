@@ -1,4 +1,3 @@
-CREATE database bd_api;
 USE bd_api;
 
 CREATE TABLE tb_perfil (
@@ -12,9 +11,6 @@ INSERT INTO tb_perfil (perfil) VALUES
 ('ESTOQUE'),
 ('OPERACIONAL');
 
-select*from tb_usuario; 
-insert into tb_usuario (nome,usuario,senha,email,id_perfil) values
-('Kamille','kamille',1234,'kamillefds2005@gmail.com',1);
 
 CREATE TABLE tb_usuario(
   id_usuario INT auto_increment PRIMARY KEY NOT NULL,
@@ -28,7 +24,8 @@ CREATE TABLE tb_usuario(
   REFERENCES tb_perfil (id_perfil)
   );
   
-  
+insert into tb_usuario (nome,usuario,senha,email,id_perfil) values
+('Kamille','kamille',1234,'kamillefds2005@gmail.com',1);
 
 CREATE TABLE tb_setor (
   id_setor INT auto_increment PRIMARY KEY NOT NULL,
@@ -71,7 +68,7 @@ CREATE TABLE tb_pedido (
   id_pedido INT auto_increment NOT NULL,
   num_pedido VARCHAR(10) unique NOT NULL,
   data_abertura DATETIME NOT NULL,
-  status ENUM('EM_APROVACAO', 'APROVADO', 'NEGADO', 'EM_COTACAO', 'EM_COMPRA', 'FINALIZADO', 'CANCELADO') NOT NULL default 'EM_APROVAÇÃO',
+  status ENUM('EM_APROVACAO', 'APROVADO', 'NEGADO', 'EM_COTACAO', 'EM_COMPRA', 'FINALIZADO', 'CANCELADO') NOT NULL default 'EM_APROVACAO',
   valor_total_estimado DECIMAL(8,2) NOT NULL,
   data_aprovacao DATETIME NULL,
   parecer MEDIUMTEXT NULL,
