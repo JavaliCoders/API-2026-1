@@ -69,6 +69,34 @@ public class pedidoDAO {
         }
     }
 
+    // ── SELECT pedidos para atendimento (CA1) ────────────────
+    public static ObservableList<Pedido> listarParaAtendimento() {
+        ObservableList<Pedido> lista = FXCollections.observableArrayList();
+        String sql = """
+                SELECT p.*, u.nome AS nome_usuario,
+                       cc.centro_custo, s.setor,
+                       ap.nome AS nome_aprovador
+                FROM tb_pedido p
+                JOIN tb_usuario u       ON p.id_solicitante = u.id_usuario
+                JOIN tb_centrocusto cc  ON p.id_centrocusto = cc.id_centrocusto
+                JOIN tb_setor s         ON p.id_setor       = s.id_setor
+                LEFT JOIN tb_usuario ap ON p.id_aprovador   = ap.id_usuario
+                WHERE p.status = 'EM_COMPRA'
+                ORDER BY p.id_pedido ASC
+                """;
+
+        try (Connection con = ConexaoDB.getConexao();
+             Statement st = con.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+
+            while (rs.next()) lista.add(mapear(rs));
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao listar pedidos para atendimento: " + e.getMessage());
+        }
+        return lista;
+    }
+
     // ── SELECT todos os pedidos ───────────────────────────────
     public static ObservableList<Pedido> listarTodos() {
         ObservableList<Pedido> lista = FXCollections.observableArrayList();
