@@ -54,11 +54,6 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-                    <!--
-                        Formato: módulo/pacote.Classe
-                        Como seu projeto não tem module-info.java,
-                        use apenas o caminho completo da classe
-                    -->
                     <mainClass>api.MainApp</mainClass>
                 </configuration>
             </plugin>
