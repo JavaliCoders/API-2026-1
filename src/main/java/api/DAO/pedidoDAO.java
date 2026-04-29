@@ -237,6 +237,8 @@ public class pedidoDAO {
             return false;
         }
     }
+  
+    // método de aprovar pedido
     public static boolean aprovar(int idPedido, int idAprovador, String parecer) {
         String sql = """
             UPDATE tb_pedido
@@ -262,6 +264,7 @@ public class pedidoDAO {
         }
     }
 
+    // método de negar pedido
     public static boolean negar(int idPedido, int idAprovador, String parecer) {
         String sql = """
             UPDATE tb_pedido
