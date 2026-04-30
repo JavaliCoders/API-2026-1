@@ -1,9 +1,11 @@
 package api.controller;
 
+import api.model.SessaoUsuario;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -12,6 +14,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import api.util.PermissaoUtil;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
@@ -259,7 +262,38 @@ public class indexController implements Initializable {
         alert.setTitle("Sair");
         alert.setHeaderText(null);
         alert.showAndWait().ifPresent(btn -> {
-            if (btn == ButtonType.YES) System.exit(0);
+            if (btn == ButtonType.YES) {
+                // Limpa a sessão do usuário logado
+                SessaoUsuario.getInstancia().encerrarSessao();
+
+                // Volta para a tela de login
+                try {
+                    FXMLLoader loader = new FXMLLoader(
+                            getClass().getResource("/view/login.fxml"));
+                    AnchorPane root = loader.load();
+
+                    Scene scene = new Scene(root, 900, 600);
+
+                    // Aplica CSS do login se existir
+                    try {
+                        scene.getStylesheets().add(
+                                getClass().getResource("/style/loginStyle.css")
+                                        .toExternalForm());
+                    } catch (Exception e) {
+                        System.out.println("CSS não encontrado.");
+                    }
+
+                    Stage stage = (Stage) sidebar.getScene().getWindow();
+                    stage.setScene(scene);
+                    stage.setTitle("Sistema de Pedidos - Login");
+                    stage.setResizable(false);
+                    stage.show();
+
+                } catch (IOException e) {
+                    System.err.println("Erro ao voltar para login: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
         });
     }
 

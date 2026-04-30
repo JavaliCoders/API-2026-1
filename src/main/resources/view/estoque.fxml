@@ -119,10 +119,7 @@
                                -fx-border-color: transparent; -fx-padding: 6 10;"/>
             </HBox>
 
-            <!-- Conteúdo com scroll -->
-            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
-                        style="-fx-background-color: transparent; -fx-background: transparent;
-                               -fx-border-color: transparent;">
+
                 <VBox spacing="0" style="-fx-padding: 20;">
 
                     <!-- Linha 1: COD + Unidade -->
@@ -188,7 +185,7 @@
                         </VBox>
                     </HBox>
                 </VBox>
-            </ScrollPane>
+
 
             <!-- Rodapé com botão fechar -->
             <HBox alignment="CENTER_RIGHT"

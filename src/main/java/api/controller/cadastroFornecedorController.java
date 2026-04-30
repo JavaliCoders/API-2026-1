@@ -4,6 +4,7 @@ import api.DAO.FormaPagamentoDAO;
 import api.DAO.fornecedorDAO;
 import api.model.FormaPagamento;
 import api.model.Fornecedor;
+import api.service.HistoricoService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -154,6 +155,16 @@ public class cadastroFornecedorController implements Initializable {
                     fieldStatus.getValue()
             );
             sucesso = fornecedorDAO.inserir(novo, formasSelecionadas);
+
+            if (sucesso) {
+                HistoricoService.registrar(
+                        "Fornecedor",
+                        "Cadastro",
+                        novo.getIdFornecedor(),
+                        "Fornecedor \"" + novo.getNome() + "\" cadastrado"
+                );
+            }
+
             exibirAlerta(sucesso,
                     "Fornecedor \"" + novo.getNome() + "\" cadastrado com sucesso!",
                     "Erro ao cadastrar. Verifique a conexão com o banco.");
@@ -166,6 +177,15 @@ public class cadastroFornecedorController implements Initializable {
                     fieldStatus.getValue()
             );
             sucesso = fornecedorDAO.atualizar(editado, formasSelecionadas);
+
+            if (sucesso) {
+                HistoricoService.registrar(
+                        "Fornecedor",
+                        "Alteração",
+                        editado.getIdFornecedor(),
+                        "Fornecedor \"" + editado.getNome() + "\" alterado"
+                );
+            }
             exibirAlerta(sucesso,
                     "Fornecedor \"" + editado.getNome() + "\" atualizado com sucesso!",
                     "Erro ao atualizar. Verifique a conexão com o banco.");

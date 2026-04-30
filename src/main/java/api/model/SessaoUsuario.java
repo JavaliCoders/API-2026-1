@@ -53,4 +53,9 @@ public class SessaoUsuario {
     public String getPerfilUsuarioLogado() {
         return usuarioLogado != null ? usuarioLogado.getNomePerfil() : "";
     }
+
+    //Retorna id do usuário logado
+    public int getIdUsuarioLogado() {
+        return usuarioLogado != null ? usuarioLogado.getIdUsuario() : 0;
+    }
 }

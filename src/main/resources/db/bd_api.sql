@@ -6,6 +6,8 @@ CREATE TABLE tb_perfil (
   perfil VARCHAR(12) NOT NULL
    );
    
+select*from tb_fornecedor;
+   
 INSERT INTO tb_perfil (perfil) VALUES 
 ('DIRETOR'),
 ('FINANCEIRO'),
@@ -255,6 +257,8 @@ CREATE TABLE tb_historico (
     FOREIGN KEY (id_usuario)
     REFERENCES tb_usuario (id_usuario)
     );
+
+
     
 CREATE TABLE tb_notificacao (
   id_notificacao INT auto_increment NOT NULL,

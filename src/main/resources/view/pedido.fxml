@@ -41,10 +41,7 @@
                                  -fx-font-size: 13px;"/>
             </HBox>
 
-            <ScrollPane fitToWidth="true" fitToHeight="true" VBox.vgrow="ALWAYS"
-                        hbarPolicy="AS_NEEDED" vbarPolicy="AS_NEEDED"
-                        style="-fx-background-color: transparent; -fx-background: transparent;
-                               -fx-border-color: transparent;">
+
                 <TableView fx:id="tabelaPedidos" minWidth="800"
                            style="-fx-background-color: transparent; -fx-border-color: transparent;
                                   -fx-table-cell-border-color: transparent; -fx-font-size: 13px;">
@@ -63,7 +60,6 @@
                                style="-fx-text-fill: #475569; -fx-font-size: 13px;"/>
                     </placeholder>
                 </TableView>
-            </ScrollPane>
         </VBox>
     </VBox>
 

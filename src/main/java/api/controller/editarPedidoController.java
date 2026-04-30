@@ -5,6 +5,7 @@ import api.DAO.pedidoDAO;
 import api.DAO.produtoDAO;
 import api.DAO.SetorDAO;
 import api.model.*;
+import api.service.HistoricoService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -330,6 +331,16 @@ public class editarPedidoController implements Initializable {
                 pedidoEdicao.getIdPedido(), itensPedido);
 
         if (itensOk) {
+
+            HistoricoService.registrar(
+                    "Pedido",
+                    "Alteração",
+                    pedidoEdicao.getIdPedido(),
+                    "Pedido " + fieldNumPedido.getText() +
+                            " alterado por " + SessaoUsuario.getInstancia().getNomeUsuarioLogado() +
+                            " com total de R$ " + labelTotal.getText()
+            );
+
             Alert alerta = new Alert(Alert.AlertType.INFORMATION);
             alerta.setTitle("Sucesso");
             alerta.setHeaderText(null);
