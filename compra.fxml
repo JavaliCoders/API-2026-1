@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="api.controller.compraController"
+           style="-fx-background-color: #f0f2f5;">
+
+    <VBox spacing="24" style="-fx-padding: 24;">
+        <VBox style="-fx-background-color: white; -fx-background-radius: 12;
+                     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 10, 0, 0, 2);
+                     -fx-padding: 24;" VBox.vgrow="ALWAYS">
+
+            <VBox spacing="4" style="-fx-padding: 0 0 20 0;">
+                <Label text="Registro de Compra"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+                <Label text="Pedidos aprovados aguardando registro da compra"
+                       style="-fx-font-size: 13px; -fx-text-fill: #475569;"/>
+            </VBox>
+
+            <HBox spacing="12" style="-fx-padding: 0 0 20 0;" alignment="CENTER_LEFT">
+                <TextField fx:id="searchNum"
+                           promptText="Buscar por numero"
+                           prefWidth="180" onKeyReleased="#onSearch"
+                           style="-fx-background-color: #f8fafc; -fx-border-color: #cbd5e1;
+                                  -fx-border-radius: 8; -fx-background-radius: 8;
+                                  -fx-padding: 10 14; -fx-font-size: 13px;"/>
+                <TextField fx:id="searchSolicitante"
+                           promptText="Buscar por solicitante"
+                           prefWidth="220" onKeyReleased="#onSearch"
+                           style="-fx-background-color: #f8fafc; -fx-border-color: #cbd5e1;
+                                  -fx-border-radius: 8; -fx-background-radius: 8;
+                                  -fx-padding: 10 14; -fx-font-size: 13px;"/>
+            </HBox>
+
+            <ScrollPane fitToWidth="true" fitToHeight="true" VBox.vgrow="ALWAYS"
+                        hbarPolicy="AS_NEEDED" vbarPolicy="AS_NEEDED"
+                        style="-fx-background-color: transparent; -fx-background: transparent;
+                               -fx-border-color: transparent;">
+                <TableView fx:id="tabelaPedidos" minWidth="850"
+                           style="-fx-background-color: transparent; -fx-border-color: transparent;
+                                  -fx-table-cell-border-color: transparent; -fx-font-size: 13px;">
+                    <columns>
+                        <TableColumn fx:id="colNum" text="N Pedido" prefWidth="100"/>
+                        <TableColumn fx:id="colData" text="Data" prefWidth="135"/>
+                        <TableColumn fx:id="colSolicitante" text="Solicitante" prefWidth="155"/>
+                        <TableColumn fx:id="colSetor" text="Setor" prefWidth="120"/>
+                        <TableColumn fx:id="colCentro" text="Centro Custo" prefWidth="140"/>
+                        <TableColumn fx:id="colValor" text="Valor Est." prefWidth="110"/>
+                        <TableColumn fx:id="colStatus" text="Status" prefWidth="115"/>
+                        <TableColumn fx:id="colAcoes" text="Acoes" prefWidth="105"/>
+                    </columns>
+                    <placeholder>
+                        <Label text="Nenhum pedido aprovado aguardando compra."
+                               style="-fx-text-fill: #475569; -fx-font-size: 13px;"/>
+                    </placeholder>
+                </TableView>
+            </ScrollPane>
+        </VBox>
+    </VBox>
+</StackPane>
