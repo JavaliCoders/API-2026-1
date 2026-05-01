@@ -52,15 +52,6 @@
                            style="-fx-text-fill: rgb(210,210,216); -fx-font-size: 16px;"/>
                 </HBox>
 
-                <!-- <HBox fx:id="menuCotacao" alignment="CENTER_LEFT" spacing="12"
-                      style="-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 12 16; -fx-cursor: hand;"
-                      onMouseClicked="#onCotacaoClicked">
-                    <Label text="📋" style="-fx-font-size: 20px;"/>
-                    <Label fx:id="textoCotacao" text="Cotação"
-                           style="-fx-text-fill: #9999bb; -fx-font-size: 16px;"/>
-                </HBox>-->
-
-
                 <HBox fx:id="menuUsuarios" alignment="CENTER_LEFT" spacing="12"
                       style="-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 12 16; -fx-cursor: hand;"
                       onMouseClicked="#onUsuariosClicked">
@@ -69,6 +60,29 @@
                            style="-fx-text-fill: rgb(210,210,216); -fx-font-size: 16px;"/>
                 </HBox>
 
+                <!-- ── Menu Notificações (com badge) ────────── -->
+                <HBox fx:id="menuNotificacoes" alignment="CENTER_LEFT" spacing="12"
+                      style="-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 12 16; -fx-cursor: hand;"
+                      onMouseClicked="#onNotificacoesClicked">
+
+                    <!-- Sino + badge empilhados num StackPane -->
+                    <StackPane>
+                        <Label fx:id="iconNotificacoes" text="🔔"
+                               style="-fx-font-size: 20px; -fx-text-fill: rgb(210,210,216);"/>
+                        <!-- Badge vermelho com contagem; visível só quando há não lidas -->
+                        <Label fx:id="badgeNotificacoes" text="0"
+                               alignment="CENTER"
+                               style="-fx-background-color: #ef4444; -fx-text-fill: white;
+                                      -fx-font-size: 9px; -fx-font-weight: bold;
+                                      -fx-background-radius: 10; -fx-padding: 1 4;
+                                      -fx-min-width: 16; -fx-min-height: 16;"
+                               StackPane.alignment="TOP_RIGHT"
+                               visible="false" managed="false"/>
+                    </StackPane>
+
+                    <Label fx:id="textoNotificacoes" text="Notificações"
+                           style="-fx-text-fill: rgb(210,210,216); -fx-font-size: 16px;"/>
+                </HBox>
 
             </VBox>
 
