@@ -1,6 +1,7 @@
 CREATE database bd_api;
 USE bd_api;
 
+
 CREATE TABLE tb_perfil (
   id_perfil INT auto_increment KEY NOT NULL,
   perfil VARCHAR(12) NOT NULL

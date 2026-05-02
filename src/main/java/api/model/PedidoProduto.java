@@ -51,12 +51,13 @@ public class PedidoProduto {
 
     // Setters
     public void setQtdSolicitada(int qtd) { qtdSolicitada.set(qtd); }
+    public void setQtdAprovada(int qtd)   { qtdAprovada.set(qtd); }   // ← adicionado
 
     // Properties
-    public IntegerProperty             idPedidoProdutoProperty() { return idPedidoProduto; }
-    public IntegerProperty             idPedidoProperty()        { return idPedido; }
-    public ObjectProperty<Produto>     produtoProperty()         { return produto; }
-    public IntegerProperty             qtdSolicitadaProperty()   { return qtdSolicitada; }
-    public IntegerProperty             qtdAprovadaProperty()     { return qtdAprovada; }
-    public IntegerProperty             qtdRecebidaProperty()     { return qtdRecebida; }
+    public IntegerProperty         idPedidoProdutoProperty() { return idPedidoProduto; }
+    public IntegerProperty         idPedidoProperty()        { return idPedido; }
+    public ObjectProperty<Produto> produtoProperty()         { return produto; }
+    public IntegerProperty         qtdSolicitadaProperty()   { return qtdSolicitada; }
+    public IntegerProperty         qtdAprovadaProperty()     { return qtdAprovada; }
+    public IntegerProperty         qtdRecebidaProperty()     { return qtdRecebida; }
 }

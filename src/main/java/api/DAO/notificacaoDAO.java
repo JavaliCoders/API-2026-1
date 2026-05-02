@@ -217,4 +217,24 @@ public class notificacaoDAO {
                 rs.getTimestamp("data").toLocalDateTime()
         );
     }
+    public static String buscarEmailUsuario(int idUsuario) {
+        String sql = "SELECT email FROM tb_usuario WHERE id_usuario = ? AND status = 'ATIVO'";
+
+        try (Connection con = ConexaoDB.getConexao();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idUsuario);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return rs.getString("email");
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao buscar email do usuário: " + e.getMessage());
+        }
+
+        return null;
+    }
 }

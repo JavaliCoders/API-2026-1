@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="api.controller.cotacaoController"
+            style="-fx-background-color: #f0f2f5;">
+
+    <VBox spacing="0"
+          AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+          AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+
+        <!-- ── Barra de filtros ───────────────────────────── -->
+        <HBox alignment="CENTER_LEFT" spacing="12"
+              style="-fx-background-color: white; -fx-padding: 16 28;
+                     -fx-border-color: transparent transparent #e5e7eb transparent;
+                     -fx-border-width: 1;">
+
+            <Button fx:id="btnVoltar" text="← Voltar" onAction="#onVoltar"
+                    visible="false" managed="false"
+                    style="-fx-background-color:#f1f5f9; -fx-text-fill:#374151;
+                           -fx-background-radius:8; -fx-border-color:transparent;
+                           -fx-padding:8 16; -fx-cursor:hand; -fx-font-size:13px;"/>
+
+            <TextField fx:id="fieldBusca"
+                       promptText="🔍  Buscar por nº pedido ou fornecedor..."
+                       prefWidth="300"
+                       style="-fx-background-radius:8; -fx-border-radius:8;
+                              -fx-border-color:#d1d5db; -fx-padding:8 12; -fx-font-size:13px;"/>
+
+            <ComboBox fx:id="filtroStatus" promptText="Status" prefWidth="160"
+                      style="-fx-background-radius:8; -fx-border-color:#d1d5db; -fx-font-size:13px;"/>
+
+            <Button text="Limpar" onAction="#onLimparFiltro"
+                    style="-fx-background-color:#f1f5f9; -fx-text-fill:#475569;
+                           -fx-font-size:13px; -fx-background-radius:8;
+                           -fx-border-color:transparent; -fx-padding:8 16; -fx-cursor:hand;"/>
+
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="labelTotal" style="-fx-font-size:13px; -fx-text-fill:#6b7280;"/>
+        </HBox>
+
+        <!-- ── Banner de filtro por pedido ───────────────── -->
+        <HBox fx:id="boxFiltradoPedido" spacing="8" alignment="CENTER_LEFT"
+              visible="false" managed="false"
+              style="-fx-background-color:#eff6ff; -fx-padding:10 28;
+                     -fx-border-color:transparent transparent #bfdbfe transparent; -fx-border-width:1;">
+            <Label text="📋" style="-fx-font-size:14px;"/>
+            <Label fx:id="labelFiltradoPedido" text=""
+                   style="-fx-font-size:13px; -fx-text-fill:#1e40af; -fx-font-weight:bold;"/>
+        </HBox>
+
+        <!-- ── Tabela ─────────────────────────────────────── -->
+        <TableView fx:id="tabelaCotacoes" VBox.vgrow="ALWAYS"
+                   style="-fx-background-color:white; -fx-border-color:transparent;">
+            <columns>
+                <TableColumn fx:id="colNumPedido"  text="Nº Pedido"    prefWidth="100"/>
+                <TableColumn fx:id="colFornecedor" text="Fornecedor"    prefWidth="180"/>
+                <TableColumn fx:id="colValor"      text="Valor Cotado"  prefWidth="120"/>
+                <TableColumn fx:id="colData"       text="Data Registro" prefWidth="130"/>
+                <TableColumn fx:id="colStatus"     text="Status"        prefWidth="120"/>
+                <TableColumn fx:id="colAprovador"  text="Aprovado por"  prefWidth="130"/>
+                <TableColumn fx:id="colDataAprov"  text="Data Decisão"  prefWidth="130"/>
+                <TableColumn fx:id="colAnexo"      text="Anexo"         prefWidth="90"/>
+                <!-- Adicionar nova cotação para o mesmo pedido — só FINANCEIRO -->
+                <TableColumn fx:id="colNovaCotacao" text="Nova Cotação" prefWidth="120"/>
+                <!-- Aprovar / Negar — só DIRETOR -->
+                <TableColumn fx:id="colAcoes"      text="Ações"         prefWidth="110"/>
+            </columns>
+            <placeholder>
+                <Label text="Nenhuma cotação encontrada."
+                       style="-fx-text-fill:#9ca3af; -fx-font-size:14px;"/>
+            </placeholder>
+        </TableView>
+
+        <!-- ── Painel de parecer ──────────────────────────── -->
+        <VBox fx:id="painelParecer" spacing="6" visible="false" managed="false"
+              style="-fx-background-color:white; -fx-padding:14 28;
+                     -fx-border-color:#e5e7eb transparent transparent transparent; -fx-border-width:1;">
+            <Label text="Parecer"
+                   style="-fx-font-weight:bold; -fx-font-size:13px; -fx-text-fill:#374151;"/>
+            <Label fx:id="labelParecer" wrapText="true"
+                   style="-fx-font-size:13px; -fx-text-fill:#6b7280;"/>
+        </VBox>
+
+    </VBox>
+</AnchorPane>

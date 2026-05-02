@@ -41,29 +41,31 @@
                                  -fx-font-size: 13px;"/>
             </HBox>
 
-
-                <TableView fx:id="tabelaPedidos" minWidth="800"
-                           style="-fx-background-color: transparent; -fx-border-color: transparent;
-                                  -fx-table-cell-border-color: transparent; -fx-font-size: 13px;">
-                    <columns>
-                        <TableColumn fx:id="colNum"       text="Nº Pedido"   prefWidth="100"/>
-                        <TableColumn fx:id="colData"      text="Data"        prefWidth="140"/>
-                        <TableColumn fx:id="colSolicitante" text="Solicitante" prefWidth="160"/>
-                        <TableColumn fx:id="colSetor"     text="Setor"       prefWidth="120"/>
-                        <TableColumn fx:id="colCentro"    text="Centro Custo" prefWidth="140"/>
-                        <TableColumn fx:id="colValor"     text="Valor Total"  prefWidth="110"/>
-                        <TableColumn fx:id="colStatus"    text="Status"       prefWidth="120"/>
-                        <TableColumn fx:id="colAcoes" text="Ações" prefWidth="70"/>
-                    </columns>
-                    <placeholder>
-                        <Label text="Nenhum pedido encontrado."
-                               style="-fx-text-fill: #475569; -fx-font-size: 13px;"/>
-                    </placeholder>
-                </TableView>
+            <TableView fx:id="tabelaPedidos" minWidth="800"
+                       style="-fx-background-color: transparent; -fx-border-color: transparent;
+                              -fx-table-cell-border-color: transparent; -fx-font-size: 13px;">
+                <columns>
+                    <TableColumn fx:id="colNum"         text="Nº Pedido"    prefWidth="100"/>
+                    <TableColumn fx:id="colData"        text="Data"          prefWidth="140"/>
+                    <TableColumn fx:id="colSolicitante" text="Solicitante"   prefWidth="160"/>
+                    <TableColumn fx:id="colSetor"       text="Setor"         prefWidth="120"/>
+                    <TableColumn fx:id="colCentro"      text="Centro Custo"  prefWidth="140"/>
+                    <TableColumn fx:id="colValor"       text="Valor Total"   prefWidth="110"/>
+                    <TableColumn fx:id="colStatus"      text="Status"        prefWidth="120"/>
+                    <!-- Editar: visível para todos, ativo só em EM_APROVACAO -->
+                    <TableColumn fx:id="colEditar"      text="Editar"        prefWidth="80"/>
+                    <!-- Ações: dropdown contextual por perfil -->
+                    <TableColumn fx:id="colAcoes"       text="Ações"         prefWidth="110"/>
+                </columns>
+                <placeholder>
+                    <Label text="Nenhum pedido encontrado."
+                           style="-fx-text-fill: #475569; -fx-font-size: 13px;"/>
+                </placeholder>
+            </TableView>
         </VBox>
     </VBox>
 
-    <!-- ── CAMADA 2: Overlay de detalhes ── -->
+    <!-- ── CAMADA 2: Overlay de detalhes (original preservado) ── -->
     <StackPane fx:id="overlayDetalhes" visible="false" managed="false"
                style="-fx-background-color: rgba(0,0,0,0.45);">
 
@@ -78,8 +80,7 @@
                     <Label text="Detalhes do Pedido"
                            style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #bfdbfe;"/>
                     <Label fx:id="detalheNum"
-                           style="-fx-font-size: 17px; -fx-font-weight: bold;
-                                  -fx-text-fill: white;"/>
+                           style="-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: white;"/>
                 </VBox>
                 <Button text="✕" onAction="#fecharDetalhes"
                         style="-fx-background-color: rgba(255,255,255,0.2);
@@ -93,7 +94,6 @@
                                -fx-border-color: transparent;">
                 <VBox spacing="0" style="-fx-padding: 20;">
 
-                    <!-- Linha 1: Data + Status -->
                     <HBox spacing="24" style="-fx-padding: 0 0 16 0;
                           -fx-border-color: transparent transparent #f1f5f9 transparent; -fx-border-width: 1;">
                         <VBox spacing="3" HBox.hgrow="ALWAYS">
@@ -111,7 +111,6 @@
                         </VBox>
                     </HBox>
 
-                    <!-- Linha 2: Solicitante + Valor -->
                     <HBox spacing="24" style="-fx-padding: 16 0;
                           -fx-border-color: transparent transparent #f1f5f9 transparent; -fx-border-width: 1;">
                         <VBox spacing="3" HBox.hgrow="ALWAYS">
@@ -128,7 +127,6 @@
                         </VBox>
                     </HBox>
 
-                    <!-- Linha 3: Setor + Centro de Custo -->
                     <HBox spacing="24" style="-fx-padding: 16 0;
                           -fx-border-color: transparent transparent #f1f5f9 transparent; -fx-border-width: 1;">
                         <VBox spacing="3" HBox.hgrow="ALWAYS">
@@ -145,7 +143,6 @@
                         </VBox>
                     </HBox>
 
-                    <!-- Produtos do pedido -->
                     <VBox spacing="8" style="-fx-padding: 16 0 0 0;">
                         <Label text="PRODUTOS DO PEDIDO"
                                style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #94a3b8;"/>
@@ -154,15 +151,14 @@
                                           -fx-border-radius: 8; -fx-background-radius: 8;
                                           -fx-font-size: 12px;">
                             <columns>
-                                <TableColumn fx:id="colItemProduto"  text="Produto"    prefWidth="180"/>
-                                <TableColumn fx:id="colItemUnidade"  text="Un."        prefWidth="50"/>
-                                <TableColumn fx:id="colItemQtd"      text="Qtd"        prefWidth="60"/>
+                                <TableColumn fx:id="colItemProduto"   text="Produto"    prefWidth="180"/>
+                                <TableColumn fx:id="colItemUnidade"   text="Un."        prefWidth="50"/>
+                                <TableColumn fx:id="colItemQtd"       text="Qtd"        prefWidth="60"/>
                                 <TableColumn fx:id="colItemValorUnit" text="Vlr Unit."  prefWidth="90"/>
                                 <TableColumn fx:id="colItemValorTotal" text="Vlr Total" prefWidth="100"/>
                             </columns>
                             <placeholder>
-                                <Label text="Sem produtos."
-                                       style="-fx-text-fill: #94a3b8;"/>
+                                <Label text="Sem produtos." style="-fx-text-fill: #94a3b8;"/>
                             </placeholder>
                         </TableView>
                     </VBox>
