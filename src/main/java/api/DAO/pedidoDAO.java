@@ -60,7 +60,7 @@ public class pedidoDAO {
         }
     }
 
-    // ── SELECT todos (exceto CANCELADO) ───────────────────────
+    // ── SELECT todos (exclui CANCELADO) ───────────────────────
     public static ObservableList<Pedido> listarTodos() {
         ObservableList<Pedido> lista = FXCollections.observableArrayList();
         String sql = """
@@ -128,7 +128,7 @@ public class pedidoDAO {
         return "PED-0001";
     }
 
-    // ── UPDATE — atualiza setor, centro e valor ───────────────
+    // ── UPDATE — atualizar pedido ─────────────────────────────
     public static boolean atualizar(Pedido pedido) {
         String sql = """
                 UPDATE tb_pedido SET
@@ -151,7 +151,7 @@ public class pedidoDAO {
         }
     }
 
-    // ── DELETE itens (para reinserção no editar) ──────────────
+    // ── DELETE itens (para reinserção) ────────────────────────
     public static boolean removerItens(int idPedido) {
         String sql = "DELETE FROM tb_pedido_produto WHERE id_pedido = ?";
         try (Connection con = ConexaoDB.getConexao();
@@ -165,79 +165,7 @@ public class pedidoDAO {
         }
     }
 
-    // ── UPDATE — aprovar pedido ───────────────────────────────
-    public static boolean aprovar(int idPedido, int idAprovador, String parecer) {
-        return updateDecisao(idPedido, "APROVADO", idAprovador, parecer);
-    }
-
-    // ── UPDATE — negar pedido ─────────────────────────────────
-    public static boolean negar(int idPedido, int idAprovador, String parecer) {
-        return updateDecisao(idPedido, "NEGADO", idAprovador, parecer);
-    }
-
-    // ── UPDATE — cancelar pedido ──────────────────────────────
-    public static boolean cancelar(int idPedido) {
-        String sql = "UPDATE tb_pedido SET status = 'CANCELADO' WHERE id_pedido = ?";
-        try (Connection con = ConexaoDB.getConexao();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, idPedido);
-            ps.executeUpdate();
-            return true;
-        } catch (SQLException e) {
-            System.err.println("Erro ao cancelar pedido: " + e.getMessage());
-            return false;
-        }
-    }
-
-    private static boolean updateDecisao(int idPedido, String status,
-                                         int idAprovador, String parecer) {
-        String sql = """
-                UPDATE tb_pedido
-                SET status         = ?,
-                    id_aprovador   = ?,
-                    data_aprovacao = NOW(),
-                    parecer        = ?
-                WHERE id_pedido    = ?
-                """;
-        try (Connection con = ConexaoDB.getConexao();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, status);
-            ps.setInt   (2, idAprovador);
-            ps.setString(3, parecer);
-            ps.setInt   (4, idPedido);
-            ps.executeUpdate();
-            return true;
-        } catch (SQLException e) {
-            System.err.println("Erro ao atualizar decisão: " + e.getMessage());
-            return false;
-        }
-    }
-
-    // ── Mapper ────────────────────────────────────────────────
-    private static Pedido mapear(ResultSet rs) throws SQLException {
-        Usuario solicitante = new Usuario(
-                rs.getInt("id_solicitante"), rs.getString("nome_usuario"),
-                "", "", "", "ATIVO", new Perfil());
-        CentroCusto cc  = new CentroCusto(rs.getInt("id_centrocusto"), rs.getString("centro_custo"));
-        Setor setor     = new Setor(rs.getInt("id_setor"), rs.getString("setor"));
-        Pedido pedido   = new Pedido(
-                rs.getInt("id_pedido"), rs.getString("num_pedido"),
-                rs.getTimestamp("data_abertura").toLocalDateTime(),
-                rs.getString("status"), rs.getDouble("valor_total_estimado"),
-                solicitante, cc, setor);
-
-        int idAprov = rs.getInt("id_aprovador");
-        if (!rs.wasNull())
-            pedido.setAprovador(new Usuario(idAprov, rs.getString("nome_aprovador"),
-                    "", "", "", "ATIVO", new Perfil()));
-
-        Timestamp tsAprov = rs.getTimestamp("data_aprovacao");
-        if (tsAprov != null) pedido.setDataAprovacao(tsAprov.toLocalDateTime());
-        pedido.setParecer(rs.getString("parecer"));
-        return pedido;
-    }
-// ── UPDATE qtd_aprovada de cada item ─────────────────────
-
+    // ── UPDATE qtd_aprovada por item ──────────────────────────
     public static boolean atualizarQtdAprovada(int idPedido,
                                                ObservableList<PedidoProduto> itens) {
         String sql = "UPDATE tb_pedido_produto SET qtd_aprovada = ? WHERE id_pedido_produto = ?";
@@ -256,4 +184,88 @@ public class pedidoDAO {
         }
     }
 
+    // ── UPDATE — aprovar pedido ───────────────────────────────
+    public static boolean aprovar(int idPedido, int idAprovador, String parecer) {
+        String sql = """
+                UPDATE tb_pedido
+                SET status         = 'APROVADO',
+                    id_aprovador   = ?,
+                    data_aprovacao = NOW(),
+                    parecer        = ?
+                WHERE id_pedido    = ?
+                """;
+        try (Connection con = ConexaoDB.getConexao();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt   (1, idAprovador);
+            ps.setString(2, parecer);
+            ps.setInt   (3, idPedido);
+            ps.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            System.err.println("Erro ao aprovar pedido: " + e.getMessage());
+            return false;
+        }
+    }
+
+    // ── UPDATE — negar pedido ─────────────────────────────────
+    public static boolean negar(int idPedido, int idAprovador, String parecer) {
+        String sql = """
+                UPDATE tb_pedido
+                SET status         = 'NEGADO',
+                    id_aprovador   = ?,
+                    data_aprovacao = NOW(),
+                    parecer        = ?
+                WHERE id_pedido    = ?
+                """;
+        try (Connection con = ConexaoDB.getConexao();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt   (1, idAprovador);
+            ps.setString(2, parecer);
+            ps.setInt   (3, idPedido);
+            ps.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            System.err.println("Erro ao negar pedido: " + e.getMessage());
+            return false;
+        }
+    }
+
+    // ── UPDATE — cancelar pedido ──────────────────────────────
+    public static boolean cancelar(int idPedido) {
+        String sql = "UPDATE tb_pedido SET status = 'CANCELADO' WHERE id_pedido = ?";
+        try (Connection con = ConexaoDB.getConexao();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, idPedido);
+            ps.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            System.err.println("Erro ao cancelar pedido: " + e.getMessage());
+            return false;
+        }
+    }
+
+    // ── Mapper ────────────────────────────────────────────────
+    private static Pedido mapear(ResultSet rs) throws SQLException {
+        Usuario solicitante = new Usuario(
+                rs.getInt("id_solicitante"), rs.getString("nome_usuario"),
+                "", "", "", "ATIVO", new Perfil());
+        CentroCusto cc  = new CentroCusto(rs.getInt("id_centrocusto"), rs.getString("centro_custo"));
+        Setor setor     = new Setor(rs.getInt("id_setor"), rs.getString("setor"));
+
+        Pedido pedido = new Pedido(
+                rs.getInt("id_pedido"), rs.getString("num_pedido"),
+                rs.getTimestamp("data_abertura").toLocalDateTime(),
+                rs.getString("status"), rs.getDouble("valor_total_estimado"),
+                solicitante, cc, setor);
+
+        int idAprov = rs.getInt("id_aprovador");
+        if (!rs.wasNull())
+            pedido.setAprovador(new Usuario(idAprov, rs.getString("nome_aprovador"),
+                    "", "", "", "ATIVO", new Perfil()));
+
+        Timestamp tsAprov = rs.getTimestamp("data_aprovacao");
+        if (tsAprov != null) pedido.setDataAprovacao(tsAprov.toLocalDateTime());
+        pedido.setParecer(rs.getString("parecer"));
+        return pedido;
+    }
 }
