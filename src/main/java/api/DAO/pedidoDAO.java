@@ -206,6 +206,28 @@ public class pedidoDAO {
             return false;
         }
     }
+    // ── UPDATE — aprovar parcialmente pedido ──────────────────
+    public static boolean aprovarParcialmente(int idPedido, int idAprovador, String parecer) {
+        String sql = """
+            UPDATE tb_pedido
+            SET status         = 'APROVADO_PARCIALMENTE',
+                id_aprovador   = ?,
+                data_aprovacao = NOW(),
+                parecer        = ?
+            WHERE id_pedido    = ?
+            """;
+        try (Connection con = ConexaoDB.getConexao();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt   (1, idAprovador);
+            ps.setString(2, parecer);
+            ps.setInt   (3, idPedido);
+            ps.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            System.err.println("Erro ao aprovar parcialmente pedido: " + e.getMessage());
+            return false;
+        }
+    }
 
     // ── UPDATE — negar pedido ─────────────────────────────────
     public static boolean negar(int idPedido, int idAprovador, String parecer) {

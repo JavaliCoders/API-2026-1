@@ -2,6 +2,7 @@ CREATE database bd_api;
 USE bd_api;
 
 
+
 CREATE TABLE tb_perfil (
   id_perfil INT auto_increment KEY NOT NULL,
   perfil VARCHAR(12) NOT NULL
@@ -88,7 +89,8 @@ CREATE TABLE tb_pedido (
   FOREIGN KEY (id_setor)
   REFERENCES tb_setor (id_setor)
   );
-
+ALTER TABLE tb_pedido 
+MODIFY COLUMN status VARCHAR(25) NOT NULL;
 CREATE TABLE tb_pedido_produto (
   id_pedido INT NOT NULL,
   id_produto INT NOT NULL,

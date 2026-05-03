@@ -106,7 +106,9 @@
                             <TableColumn fx:id="colUnidade"  text="Un."              prefWidth="60"/>
                             <TableColumn fx:id="colQtdSolic" text="Qtd Solicitada"   prefWidth="130"/>
                             <TableColumn fx:id="colVlrUnit"  text="Vlr Unit."        prefWidth="110"/>
+                            <TableColumn fx:id="colQtdAprov"  text="Qtd Aprov."   prefWidth="110"/>
                             <TableColumn fx:id="colVlrTotal" text="Vlr Total"        prefWidth="120"/>
+
                         </columns>
                         <placeholder>
                             <Label text="Nenhum item." style="-fx-text-fill:#9ca3af;"/>
@@ -130,7 +132,7 @@
 
                     <Label text="Decisão"
                            style="-fx-font-size:14px; -fx-font-weight:bold; -fx-text-fill:#374151;"/>
-                    <Label text="Obrigatório ao negar. Opcional ao aprovar."
+                    <Label text="Obrigatório para aprovar ou negar."
                            style="-fx-font-size:12px; -fx-text-fill:#6b7280;"/>
 
                     <TextArea fx:id="fieldParecer"
