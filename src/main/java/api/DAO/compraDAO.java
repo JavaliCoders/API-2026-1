@@ -24,80 +24,82 @@ public class compraDAO {
         }
 
         String sqlCompra = """
-                INSERT INTO tb_compra
-                (id_pedido, id_fornecedor, data, id_comprador, valor_total, data_prevista, status)
-                VALUES (?, ?, NOW(), ?, ?, ?, 'REALIZADA')
-                """;
+            INSERT INTO tb_compra
+            (id_pedido, id_fornecedor, data, id_comprador, valor_total, data_prevista, status)
+            VALUES (?, ?, NOW(), ?, ?, ?, 'REALIZADA')
+            """;
 
         String sqlItem = """
-                INSERT INTO tb_compra_item
-                (id_compra, id_pedido_produto, valor_uni, qtd_comprada, valor_total)
-                VALUES (?, ?, ?, ?, ?)
-                """;
-
-        String sqlUpdateQtd = """
-                UPDATE tb_pedido_produto
-                SET qtd_comprada = COALESCE(qtd_comprada, 0) + ?
-                WHERE id_pedido_produto = ?
-                """;
+            INSERT INTO tb_compra_item
+            (id_compra, id_pedido_produto, valor_uni, qtd_comprada, valor_total)
+            VALUES (?, ?, ?, ?, ?)
+            """;
 
         try (Connection con = ConexaoDB.getConexao()) {
             con.setAutoCommit(false);
 
-            int idCompra;
+            try {
+                int idCompra;
 
-            try (PreparedStatement ps = con.prepareStatement(sqlCompra, Statement.RETURN_GENERATED_KEYS)) {
-                ps.setInt(1, compra.getPedido().getIdPedido());
-                ps.setInt(2, compra.getFornecedor().getIdFornecedor());
-                ps.setInt(3, compra.getComprador().getIdUsuario());
-                ps.setDouble(4, compra.getValorTotal());
+                try (PreparedStatement ps = con.prepareStatement(sqlCompra, Statement.RETURN_GENERATED_KEYS)) {
+                    ps.setInt(1, compra.getPedido().getIdPedido());
+                    ps.setInt(2, compra.getFornecedor().getIdFornecedor());
+                    ps.setInt(3, compra.getComprador().getIdUsuario());
+                    ps.setDouble(4, compra.getValorTotal());
 
-                if (compra.getDataPrevista() != null)
-                    ps.setTimestamp(5, Timestamp.valueOf(compra.getDataPrevista()));
-                else
-                    ps.setNull(5, Types.TIMESTAMP);
+                    if (compra.getDataPrevista() != null)
+                        ps.setTimestamp(5, Timestamp.valueOf(compra.getDataPrevista()));
+                    else
+                        ps.setNull(5, Types.TIMESTAMP);
 
-                ps.executeUpdate();
+                    ps.executeUpdate();
 
-                ResultSet rs = ps.getGeneratedKeys();
-                if (!rs.next()) { con.rollback(); return -1; }
-                idCompra = rs.getInt(1);
-            }
-
-            try (PreparedStatement psItem = con.prepareStatement(sqlItem);
-                 PreparedStatement psQtd  = con.prepareStatement(sqlUpdateQtd)) {
-
-                for (CompraItem item : itens) {
-                    if (item.getQtdComprada() <= 0) continue;
-
-                    PedidoProduto pp = item.getPedidoProduto();
-                    double pendente = pp.getQtdAprovada() - pp.getQtdComprada();
-                    if (item.getQtdComprada() > pendente) {
-                        System.err.println("Qtd excede pendente para: " + pp.getNomeProduto());
+                    ResultSet rs = ps.getGeneratedKeys();
+                    if (!rs.next()) {
                         con.rollback();
-                        return -3;
+                        return -1;
                     }
-
-                    psItem.setInt(1, idCompra);
-                    psItem.setInt(2, pp.getIdPedidoProduto());
-                    psItem.setDouble(3, item.getValorUni());
-                    psItem.setDouble(4, item.getQtdComprada());
-                    psItem.setDouble(5, item.getValorTotal());
-                    psItem.addBatch();
-
-                    psQtd.setDouble(1, item.getQtdComprada());
-                    psQtd.setInt(2, pp.getIdPedidoProduto());
-                    psQtd.addBatch();
+                    idCompra = rs.getInt(1);
                 }
 
-                psItem.executeBatch();
-                psQtd.executeBatch();
+                try (PreparedStatement psItem = con.prepareStatement(sqlItem)) {
+
+                    for (CompraItem item : itens) {
+                        if (item.getQtdComprada() <= 0) continue;
+
+                        PedidoProduto pp = item.getPedidoProduto();
+
+                        // calcula pendente consultando tb_compra_item diretamente
+                        double jaComprado = getQtdCompradaPorPedidoProduto(pp.getIdPedidoProduto());
+                        double pendente   = pp.getQtdAprovada() - jaComprado;
+
+                        if (item.getQtdComprada() > pendente) {
+                            System.err.println("Qtd excede pendente para: " + pp.getNomeProduto());
+                            con.rollback();
+                            return -3;
+                        }
+
+                        psItem.setInt(1, idCompra);
+                        psItem.setInt(2, pp.getIdPedidoProduto());
+                        psItem.setDouble(3, item.getValorUni());
+                        psItem.setDouble(4, item.getQtdComprada());
+                        psItem.setDouble(5, item.getValorTotal());
+                        psItem.addBatch();
+                    }
+
+                    psItem.executeBatch();
+                }
+
+                atualizarStatusPedido(con, compra.getPedido().getIdPedido());
+
+                con.commit();
+                return idCompra;
+
+            } catch (Exception e) {
+                con.rollback();
+                e.printStackTrace();
+                return -1;
             }
-
-            atualizarStatusPedido(con, compra.getPedido().getIdPedido());
-
-            con.commit();
-            return idCompra;
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -108,41 +110,28 @@ public class compraDAO {
     // ── CANCELAR compra — reverte qtd_comprada ────────────────────────────────
     public static boolean cancelar(int idCompra) {
 
-        String sqlItens    = "SELECT id_pedido_produto, qtd_comprada FROM tb_compra_item WHERE id_compra = ?";
-        String sqlReverter = """
-                UPDATE tb_pedido_produto
-                SET qtd_comprada = GREATEST(0, COALESCE(qtd_comprada, 0) - ?)
-                WHERE id_pedido_produto = ?
-                """;
         String sqlCancelar = "UPDATE tb_compra SET status = 'CANCELADA' WHERE id_compra = ?";
 
         try (Connection con = ConexaoDB.getConexao()) {
             con.setAutoCommit(false);
 
-            try (PreparedStatement ps = con.prepareStatement(sqlItens)) {
-                ps.setInt(1, idCompra);
-                ResultSet rs = ps.executeQuery();
-
-                try (PreparedStatement psRev = con.prepareStatement(sqlReverter)) {
-                    while (rs.next()) {
-                        psRev.setDouble(1, rs.getDouble("qtd_comprada"));
-                        psRev.setInt(2, rs.getInt("id_pedido_produto"));
-                        psRev.addBatch();
-                    }
-                    psRev.executeBatch();
+            try {
+                try (PreparedStatement ps = con.prepareStatement(sqlCancelar)) {
+                    ps.setInt(1, idCompra);
+                    ps.executeUpdate();
                 }
+
+                int idPedido = getPedidoByCompra(con, idCompra);
+                if (idPedido > 0) atualizarStatusPedido(con, idPedido);
+
+                con.commit();
+                return true;
+
+            } catch (Exception e) {
+                con.rollback();
+                e.printStackTrace();
+                return false;
             }
-
-            try (PreparedStatement ps = con.prepareStatement(sqlCancelar)) {
-                ps.setInt(1, idCompra);
-                ps.executeUpdate();
-            }
-
-            int idPedido = getPedidoByCompra(con, idCompra);
-            if (idPedido > 0) atualizarStatusPedido(con, idPedido);
-
-            con.commit();
-            return true;
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -272,19 +261,18 @@ public class compraDAO {
     // ── Verifica se pedido tem ao menos uma cotação aprovada ──────────────────
     public static boolean pedidoTemCotacaoAprovada(int idPedido) {
         String sql = """
-                SELECT 1
-                FROM tb_cotacao_item ci
-                JOIN tb_pedido_produto pp ON pp.id_pedido_produto = ci.id_pedido_produto
-                WHERE pp.id_pedido = ?
-                AND ci.aprovado = true
-                LIMIT 1
-                """;
-
+        SELECT 1
+        FROM tb_cotacao
+        WHERE id_pedido = ?
+          AND status IN ('APROVADO', 'APROVADO_PARCIALMENTE')
+        LIMIT 1
+        """;
         try (Connection con = ConexaoDB.getConexao();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, idPedido);
             return ps.executeQuery().next();
         } catch (Exception e) {
+            System.err.println("Erro ao verificar cotação aprovada: " + e.getMessage());
             return false;
         }
     }
@@ -292,19 +280,26 @@ public class compraDAO {
     // ── Verifica se ainda há itens com quantidade pendente de compra ──────────
     public static boolean pedidoTemItensPendentes(int idPedido) {
         String sql = """
-                SELECT 1
-                FROM tb_pedido_produto pp
-                WHERE pp.id_pedido = ?
-                  AND pp.qtd_aprovada > 0
-                  AND COALESCE(pp.qtd_comprada, 0) < pp.qtd_aprovada
-                LIMIT 1
-                """;
+            SELECT 1
+            FROM tb_pedido_produto pp
+            WHERE pp.id_pedido = ?
+              AND pp.qtd_aprovada > 0
+              AND pp.qtd_aprovada > COALESCE((
+                  SELECT SUM(ci.qtd_comprada)
+                  FROM tb_compra_item ci
+                  JOIN tb_compra c ON c.id_compra = ci.id_compra
+                  WHERE ci.id_pedido_produto = pp.id_pedido_produto
+                    AND c.status <> 'CANCELADA'
+              ), 0)
+            LIMIT 1
+            """;
 
         try (Connection con = ConexaoDB.getConexao();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, idPedido);
             return ps.executeQuery().next();
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }
@@ -383,24 +378,31 @@ public class compraDAO {
     // ── Atualiza status do pedido com base na qtd_comprada ────────────────────
     private static void atualizarStatusPedido(Connection con, int idPedido) throws SQLException {
         String sql = """
-                UPDATE tb_pedido
-                SET status = (
-                    CASE
-                        WHEN NOT EXISTS (
-                            SELECT 1 FROM tb_pedido_produto
-                            WHERE id_pedido = ? AND qtd_aprovada > 0
-                        ) THEN status
-                        WHEN EXISTS (
-                            SELECT 1 FROM tb_pedido_produto
-                            WHERE id_pedido = ?
-                            AND qtd_aprovada > 0
-                            AND COALESCE(qtd_comprada, 0) < qtd_aprovada
-                        ) THEN 'EM_COMPRA'
-                        ELSE 'FINALIZADO'
-                    END
-                )
-                WHERE id_pedido = ?
-                """;
+            UPDATE tb_pedido
+            SET status = (
+                CASE
+                    WHEN NOT EXISTS (
+                        SELECT 1 FROM tb_pedido_produto
+                        WHERE id_pedido = ? AND qtd_aprovada > 0
+                    ) THEN status
+                    WHEN EXISTS (
+                        SELECT 1 FROM tb_pedido_produto pp
+                        WHERE pp.id_pedido = ?
+                          AND pp.qtd_aprovada > 0
+                          AND pp.qtd_aprovada > COALESCE((
+                              SELECT SUM(ci.qtd_comprada)
+                              FROM tb_compra_item ci
+                              JOIN tb_compra c ON c.id_compra = ci.id_compra
+                              WHERE ci.id_pedido_produto = pp.id_pedido_produto
+                                AND c.status <> 'CANCELADA'
+                          ), 0)
+                    ) THEN 'EM_COMPRA'
+                    ELSE 'EM_COMPRA'
+                END
+            )
+            WHERE id_pedido = ?
+              AND status NOT IN ('FINALIZADO', 'CANCELADO')
+            """;
 
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, idPedido);

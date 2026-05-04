@@ -360,7 +360,6 @@ public class cotacaoController implements Initializable {
     // ── Ações do Diretor ──────────────────────────────────────
 
     private void onAprovarCotacao(Cotacao cotacao) {
-        // Diálogo com campo de parecer obrigatório
         Dialog<String> dlg = criarDialogoParecer(
                 "Aprovar Cotação",
                 "Fornecedor: " + cotacao.getNomeFornecedor()
@@ -370,6 +369,10 @@ public class cotacaoController implements Initializable {
         dlg.showAndWait().ifPresent(parecer -> {
             int idAprov = SessaoUsuario.getInstancia().getIdUsuarioLogado();
             if (cotacaoDAO.aprovar(cotacao.getIdCotacao(), idAprov, parecer)) {
+
+                // ✅ ADICIONE ISTO: marca o pedido como EM_COTACAO ao aprovar cotação
+                cotacaoDAO.marcarPedidoEmCotacao(cotacao.getIdPedido());
+
                 HistoricoService.registrar("Cotação", "Aprovação", cotacao.getIdCotacao(),
                         "Cotação do pedido " + cotacao.getNumPedido()
                                 + " aprovada por " + SessaoUsuario.getInstancia().getNomeUsuarioLogado()

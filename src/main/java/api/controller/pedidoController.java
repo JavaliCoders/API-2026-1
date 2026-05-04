@@ -401,23 +401,27 @@ public class pedidoController implements Initializable {
      * - ainda há itens pendentes de compra (qtd_aprovada > qtd_comprada)
      */
     private boolean podeFazerCompra(Pedido p) {
+        boolean isStatusValido = p.getStatus().equals("EM_COTACAO")
+                || p.getStatus().equals("EM_COMPRA")
+                || p.getStatus().equals("APROVADO")
+                || p.getStatus().equals("APROVADO_PARCIALMENTE");
 
-        boolean isStatusValido = p.getStatus().equals("EM_COTACAO") || p.getStatus().equals("EM_COMPRA");
-        boolean temCotacao = compraDAO.pedidoTemCotacaoAprovada(p.getIdPedido());
+        System.out.println("=== podeFazerCompra ===");
+        System.out.println("Pedido: " + p.getNumPedido());
+        System.out.println("Status: " + p.getStatus());
+        System.out.println("isFinanceiro: " + isFinanceiro);
+        System.out.println("isStatusValido: " + isStatusValido);
+
+        if (!isFinanceiro || !isStatusValido) return false;
+
+        boolean temCotacao  = compraDAO.pedidoTemCotacaoAprovada(p.getIdPedido());
         boolean temPendente = compraDAO.pedidoTemItensPendentes(p.getIdPedido());
 
-        System.out.println("------ DEBUG COMPRA ------");
-        System.out.println("Pedido: " + p.getNumPedido());
-        System.out.println("Usuário financeiro: " + isFinanceiro);
-        System.out.println("Status: " + p.getStatus());
-        System.out.println("Status válido: " + isStatusValido);
-        System.out.println("Tem cotação aprovada: " + temCotacao);
-        System.out.println("Tem itens pendentes: " + temPendente);
-        System.out.println("--------------------------");
+        System.out.println("temCotacao: " + temCotacao);
+        System.out.println("temPendente: " + temPendente);
+        System.out.println("======================");
 
-        if (!isFinanceiro) return false;
-
-        return isStatusValido && temCotacao && temPendente;
+        return temCotacao && temPendente;
     }
 
     private boolean temAlgumaAcao(Pedido p) {
@@ -425,14 +429,14 @@ public class pedidoController implements Initializable {
 
         if (isDiretor && s.equals("EM_APROVACAO")) return true;
 
-        if (isFinanceiro && (s.equals("APROVADO") || s.equals("APROVADO_PARCIALMENTE")))
-            return true;
-
-        // 🔥 ADICIONE ISSO
-        if (isFinanceiro && (s.equals("EM_COTACAO") || s.equals("EM_COMPRA")))
-            return true;
+        // ✅ REMOVA o bloco redundante abaixo — ele causava o menu vazio:
+        // if (isFinanceiro && (s.equals("EM_COTACAO") || s.equals("EM_COMPRA")))
+        //     return true;
 
         if (podeFazerCompra(p)) return true;
+
+        if (isFinanceiro && (s.equals("APROVADO") || s.equals("APROVADO_PARCIALMENTE")))
+            return true;
 
         if (podeGerenciar && (s.equals("EM_APROVACAO") || s.equals("NEGADO")))
             return true;
