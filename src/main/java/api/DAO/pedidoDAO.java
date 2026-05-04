@@ -305,4 +305,42 @@ public class pedidoDAO {
 
         return lista;
     }
+
+    // ── SELECT itens com qtd_recebida > 0 (disponíveis para dar saída) ──
+    public static ObservableList<PedidoProduto> listarItensRecebidos(int idPedido) {
+        ObservableList<PedidoProduto> lista = FXCollections.observableArrayList();
+        String sql = """
+            SELECT pp.id_pedido_produto,
+                   pp.qtd_solicitada,
+                   pp.qtd_aprovada,
+                   pp.qtd_recebida,
+                   pr.produto        AS nome_produto,
+                   pr.unidade_medida AS unidade,
+                   pr.valor_estimado AS valor_unitario
+            FROM tb_pedido_produto pp
+            JOIN tb_produto pr ON pr.id_produto = pp.id_produto
+            WHERE pp.id_pedido = ?
+              AND pp.qtd_recebida > 0
+            """;
+        try (Connection con = ConexaoDB.getConexao();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, idPedido);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                PedidoProduto pp = new PedidoProduto(
+                        rs.getInt("id_pedido_produto"),
+                        rs.getString("nome_produto"),
+                        rs.getString("unidade"),
+                        rs.getInt("qtd_solicitada"),
+                        rs.getInt("qtd_aprovada"),
+                        rs.getDouble("valor_unitario")
+                );
+                pp.setQtdRecebida(rs.getInt("qtd_recebida")); // ← setter que precisa existir
+                lista.add(pp);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
 }

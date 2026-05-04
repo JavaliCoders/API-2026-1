@@ -3,6 +3,7 @@ package api.controller;
 import api.DAO.movimentacaoDAO;
 import api.DAO.notaFiscalDAO;
 import api.DAO.pedidoDAO;
+import api.connection.ConexaoDB;
 import api.model.*;
 import api.service.HistoricoService;
 import javafx.beans.property.SimpleStringProperty;
@@ -15,10 +16,14 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ResourceBundle;
 
 /**
@@ -27,7 +32,6 @@ import java.util.ResourceBundle;
  */
 public class saidaEstoqueController implements Initializable {
 
-    // ── Tabela de pedidos prontos para atendimento ────────────
     @FXML private TableView<Pedido>           tabelaPedidos;
     @FXML private TableColumn<Pedido, String> colNum;
     @FXML private TableColumn<Pedido, String> colSolicitante;
@@ -36,19 +40,17 @@ public class saidaEstoqueController implements Initializable {
     @FXML private TableColumn<Pedido, String> colStatus;
     @FXML private TableColumn<Pedido, Void>   colAcoes;
 
-    @FXML private TextField        fieldBusca;
-    @FXML private ComboBox<String> filtroStatus;
+    @FXML private TextField fieldBusca;
 
-    // ── Overlay de atendimento ────────────────────────────────
-    @FXML private javafx.scene.layout.StackPane overlayAtendimento;
-    @FXML private Label labelNumPedido;
-    @FXML private Label labelSolicitante;
+    @FXML private StackPane overlayAtendimento;
+    @FXML private Label     labelNumPedido;
+    @FXML private Label     labelSolicitante;
 
-    @FXML private TableView<PedidoProduto>             tabelaItens;
-    @FXML private TableColumn<PedidoProduto, String>   colItemProduto;
-    @FXML private TableColumn<PedidoProduto, String>   colItemUnidade;
-    @FXML private TableColumn<PedidoProduto, String>   colItemQtdRecebida;
-    @FXML private TableColumn<PedidoProduto, Void>     colItemAtendir;
+    @FXML private TableView<PedidoProduto>           tabelaItens;
+    @FXML private TableColumn<PedidoProduto, String> colItemProduto;
+    @FXML private TableColumn<PedidoProduto, String> colItemUnidade;
+    @FXML private TableColumn<PedidoProduto, String> colItemQtdRecebida;
+    @FXML private TableColumn<PedidoProduto, Void>   colItemAtendir;
 
     private AnchorPane areaPrincipal;
     private ObservableList<Pedido> todosPedidos;
@@ -70,8 +72,8 @@ public class saidaEstoqueController implements Initializable {
     }
 
     // ── Dados ─────────────────────────────────────────────────
+
     private void carregarPedidos() {
-        // Filtra pedidos com status RECEBIDO
         ObservableList<Pedido> todos = pedidoDAO.listarTodosIncluindoRecebidos();
         todosPedidos = FXCollections.observableArrayList(
                 todos.stream()
@@ -82,12 +84,14 @@ public class saidaEstoqueController implements Initializable {
     }
 
     // ── Filtros ───────────────────────────────────────────────
+
     private void configurarFiltros() {
         fieldBusca.textProperty().addListener((o, a, n) -> aplicarFiltro());
     }
 
     private void aplicarFiltro() {
-        String busca = fieldBusca.getText() == null ? "" : fieldBusca.getText().trim().toLowerCase();
+        String busca = fieldBusca.getText() == null ? ""
+                : fieldBusca.getText().trim().toLowerCase();
         pedidosFiltrados.setPredicate(p ->
                 busca.isEmpty()
                         || p.getNumPedido().toLowerCase().contains(busca)
@@ -97,19 +101,22 @@ public class saidaEstoqueController implements Initializable {
 
     @FXML private void onLimparFiltros() { fieldBusca.clear(); }
 
-    // ── Colunas ───────────────────────────────────────────────
+    // ── Colunas tabela principal ──────────────────────────────
+
     private void configurarColunas() {
         colNum        .setCellValueFactory(d -> new SimpleStringProperty(d.getValue().getNumPedido()));
         colSolicitante.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().getNomeSolicitante()));
         colSetor      .setCellValueFactory(d -> new SimpleStringProperty(d.getValue().getNomeSetor()));
         colData       .setCellValueFactory(d -> new SimpleStringProperty(d.getValue().getDataAberturaFormatada()));
 
-        for (TableColumn<Pedido, String> col : new TableColumn[]{colNum, colSolicitante, colSetor, colData}) {
+        for (TableColumn<Pedido, String> col : new TableColumn[]{
+                colNum, colSolicitante, colSetor, colData}) {
             col.setCellFactory(c -> new TableCell<>() {
                 @Override protected void updateItem(String item, boolean empty) {
                     super.updateItem(item, empty);
                     if (empty || item == null) { setText(null); return; }
-                    setText(item); setFont(Font.font("Segoe UI", 13));
+                    setText(item);
+                    setFont(Font.font("Segoe UI", 13));
                     setStyle("-fx-text-fill:#0f172a;");
                 }
             });
@@ -124,18 +131,17 @@ public class saidaEstoqueController implements Initializable {
             @Override protected void updateItem(String status, boolean empty) {
                 super.updateItem(status, empty);
                 if (empty || status == null) { setGraphic(null); setText(null); return; }
-                Label badge = new Label(status);
+                Label badge = new Label("Recebido");
                 badge.setFont(Font.font("Segoe UI", FontWeight.BOLD, 11));
                 badge.setAlignment(Pos.CENTER);
                 badge.setPrefWidth(110);
-                badge.setStyle("-fx-background-radius:6; -fx-padding:4 10; -fx-font-size:11px; -fx-font-weight:bold;"
-                        + "-fx-background-color:#dbeafe; -fx-text-fill:#1e40af;");
+                badge.setStyle("-fx-background-radius:6; -fx-padding:4 10;" +
+                        "-fx-background-color:#d1fae5; -fx-text-fill:#065f46;");
                 HBox box = new HBox(badge); box.setAlignment(Pos.CENTER);
                 setGraphic(box); setText(null);
             }
         });
 
-        // Botão Atender
         colAcoes.setCellFactory(col -> new TableCell<>() {
             private final Button btn = new Button("📦  Atender");
             {
@@ -155,8 +161,11 @@ public class saidaEstoqueController implements Initializable {
             }
             @Override protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty || getTableRow() == null || getTableRow().getItem() == null) { setGraphic(null); return; }
-                HBox box = new HBox(btn); box.setAlignment(Pos.CENTER); setGraphic(box);
+                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                    setGraphic(null); return;
+                }
+                HBox box = new HBox(btn); box.setAlignment(Pos.CENTER);
+                setGraphic(box);
             }
         });
 
@@ -164,18 +173,22 @@ public class saidaEstoqueController implements Initializable {
             @Override protected void updateItem(Pedido item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) setStyle("-fx-background-color:white;");
-                else setStyle(getIndex() % 2 == 0 ? "-fx-background-color:white;" : "-fx-background-color:#fafafa;");
+                else setStyle(getIndex() % 2 == 0
+                        ? "-fx-background-color:white;"
+                        : "-fx-background-color:#fafafa;");
             }
         });
     }
 
     // ── Overlay atendimento ───────────────────────────────────
+
     private void abrirAtendimento(Pedido pedido) {
         pedidoEmAtendimento = pedido;
         labelNumPedido  .setText(pedido.getNumPedido());
         labelSolicitante.setText(pedido.getNomeSolicitante());
 
-        ObservableList<PedidoProduto> itens = pedidoDAO.listarItens(pedido.getIdPedido());
+        // Carrega apenas itens com qtd_recebida > 0 (disponíveis para saída)
+        ObservableList<PedidoProduto> itens = pedidoDAO.listarItensRecebidos(pedido.getIdPedido());
         tabelaItens.setItems(itens);
 
         overlayAtendimento.setVisible(true);
@@ -189,6 +202,7 @@ public class saidaEstoqueController implements Initializable {
     }
 
     // ── Tabela de itens no overlay ────────────────────────────
+
     private void configurarTabelaItens() {
         colItemProduto    .setCellValueFactory(d -> new SimpleStringProperty(d.getValue().getNomeProduto()));
         colItemUnidade    .setCellValueFactory(d -> new SimpleStringProperty(d.getValue().getUnidadeProduto()));
@@ -201,7 +215,8 @@ public class saidaEstoqueController implements Initializable {
                 @Override protected void updateItem(String item, boolean empty) {
                     super.updateItem(item, empty);
                     if (empty || item == null) { setText(null); return; }
-                    setText(item); setFont(Font.font("Segoe UI", 13));
+                    setText(item);
+                    setFont(Font.font("Segoe UI", 13));
                     setStyle("-fx-text-fill:#0f172a;");
                 }
             });
@@ -211,7 +226,7 @@ public class saidaEstoqueController implements Initializable {
         colItemQtdRecebida.setCellValueFactory(d -> new SimpleStringProperty(
                 String.valueOf(d.getValue().getQtdRecebida())));
 
-        // Botão dar saída por item
+        // Botão "Dar Saída" por item
         colItemAtendir.setCellFactory(col -> new TableCell<>() {
             private final Button btn = new Button("✅  Dar Saída");
             {
@@ -221,7 +236,7 @@ public class saidaEstoqueController implements Initializable {
                 btn.setOnMouseExited (e -> estilo(false));
                 btn.setOnAction(e -> {
                     PedidoProduto pp = getTableView().getItems().get(getIndex());
-                    darSaida(pp);
+                    darSaidaItem(pp);
                 });
             }
             private void estilo(boolean h) {
@@ -231,61 +246,97 @@ public class saidaEstoqueController implements Initializable {
             }
             @Override protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty || getTableRow() == null || getTableRow().getItem() == null) { setGraphic(null); return; }
+                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                    setGraphic(null); return;
+                }
                 PedidoProduto pp = (PedidoProduto) getTableRow().getItem();
-                // Só exibe se há saldo recebido para sair
                 if (pp.getQtdRecebida() > 0) {
-                    HBox box = new HBox(btn); box.setAlignment(Pos.CENTER); setGraphic(box);
-                } else setGraphic(null);
+                    HBox box = new HBox(btn); box.setAlignment(Pos.CENTER);
+                    setGraphic(box);
+                } else {
+                    setGraphic(null);
+                }
+            }
+        });
+
+        tabelaItens.setRowFactory(tv -> new TableRow<>() {
+            @Override protected void updateItem(PedidoProduto item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) setStyle("-fx-background-color:white;");
+                else setStyle(getIndex() % 2 == 0
+                        ? "-fx-background-color:white;"
+                        : "-fx-background-color:#fafafa;");
             }
         });
     }
 
-    // ── Dar saída de um item ──────────────────────────────────
-    private void darSaida(PedidoProduto pp) {
-        Alert confirmacao = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmacao.setTitle("Dar Saída");
-        confirmacao.setHeaderText(null);
-        confirmacao.setContentText("Registrar saída de " + pp.getQtdRecebida()
-                + " " + pp.getUnidadeProduto() + " de " + pp.getNomeProduto()
-                + "\npara o pedido " + pedidoEmAtendimento.getNumPedido() + "?");
-        confirmacao.showAndWait().ifPresent(btn -> {
-            if (btn != ButtonType.OK) return;
+    // ── Dar saída de um item específico ───────────────────────
 
-            int idProduto = pp.getProduto() != null
-                    ? pp.getProduto().getIdProduto()
-                    : buscarIdProduto(pp.getIdPedidoProduto());
+    private void darSaidaItem(PedidoProduto pp) {
+        Alert confirmacao = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmacao.setTitle("Confirmar Saída");
+        confirmacao.setHeaderText(null);
+        confirmacao.setContentText(
+                "Registrar saída de " + pp.getQtdRecebida()
+                        + " " + pp.getUnidadeProduto()
+                        + " de \"" + pp.getNomeProduto() + "\""
+                        + "\npara o pedido " + pedidoEmAtendimento.getNumPedido() + "?");
+
+        confirmacao.showAndWait().ifPresent(resposta -> {
+            if (resposta != ButtonType.OK) return;
 
             int idUsuario = SessaoUsuario.getInstancia().getIdUsuarioLogado();
+            int idProduto = buscarIdProduto(pp.getIdPedidoProduto());
 
-            // Reduzir saldo no banco
-            boolean okSaldo = atualizarSaldo(idProduto, -pp.getQtdRecebida());
-            if (!okSaldo) {
-                new Alert(Alert.AlertType.ERROR, "Erro ao atualizar saldo.").showAndWait(); return;
+            if (idProduto == -1) {
+                erro("Produto não encontrado."); return;
             }
 
-            // Movimentação de SAÍDA
-            movimentacaoDAO.inserirSaida(idProduto, pp.getQtdRecebida(), idUsuario,
+            // CA3 — Reduz saldo no estoque
+            boolean okSaldo = atualizarSaldo(idProduto, -pp.getQtdRecebida());
+            if (!okSaldo) { erro("Erro ao atualizar saldo do estoque."); return; }
+
+            // CA4 — Registra movimentação de SAÍDA
+            boolean okMov = movimentacaoDAO.inserirSaida(
+                    idProduto, pp.getQtdRecebida(), idUsuario,
                     pedidoEmAtendimento.getIdPedido(),
                     "Atendimento pedido " + pedidoEmAtendimento.getNumPedido());
+            if (!okMov) { erro("Erro ao registrar movimentação."); return; }
 
-            // Verificar se todos os itens foram atendidos → FINALIZADO
-            verificarFinalizacao();
+            // Marca item como atendido (zera qtd_recebida para não sair duas vezes)
+            marcarItemAtendido(pp.getIdPedidoProduto());
 
+            // CA6 — Histórico do item
             HistoricoService.registrar("Pedido", "Saída", pedidoEmAtendimento.getIdPedido(),
-                    "Saída de " + pp.getQtdRecebida() + "x " + pp.getNomeProduto()
-                            + " — pedido " + pedidoEmAtendimento.getNumPedido()
+                    "Saída de " + pp.getQtdRecebida() + "x \"" + pp.getNomeProduto()
+                            + "\" — pedido " + pedidoEmAtendimento.getNumPedido()
                             + " por " + SessaoUsuario.getInstancia().getNomeUsuarioLogado());
 
-            new Alert(Alert.AlertType.INFORMATION, "Saída registrada com sucesso!").showAndWait();
-            fecharAtendimento();
-            carregarPedidos();
+            // CA2/CA5 — Verifica se todos os itens foram atendidos
+            verificarFinalizacao();
+
+            new Alert(Alert.AlertType.INFORMATION,
+                    "Saída registrada com sucesso!").showAndWait();
+
+            // Recarrega itens do overlay — remove o item atendido
+            ObservableList<PedidoProduto> itensAtualizados =
+                    pedidoDAO.listarItensRecebidos(pedidoEmAtendimento.getIdPedido());
+
+            if (itensAtualizados.isEmpty()) {
+                // Todos atendidos — fecha overlay e recarrega tabela
+                fecharAtendimento();
+                carregarPedidos();
+            } else {
+                tabelaItens.setItems(itensAtualizados);
+            }
         });
     }
 
+    // ── Helpers ───────────────────────────────────────────────
+
     private boolean atualizarSaldo(int idProduto, int delta) {
-        try (var con = api.connection.ConexaoDB.getConexao();
-             var ps = con.prepareStatement(
+        try (Connection con = ConexaoDB.getConexao();
+             PreparedStatement ps = con.prepareStatement(
                      "UPDATE tb_produto SET saldo = saldo + ? WHERE id_produto = ?")) {
             ps.setInt(1, delta);
             ps.setInt(2, idProduto);
@@ -297,12 +348,60 @@ public class saidaEstoqueController implements Initializable {
         }
     }
 
+    private void marcarItemAtendido(int idPedidoProduto) {
+        // Zera qtd_recebida para indicar que já foi entregue ao solicitante
+        try (Connection con = ConexaoDB.getConexao();
+             PreparedStatement ps = con.prepareStatement(
+                     "UPDATE tb_pedido_produto SET qtd_recebida = 0 " +
+                             "WHERE id_pedido_produto = ?")) {
+            ps.setInt(1, idPedidoProduto);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            System.err.println("Erro ao marcar item atendido: " + e.getMessage());
+        }
+    }
+
+    // CA5 — Se todos os itens do pedido têm qtd_recebida = 0, está FINALIZADO
+    private void verificarFinalizacao() {
+        String sql = """
+                SELECT COUNT(*) AS total,
+                       SUM(CASE WHEN qtd_recebida = 0 THEN 1 ELSE 0 END) AS atendidos
+                FROM tb_pedido_produto
+                WHERE id_pedido = ? AND qtd_aprovada > 0
+                """;
+        try (Connection con = ConexaoDB.getConexao();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, pedidoEmAtendimento.getIdPedido());
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                int total    = rs.getInt("total");
+                int atendidos = rs.getInt("atendidos");
+                if (total > 0 && total == atendidos) {
+                    try (PreparedStatement fin = con.prepareStatement(
+                            "UPDATE tb_pedido SET status = 'FINALIZADO' " +
+                                    "WHERE id_pedido = ?")) {
+                        fin.setInt(1, pedidoEmAtendimento.getIdPedido());
+                        fin.executeUpdate();
+                    }
+                    // CA6 — Histórico de finalização
+                    HistoricoService.registrar("Pedido", "Alteração",
+                            pedidoEmAtendimento.getIdPedido(),
+                            "Pedido " + pedidoEmAtendimento.getNumPedido()
+                                    + " FINALIZADO após todos os itens atendidos por "
+                                    + SessaoUsuario.getInstancia().getNomeUsuarioLogado());
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao verificar finalização: " + e.getMessage());
+        }
+    }
+
     private int buscarIdProduto(int idPedidoProduto) {
-        try (var con = api.connection.ConexaoDB.getConexao();
-             var ps = con.prepareStatement(
+        try (Connection con = ConexaoDB.getConexao();
+             PreparedStatement ps = con.prepareStatement(
                      "SELECT id_produto FROM tb_pedido_produto WHERE id_pedido_produto = ?")) {
             ps.setInt(1, idPedidoProduto);
-            var rs = ps.executeQuery();
+            ResultSet rs = ps.executeQuery();
             if (rs.next()) return rs.getInt("id_produto");
         } catch (Exception e) {
             System.err.println("Erro ao buscar id_produto: " + e.getMessage());
@@ -310,24 +409,7 @@ public class saidaEstoqueController implements Initializable {
         return -1;
     }
 
-    /**
-     * Verifica se todos os itens do pedido foram atendidos e atualiza para FINALIZADO.
-     */
-    private void verificarFinalizacao() {
-        // Regra simples: se todos os itens com qtd_recebida > 0 já saíram,
-        // marcamos como FINALIZADO.
-        // (Implementação simplificada — pode ser refinada com controle de qtd_atendida)
-        try (var con = api.connection.ConexaoDB.getConexao();
-             var ps = con.prepareStatement(
-                     "UPDATE tb_pedido SET status = 'FINALIZADO' WHERE id_pedido = ? AND status = 'RECEBIDO'")) {
-            ps.setInt(1, pedidoEmAtendimento.getIdPedido());
-            ps.executeUpdate();
-
-            HistoricoService.registrar("Pedido", "Alteração", pedidoEmAtendimento.getIdPedido(),
-                    "Pedido " + pedidoEmAtendimento.getNumPedido() + " finalizado por "
-                            + SessaoUsuario.getInstancia().getNomeUsuarioLogado());
-        } catch (Exception e) {
-            System.err.println("Erro ao finalizar pedido: " + e.getMessage());
-        }
+    private void erro(String msg) {
+        new Alert(Alert.AlertType.ERROR, msg).showAndWait();
     }
 }

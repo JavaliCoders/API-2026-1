@@ -92,6 +92,7 @@ public class PedidoProduto {
     public void setQtdSolicitada(int qtd) { qtdSolicitada.set(qtd); }
     public void setQtdAprovada(int qtd)   { qtdAprovada.set(qtd); }
     public void setQtdComprada(double qtd){ qtdComprada.set(qtd); }
+    public void setQtdRecebida(int qtd) { qtdRecebida.set(qtd); }
 
     // ── Properties ───────────────────────────────────────────────────────────
     public IntegerProperty         idPedidoProdutoProperty() { return idPedidoProduto; }

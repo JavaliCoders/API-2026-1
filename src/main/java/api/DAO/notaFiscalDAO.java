@@ -269,25 +269,27 @@ public class notaFiscalDAO {
     // ── Dar Entrada ───────────────────────────────────────────
     public static boolean darEntrada(int idNota, int idUsuario) {
         String sqlItens = """
-            SELECT ni.id_pedido_produto,
-                   ni.qtd_recebida    AS qtd_nf,
-                   pp.id_pedido,
-                   pp.id_produto,
-                   pp.qtd_aprovada,
-                   pp.qtd_recebida    AS qtd_ja_recebida
-            FROM tb_nf_item        ni
-            JOIN tb_pedido_produto pp ON pp.id_pedido_produto = ni.id_pedido_produto
-            WHERE ni.id_nota = ?
-            """;
+        SELECT ni.id_pedido_produto,
+               ni.qtd_recebida    AS qtd_nf,
+               pp.id_pedido,
+               pp.id_produto,
+               pp.qtd_aprovada,
+               pp.qtd_recebida    AS qtd_ja_recebida
+        FROM tb_nf_item        ni
+        JOIN tb_pedido_produto pp ON pp.id_pedido_produto = ni.id_pedido_produto
+        WHERE ni.id_nota = ?
+        """;
         try (Connection con = ConexaoDB.getConexao()) {
             con.setAutoCommit(false);
+            int idPedido = -1; // ← captura aqui
+
             try (PreparedStatement ps = con.prepareStatement(sqlItens)) {
                 ps.setInt(1, idNota);
                 ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
                     int idPedidoProduto = rs.getInt("id_pedido_produto");
                     int idProduto       = rs.getInt("id_produto");
-                    int idPedido        = rs.getInt("id_pedido");
+                    idPedido            = rs.getInt("id_pedido"); // ← captura
                     int qtdNf           = rs.getInt("qtd_nf");
                     int qtdAprovada     = rs.getInt("qtd_aprovada");
                     int qtdJaRecebida   = rs.getInt("qtd_ja_recebida");
@@ -321,6 +323,17 @@ public class notaFiscalDAO {
                     }
                 }
             }
+
+            // ← Marca pedido como RECEBIDO após entrada
+            if (idPedido > 0) {
+                try (PreparedStatement upPedido = con.prepareStatement(
+                        "UPDATE tb_pedido SET status = 'RECEBIDO' " +
+                                "WHERE id_pedido = ? AND status NOT IN ('FINALIZADO','CANCELADO')")) {
+                    upPedido.setInt(1, idPedido);
+                    upPedido.executeUpdate();
+                }
+            }
+
             con.commit();
             return true;
         } catch (SQLException e) {
