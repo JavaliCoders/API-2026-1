@@ -20,21 +20,21 @@ public class movimentacaoDAO {
                 VALUES (?, 'SAÍDA', ?, ?, ?, NOW())
                 """;
 
-        // CA3: reduz saldo do produto no estoque
+        //reduz saldo do produto no estoque
         String sqlSaldo = """
                 UPDATE tb_produto
                 SET saldo = saldo - ?
                 WHERE id_produto = ?
                 """;
 
-        // CA2: atualiza qtd_recebida do item do pedido
+        //atualiza qtd_recebida do item do pedido
         String sqlItem = """
                 UPDATE tb_pedido_produto
                 SET qtd_recebida = qtd_recebida + ?
                 WHERE id_pedido_produto = ?
                 """;
 
-        // CA5: verifica se todos os itens do pedido foram atendidos
+        //verifica se todos os itens do pedido foram atendidos
         String sqlVerifica = """
                 SELECT COUNT(*) AS total,
                        SUM(CASE WHEN qtd_recebida >= qtd_aprovada THEN 1 ELSE 0 END) AS atendidos
@@ -42,13 +42,13 @@ public class movimentacaoDAO {
                 WHERE id_pedido = ?
                 """;
 
-        // CA5: finaliza o pedido quando todos os itens estão atendidos
+        //finaliza o pedido quando todos os itens estão atendidos
         String sqlFinaliza = """
                 UPDATE tb_pedido SET status = 'FINALIZADO'
                 WHERE id_pedido = ?
                 """;
 
-        // CA6: registra no histórico quando pedido é finalizado
+        //registra no histórico quando pedido é finalizado
         String sqlHistorico = """
                 INSERT INTO tb_historico (entidade_tipo, acao, id_usuario, data)
                 VALUES ('Pedido', 'Saída', ?, NOW())
@@ -57,7 +57,7 @@ public class movimentacaoDAO {
         try (Connection con = ConexaoDB.getConexao()) {
             con.setAutoCommit(false);
 
-            // CA4: registra movimentação de saída
+            // registra movimentação de saída
             try (PreparedStatement ps = con.prepareStatement(sqlMovimentacao)) {
                 ps.setInt(1, idProduto);
                 ps.setInt(2, quantidade);
@@ -78,7 +78,7 @@ public class movimentacaoDAO {
                 ps.executeUpdate();
             }
 
-            // CA5: verifica se todos os itens foram atendidos
+            // verifica se todos os itens foram atendidos
             boolean todosAtendidos = false;
             try (PreparedStatement ps = con.prepareStatement(sqlVerifica)) {
                 ps.setInt(1, idPedido);
@@ -95,7 +95,7 @@ public class movimentacaoDAO {
                     ps.setInt(1, idPedido);
                     ps.executeUpdate();
                 }
-                // CA6: registra no histórico
+                //registra no histórico
                 try (PreparedStatement ps = con.prepareStatement(sqlHistorico)) {
                     ps.setInt(1, idUsuario);
                     ps.executeUpdate();
