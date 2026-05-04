@@ -33,6 +33,7 @@ public class indexController implements Initializable {
     @FXML private HBox menuPedidos;
     @FXML private HBox menuCotacoes;
     @FXML private HBox menuUsuarios;
+    @FXML private HBox menuCompras;
     @FXML private HBox menuNotificacoes;
 
     @FXML private Label textoEstoque;
@@ -40,6 +41,7 @@ public class indexController implements Initializable {
     @FXML private Label textoPedidos;
     @FXML private Label textoCotacoes;
     @FXML private Label textoUsuarios;
+    @FXML private Label textoCompras;
     @FXML private Label textoNotificacoes;
     @FXML private Label textoSair;
     @FXML private Label labelSistema;
@@ -48,6 +50,7 @@ public class indexController implements Initializable {
     @FXML private Label iconPedidos;
     @FXML private Label iconCotacoes;
     @FXML private Label iconFornecedores;
+    @FXML private Label iconCompras;
     @FXML private Label iconSair;
     @FXML private Label iconMenu;
     @FXML private Label iconNotificacoes;
@@ -59,6 +62,18 @@ public class indexController implements Initializable {
 
     @FXML private HBox hboxTopo;
     @FXML private HBox hboxSair;
+
+    @FXML private HBox menuNotaFiscal;
+    @FXML private HBox menuMovimentacao;
+    @FXML private HBox menuSaida;
+
+    @FXML private Label textoNotaFiscal;
+    @FXML private Label textoMovimentacao;
+    @FXML private Label textoSaida;
+
+    @FXML private Label iconNotaFiscal;
+    @FXML private Label iconMovimentacao;
+    @FXML private Label iconSaida;
 
     private boolean sidebarExpandida = true;
 
@@ -76,19 +91,41 @@ public class indexController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Permissões de visibilidade
-        if (!PermissaoUtil.temPermissao("DIRETOR")) {
+
+        boolean isDiretor    = PermissaoUtil.temPermissao("DIRETOR");
+        boolean isFinanceiro = PermissaoUtil.temPermissao("FINANCEIRO");
+        boolean isEstoque    = PermissaoUtil.temPermissao("ESTOQUE");
+
+        // ── Usuários — só DIRETOR ────────────────────────────
+        if (!isDiretor) {
             menuUsuarios.setVisible(false);
             menuUsuarios.setManaged(false);
         }
-        if (!PermissaoUtil.temPermissao("FINANCEIRO")) {
+
+        // ── Fornecedores e Compras — só FINANCEIRO ───────────
+        if (!isFinanceiro) {
             menuFornecedores.setVisible(false);
             menuFornecedores.setManaged(false);
+            menuCompras.setVisible(false);
+            menuCompras.setManaged(false);
         }
-        if (!PermissaoUtil.temPermissao("DIRETOR", "FINANCEIRO")) {
+
+        // ── Cotações — DIRETOR ou FINANCEIRO ─────────────────
+        if (!isDiretor && !isFinanceiro) {
             menuCotacoes.setVisible(false);
             menuCotacoes.setManaged(false);
         }
+
+        // ── Nota Fiscal e Saída — só ESTOQUE ─────────────────
+        if (!isEstoque) {
+            menuNotaFiscal.setVisible(false);
+            menuNotaFiscal.setManaged(false);
+            menuSaida.setVisible(false);
+            menuSaida.setManaged(false);
+        }
+
+        // ── Movimentação — todos os perfis veem ──────────────
+        // (nenhuma restrição aqui)
 
         carregarTela("/view/estoque.fxml", "Controle e monitore seu inventário", "+ Novo Produto");
         ativarMenu(menuEstoque);
@@ -132,12 +169,15 @@ public class indexController implements Initializable {
 
     private HBox[] todosMenus() {
         return new HBox[]{menuEstoque, menuFornecedores, menuPedidos,
-                menuCotacoes, menuUsuarios, menuNotificacoes};
+                menuCotacoes, menuCompras, menuUsuarios, menuNotificacoes,
+                menuNotaFiscal, menuMovimentacao, menuSaida};
     }
 
     private Label[] todosTextos() {
         return new Label[]{labelSistema, textoEstoque, textoFornecedores,
-                textoPedidos, textoCotacoes, textoSair, textoUsuarios, textoNotificacoes};
+                textoPedidos, textoCotacoes, textoCompras, textoSair,
+                textoUsuarios, textoNotificacoes,
+                textoNotaFiscal, textoMovimentacao, textoSaida};
     }
 
     private void ocultarTextos() {
@@ -174,26 +214,36 @@ public class indexController implements Initializable {
             Node tela = loader.load();
             Object controller = loader.getController();
 
-            if      (controller instanceof estoqueController)
-                ((estoqueController) controller).setAreaPrincipal(areaPrincipal);
-            else if (controller instanceof cadastroProdutoController)
-                ((cadastroProdutoController) controller).setAreaPrincipal(areaPrincipal);
-            else if (controller instanceof fornecedorController)
-                ((fornecedorController) controller).setAreaPrincipal(areaPrincipal);
-            else if (controller instanceof cadastroFornecedorController)
-                ((cadastroFornecedorController) controller).setAreaPrincipal(areaPrincipal);
-            else if (controller instanceof usuarioController)
-                ((usuarioController) controller).setAreaPrincipal(areaPrincipal);
-            else if (controller instanceof cadastroUsuarioController)
-                ((cadastroUsuarioController) controller).setAreaPrincipal(areaPrincipal);
-            else if (controller instanceof pedidoController)
-                ((pedidoController) controller).setAreaPrincipal(areaPrincipal);
-            else if (controller instanceof cadastroPedidoController)
-                ((cadastroPedidoController) controller).setAreaPrincipal(areaPrincipal);
-            else if (controller instanceof editarPedidoController)
-                ((editarPedidoController) controller).setAreaPrincipal(areaPrincipal);
-            else if (controller instanceof cotacaoController)
-                ((cotacaoController) controller).setAreaPrincipal(areaPrincipal);
+            if (controller instanceof estoqueController c)
+                c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof cadastroProdutoController c)
+                c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof fornecedorController c)
+                c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof cadastroFornecedorController c)
+                c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof usuarioController c)
+                c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof cadastroUsuarioController c)
+                c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof pedidoController c)
+                c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof cadastroPedidoController c)
+                c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof editarPedidoController c)
+                c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof compraController c)
+                c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof cadastroCompraController c)
+                c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof cotacaoController c)
+                c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof notaFiscalController c)
+                c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof movimentacaoController c)
+                c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof saidaEstoqueController c)
+                c.setAreaPrincipal(areaPrincipal);
 
             AnchorPane.setTopAnchor   (tela, 0.0);
             AnchorPane.setBottomAnchor(tela, 0.0);
@@ -204,17 +254,18 @@ public class indexController implements Initializable {
             labelPagina.setText(subtitulo);
             btnAcao.setText(textoBotao);
 
-            if (fxmlPath.contains("estoque.fxml")) {
-                boolean mostra = PermissaoUtil.temPermissao("FINANCEIRO");
-                btnAcao.setVisible(mostra);
-                btnAcao.setManaged(mostra);
-            } else if (fxmlPath.contains("cotacao.fxml")) {
-                btnAcao.setVisible(false);
-                btnAcao.setManaged(false);
-            } else {
-                btnAcao.setVisible(true);
-                btnAcao.setManaged(true);
-            }
+            // Visibilidade do btnAcao por tela
+            boolean mostraBotao = switch (fxmlPath) {
+                case "/view/estoque.fxml"      -> PermissaoUtil.temPermissao("FINANCEIRO");
+                case "/view/cotacao.fxml",
+                     "/view/compra.fxml",
+                     "/view/movimentacao.fxml",
+                     "/view/saidaEstoque.fxml",
+                     "/view/notaFiscal.fxml"   -> false;
+                default                        -> true;
+            };
+            btnAcao.setVisible(mostraBotao);
+            btnAcao.setManaged(mostraBotao);
 
         } catch (IOException e) {
             System.err.println("Erro ao carregar: " + fxmlPath);
@@ -249,8 +300,27 @@ public class indexController implements Initializable {
         carregarTela("/view/usuario.fxml", "Usuários cadastrados", "+ Novo Usuário");
     }
 
+    @FXML private void onComprasClicked() {
+        ativarMenu(menuCompras);
+        carregarTela("/view/compra.fxml", "Histórico de compras realizadas", "");
+    }
+
+    @FXML private void onNotaFiscalClicked() {
+        ativarMenu(menuNotaFiscal);
+        carregarTela("/view/notaFiscal.fxml", "Notas Fiscais", "+ Nova Nota Fiscal");
+    }
+
+    @FXML private void onMovimentacaoClicked() {
+        ativarMenu(menuMovimentacao);
+        carregarTela("/view/movimentacao.fxml", "Movimentações de Estoque", "");
+    }
+
+    @FXML private void onSaidaClicked() {
+        ativarMenu(menuSaida);
+        carregarTela("/view/saidaEstoque.fxml", "Saída de Estoque — Atendimento", "");
+    }
+
     @FXML private void onNotificacoesClicked() {
-        // Ativa o menu de notificações igual aos outros
         ativarMenu(menuNotificacoes);
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/notificacao.fxml"));
@@ -305,14 +375,17 @@ public class indexController implements Initializable {
     }
 
     @FXML private void onBtnAcao() {
-        if      (btnAcao.getText().equals("+ Novo Fornecedor"))
+        if (btnAcao.getText().equals("+ Novo Fornecedor")) {
             carregarTela("/view/cadastroFornecedor.fxml", "Cadastro de Fornecedor", "+ Novo Fornecedor");
-        else if (btnAcao.getText().equals("+ Novo Usuário"))
+        } else if (btnAcao.getText().equals("+ Novo Usuário")) {
             carregarTela("/view/cadastroUsuario.fxml", "Cadastro de Usuário", "+ Novo Usuário");
-        else if (btnAcao.getText().equals("+ Novo Pedido"))
+        } else if (btnAcao.getText().equals("+ Novo Pedido")) {
             carregarTela("/view/cadastroPedido.fxml", "Novo Pedido", "+ Novo Pedido");
-        else
+        } else if (btnAcao.getText().equals("+ Nova Nota Fiscal")) {
+            carregarTela("/view/registroNotaFiscal.fxml", "Registrar Nota Fiscal", "+ Nova Nota Fiscal");
+        } else {
             carregarTela("/view/cadastroProduto.fxml", "Cadastro de Produto", "+ Novo Produto");
+        }
     }
 
     // ── Utilitários ───────────────────────────────────────────

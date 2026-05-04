@@ -19,7 +19,6 @@ public class pedidoDAO {
                 """;
         try (Connection con = ConexaoDB.getConexao();
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
             ps.setString   (1, pedido.getNumPedido());
             ps.setTimestamp(2, Timestamp.valueOf(pedido.getDataAbertura()));
             ps.setString   (3, pedido.getStatus());
@@ -28,10 +27,8 @@ public class pedidoDAO {
             ps.setInt      (6, pedido.getCentroCusto().getIdCentroCusto());
             ps.setInt      (7, pedido.getSetor().getIdSetor());
             ps.executeUpdate();
-
             ResultSet keys = ps.getGeneratedKeys();
             if (keys.next()) return keys.getInt(1);
-
         } catch (SQLException e) {
             System.err.println("Erro ao inserir pedido: " + e.getMessage());
         }
@@ -40,10 +37,7 @@ public class pedidoDAO {
 
     // ── INSERT itens ──────────────────────────────────────────
     public static boolean inserirItens(int idPedido, ObservableList<PedidoProduto> itens) {
-        String sql = """
-                INSERT INTO tb_pedido_produto (id_pedido, id_produto, qtd_solicitada)
-                VALUES (?, ?, ?)
-                """;
+        String sql = "INSERT INTO tb_pedido_produto (id_pedido, id_produto, qtd_solicitada) VALUES (?, ?, ?)";
         try (Connection con = ConexaoDB.getConexao();
              PreparedStatement ps = con.prepareStatement(sql)) {
             for (PedidoProduto item : itens) {
@@ -89,9 +83,14 @@ public class pedidoDAO {
     public static ObservableList<PedidoProduto> listarItens(int idPedido) {
         ObservableList<PedidoProduto> lista = FXCollections.observableArrayList();
         String sql = """
-                SELECT pp.*, pr.produto, pr.unidade_medida, pr.valor_estimado
+                SELECT pp.id_pedido_produto,
+                       pp.qtd_solicitada,
+                       pp.qtd_aprovada,
+                       pr.produto        AS nome_produto,
+                       pr.unidade_medida AS unidade,
+                       pr.valor_estimado AS valor_unitario
                 FROM tb_pedido_produto pp
-                JOIN tb_produto pr ON pp.id_produto = pr.id_produto
+                JOIN tb_produto pr ON pr.id_produto = pp.id_produto
                 WHERE pp.id_pedido = ?
                 """;
         try (Connection con = ConexaoDB.getConexao();
@@ -99,20 +98,31 @@ public class pedidoDAO {
             ps.setInt(1, idPedido);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                Produto prod = new Produto(
-                        rs.getInt("id_produto"), rs.getString("produto"), "",
-                        rs.getString("unidade_medida"), 0,
-                        rs.getDouble("valor_estimado"), "ATIVO", 0);
-                lista.add(new PedidoProduto(
-                        rs.getInt("id_pedido_produto"), idPedido, prod,
+                PedidoProduto item = new PedidoProduto(
+                        rs.getInt("id_pedido_produto"),
+                        rs.getString("nome_produto"),
+                        rs.getString("unidade"),
                         rs.getInt("qtd_solicitada"),
                         rs.getInt("qtd_aprovada"),
-                        rs.getInt("qtd_recebida")));
+                        rs.getDouble("valor_unitario")
+                );
+                double comprado = compraDAO.getQtdCompradaPorPedidoProduto(item.getIdPedidoProduto());
+                item.setQtdComprada(comprado);
+                lista.add(item);
             }
         } catch (SQLException e) {
-            System.err.println("Erro ao listar itens: " + e.getMessage());
+            e.printStackTrace();
         }
         return lista;
+    }
+
+    // ── SELECT compras ativas de um pedido (para o overlay) ───
+    /**
+     * Retorna resumo das compras REALIZADAS do pedido para exibição no overlay.
+     * Cada elemento é String[]{idCompra, fornecedor, data, dataPrevista, valor, status}
+     */
+    public static ObservableList<Compra> listarComprasDoPedido(int idPedido) {
+        return compraDAO.listarPorPedido(idPedido);
     }
 
     // ── Gera número do pedido ─────────────────────────────────
@@ -139,10 +149,10 @@ public class pedidoDAO {
                 """;
         try (Connection con = ConexaoDB.getConexao();
              PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt   (1, pedido.getSetor().getIdSetor());
-            ps.setInt   (2, pedido.getCentroCusto().getIdCentroCusto());
+            ps.setInt(1, pedido.getSetor().getIdSetor());
+            ps.setInt(2, pedido.getCentroCusto().getIdCentroCusto());
             ps.setDouble(3, pedido.getValorTotalEstimado());
-            ps.setInt   (4, pedido.getIdPedido());
+            ps.setInt(4, pedido.getIdPedido());
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -151,7 +161,7 @@ public class pedidoDAO {
         }
     }
 
-    // ── DELETE itens (para reinserção) ────────────────────────
+    // ── DELETE itens ──────────────────────────────────────────
     public static boolean removerItens(int idPedido) {
         String sql = "DELETE FROM tb_pedido_produto WHERE id_pedido = ?";
         try (Connection con = ConexaoDB.getConexao();
@@ -166,8 +176,7 @@ public class pedidoDAO {
     }
 
     // ── UPDATE qtd_aprovada por item ──────────────────────────
-    public static boolean atualizarQtdAprovada(int idPedido,
-                                               ObservableList<PedidoProduto> itens) {
+    public static boolean atualizarQtdAprovada(int idPedido, ObservableList<PedidoProduto> itens) {
         String sql = "UPDATE tb_pedido_produto SET qtd_aprovada = ? WHERE id_pedido_produto = ?";
         try (Connection con = ConexaoDB.getConexao();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -184,77 +193,39 @@ public class pedidoDAO {
         }
     }
 
-    // ── UPDATE — aprovar pedido ───────────────────────────────
+    // ── UPDATE — aprovar ──────────────────────────────────────
     public static boolean aprovar(int idPedido, int idAprovador, String parecer) {
         String sql = """
                 UPDATE tb_pedido
-                SET status         = 'APROVADO',
-                    id_aprovador   = ?,
-                    data_aprovacao = NOW(),
-                    parecer        = ?
-                WHERE id_pedido    = ?
+                SET status='APROVADO', id_aprovador=?, data_aprovacao=NOW(), parecer=?
+                WHERE id_pedido=?
                 """;
-        try (Connection con = ConexaoDB.getConexao();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt   (1, idAprovador);
-            ps.setString(2, parecer);
-            ps.setInt   (3, idPedido);
-            ps.executeUpdate();
-            return true;
-        } catch (SQLException e) {
-            System.err.println("Erro ao aprovar pedido: " + e.getMessage());
-            return false;
-        }
-    }
-    // ── UPDATE — aprovar parcialmente pedido ──────────────────
-    public static boolean aprovarParcialmente(int idPedido, int idAprovador, String parecer) {
-        String sql = """
-            UPDATE tb_pedido
-            SET status         = 'APROVADO_PARCIALMENTE',
-                id_aprovador   = ?,
-                data_aprovacao = NOW(),
-                parecer        = ?
-            WHERE id_pedido    = ?
-            """;
-        try (Connection con = ConexaoDB.getConexao();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt   (1, idAprovador);
-            ps.setString(2, parecer);
-            ps.setInt   (3, idPedido);
-            ps.executeUpdate();
-            return true;
-        } catch (SQLException e) {
-            System.err.println("Erro ao aprovar parcialmente pedido: " + e.getMessage());
-            return false;
-        }
+        return execDecisao(sql, idAprovador, parecer, idPedido);
     }
 
-    // ── UPDATE — negar pedido ─────────────────────────────────
+    // ── UPDATE — aprovar parcialmente ─────────────────────────
+    public static boolean aprovarParcialmente(int idPedido, int idAprovador, String parecer) {
+        String sql = """
+                UPDATE tb_pedido
+                SET status='APROVADO_PARCIALMENTE', id_aprovador=?, data_aprovacao=NOW(), parecer=?
+                WHERE id_pedido=?
+                """;
+        return execDecisao(sql, idAprovador, parecer, idPedido);
+    }
+
+    // ── UPDATE — negar ────────────────────────────────────────
     public static boolean negar(int idPedido, int idAprovador, String parecer) {
         String sql = """
                 UPDATE tb_pedido
-                SET status         = 'NEGADO',
-                    id_aprovador   = ?,
-                    data_aprovacao = NOW(),
-                    parecer        = ?
-                WHERE id_pedido    = ?
+                SET status='NEGADO', id_aprovador=?, data_aprovacao=NOW(), parecer=?
+                WHERE id_pedido=?
                 """;
-        try (Connection con = ConexaoDB.getConexao();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt   (1, idAprovador);
-            ps.setString(2, parecer);
-            ps.setInt   (3, idPedido);
-            ps.executeUpdate();
-            return true;
-        } catch (SQLException e) {
-            System.err.println("Erro ao negar pedido: " + e.getMessage());
-            return false;
-        }
+        return execDecisao(sql, idAprovador, parecer, idPedido);
     }
 
-    // ── UPDATE — cancelar pedido ──────────────────────────────
+    // ── UPDATE — cancelar ─────────────────────────────────────
     public static boolean cancelar(int idPedido) {
-        String sql = "UPDATE tb_pedido SET status = 'CANCELADO' WHERE id_pedido = ?";
+        String sql = "UPDATE tb_pedido SET status='CANCELADO' WHERE id_pedido=?";
         try (Connection con = ConexaoDB.getConexao();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, idPedido);
@@ -266,6 +237,20 @@ public class pedidoDAO {
         }
     }
 
+    private static boolean execDecisao(String sql, int idAprov, String parecer, int idPedido) {
+        try (Connection con = ConexaoDB.getConexao();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, idAprov);
+            ps.setString(2, parecer);
+            ps.setInt(3, idPedido);
+            ps.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            System.err.println("Erro ao executar decisão: " + e.getMessage());
+            return false;
+        }
+    }
+
     // ── Mapper ────────────────────────────────────────────────
     private static Pedido mapear(ResultSet rs) throws SQLException {
         Usuario solicitante = new Usuario(
@@ -273,8 +258,7 @@ public class pedidoDAO {
                 "", "", "", "ATIVO", new Perfil());
         CentroCusto cc  = new CentroCusto(rs.getInt("id_centrocusto"), rs.getString("centro_custo"));
         Setor setor     = new Setor(rs.getInt("id_setor"), rs.getString("setor"));
-
-        Pedido pedido = new Pedido(
+        Pedido pedido   = new Pedido(
                 rs.getInt("id_pedido"), rs.getString("num_pedido"),
                 rs.getTimestamp("data_abertura").toLocalDateTime(),
                 rs.getString("status"), rs.getDouble("valor_total_estimado"),
@@ -289,5 +273,36 @@ public class pedidoDAO {
         if (tsAprov != null) pedido.setDataAprovacao(tsAprov.toLocalDateTime());
         pedido.setParecer(rs.getString("parecer"));
         return pedido;
+    }
+    public static ObservableList<Pedido> listarTodosIncluindoRecebidos() {
+
+        ObservableList<Pedido> lista = FXCollections.observableArrayList();
+
+        String sql = """
+        SELECT *
+        FROM tb_pedido
+        ORDER BY id_pedido DESC
+        """;
+
+        try (Connection con = ConexaoDB.getConexao();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+
+                Pedido p = new Pedido();
+                p.setIdPedidoSimples(rs.getInt("id_pedido"));
+                p.setNumPedidoSimples(rs.getString("num_pedido"));
+                p.setStatus(rs.getString("status"));
+                p.valorTotalEstimadoProperty().set(rs.getDouble("valor_total_estimado"));
+
+                lista.add(p);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return lista;
     }
 }

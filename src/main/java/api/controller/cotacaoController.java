@@ -89,6 +89,8 @@ public class cotacaoController implements Initializable {
                 .addListener((obs, a, c) -> { if (c != null) abrirOverlay(c); });
     }
 
+
+
     public void setAreaPrincipal(AnchorPane areaPrincipal) {
         this.areaPrincipal = areaPrincipal;
     }

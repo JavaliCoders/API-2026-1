@@ -156,35 +156,55 @@ public class aprovacaoPedidoController implements Initializable {
         // Coluna qtd aprovada — editável via Spinner, destaca diferença em vermelho
         colQtdAprov.setCellValueFactory(d -> new SimpleStringProperty(
                 String.valueOf(d.getValue().getQtdAprovada())));
+
         colQtdAprov.setCellFactory(col -> new TableCell<>() {
-            private final Spinner<Integer> spinner = new Spinner<>(0, 9999, 0);
+            private final Spinner<Integer> spinner = new Spinner<>();
+
             {
                 spinner.setEditable(true);
                 spinner.setPrefWidth(85);
-                spinner.valueProperty().addListener((obs, a, n) -> {
-                    if (getTableRow() != null && getTableRow().getItem() != null)
-                        ((PedidoProduto) getTableRow().getItem()).setQtdAprovada(n);
+
+                spinner.valueProperty().addListener((obs, oldVal, newVal) -> {
+                    if (getTableRow() != null && getTableRow().getItem() != null) {
+                        PedidoProduto pp = (PedidoProduto) getTableRow().getItem();
+                        pp.setQtdAprovada(newVal);
+                    }
                 });
             }
-            @Override protected void updateItem(String item, boolean empty) {
+
+            @Override
+            protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty || item == null || getTableRow() == null
-                        || getTableRow().getItem() == null) {
-                    setGraphic(null); return;
+
+                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                    setGraphic(null);
+                    return;
                 }
+
                 PedidoProduto pp = (PedidoProduto) getTableRow().getItem();
-                // Inicializa spinner com valor atual
+
+                int valorInicial = (pp.getQtdAprovada() > 0)
+                        ? pp.getQtdAprovada()
+                        : pp.getQtdSolicitada(); // 🔥 AQUI ESTÁ A CORREÇÃO
+
                 SpinnerValueFactory.IntegerSpinnerValueFactory factory =
-                        (SpinnerValueFactory.IntegerSpinnerValueFactory) spinner.getValueFactory();
-                factory.setMax(pp.getQtdSolicitada());
-                if (factory.getValue() != pp.getQtdAprovada())
-                    factory.setValue(pp.getQtdAprovada());
+                        new SpinnerValueFactory.IntegerSpinnerValueFactory(
+                                0,
+                                pp.getQtdSolicitada(),
+                                valorInicial
+                        );
+
+                spinner.setValueFactory(factory);
+
+                // 🔥 Garante que o objeto também receba esse valor
+                pp.setQtdAprovada(valorInicial);
 
                 // Destaque visual
-                if (pp.getQtdAprovada() < pp.getQtdSolicitada())
+                if (pp.getQtdAprovada() < pp.getQtdSolicitada()) {
                     spinner.setStyle("-fx-font-size:13px; -fx-border-color:#dc2626; -fx-border-radius:4;");
-                else
+                } else {
                     spinner.setStyle("-fx-font-size:13px;");
+                }
 
                 setGraphic(spinner);
             }
@@ -214,6 +234,13 @@ public class aprovacaoPedidoController implements Initializable {
 
         int    idAprov = SessaoUsuario.getInstancia().getIdUsuarioLogado();
         String nomeA   = SessaoUsuario.getInstancia().getNomeUsuarioLogado();
+
+        // 🔥 GARANTE QUE NUNCA VAI SALVAR NULL
+        for (PedidoProduto i : itens) {
+            if (i.getQtdAprovada() == 0) {
+                i.setQtdAprovada(i.getQtdSolicitada());
+            }
+        }
 
         boolean todosZero      = itens.stream().allMatch(i -> i.getQtdAprovada() == 0);
         boolean algumDiferente = itens.stream()
