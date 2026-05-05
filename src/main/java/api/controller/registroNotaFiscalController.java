@@ -154,6 +154,9 @@ public class registroNotaFiscalController implements Initializable {
         if (comboCompra.getSelectionModel().getSelectedIndex() < 0) {
             mostrarErro("Selecione a compra relacionada."); return false;
         }
+        if (arquivoAnexo == null) {
+            mostrarErro("Anexe o arquivo da nota fiscal."); return false;
+        }
         labelErro.setVisible(false);
         labelErro.setManaged(false);
         return true;

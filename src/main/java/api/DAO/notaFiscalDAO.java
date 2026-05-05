@@ -46,26 +46,48 @@ public class notaFiscalDAO {
 
     // ── INSERT nota fiscal ────────────────────────────────────
     public static int inserir(NotaFiscal nf) {
-        String sql = """
+        String sqlAnexo = """
+            INSERT INTO tb_anexo (tipo, nome_arq, caminho_arquivo, data_upload)
+            VALUES ('NOTA_FISCAL', ?, ?, NOW())
+            """;
+        String sqlNf = """
             INSERT INTO tb_notasfiscal
                 (numero_nota, data_emissao, data_registro,
                  id_usuario_registro, id_compra, valor_nf,
                  id_anexo, status, total_itens)
-            VALUES (?, ?, NOW(), ?, ?, ?, NULL, 'REGISTRADA', ?)
+            VALUES (?, ?, NOW(), ?, ?, ?, ?, 'REGISTRADA', ?)
             """;
-        try (Connection con = ConexaoDB.getConexao();
-             PreparedStatement ps =
-                     con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setString(1, nf.getNumeroNota());
-            ps.setTimestamp(2, nf.getDataEmissao() != null
-                    ? Timestamp.valueOf(nf.getDataEmissao()) : null);
-            ps.setInt   (3, nf.getUsuarioRegistro().getIdUsuario());
-            ps.setInt   (4, nf.getCompra().getIdCompra());
-            ps.setDouble(5, nf.getValorNf());
-            ps.setInt   (6, nf.getTotalItens());
-            ps.executeUpdate();
-            ResultSet rs = ps.getGeneratedKeys();
-            if (rs.next()) return rs.getInt(1);
+        try (Connection con = ConexaoDB.getConexao()) {
+            con.setAutoCommit(false);
+
+            // 1. Insere tb_anexo e captura o id gerado
+            int idAnexo;
+            try (PreparedStatement ps = con.prepareStatement(sqlAnexo, Statement.RETURN_GENERATED_KEYS)) {
+                ps.setString(1, nf.getNomeAnexo());
+                ps.setString(2, nf.getCaminhoAnexo());
+                ps.executeUpdate();
+                ResultSet rs = ps.getGeneratedKeys();
+                if (!rs.next()) { con.rollback(); return -1; }
+                idAnexo = rs.getInt(1);
+            }
+
+            // 2. Insere tb_notasfiscal com o id_anexo obtido
+            try (PreparedStatement ps = con.prepareStatement(sqlNf, Statement.RETURN_GENERATED_KEYS)) {
+                ps.setString   (1, nf.getNumeroNota());
+                ps.setTimestamp(2, nf.getDataEmissao() != null
+                        ? Timestamp.valueOf(nf.getDataEmissao()) : null);
+                ps.setInt      (3, nf.getUsuarioRegistro().getIdUsuario());
+                ps.setInt      (4, nf.getCompra().getIdCompra());
+                ps.setDouble   (5, nf.getValorNf());
+                ps.setInt      (6, idAnexo);
+                ps.setInt      (7, nf.getTotalItens());
+                ps.executeUpdate();
+                ResultSet rs = ps.getGeneratedKeys();
+                if (!rs.next()) { con.rollback(); return -1; }
+                int idNota = rs.getInt(1);
+                con.commit();
+                return idNota;
+            }
         } catch (SQLException e) {
             System.err.println("Erro ao inserir nota fiscal: " + e.getMessage());
         }

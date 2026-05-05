@@ -8,7 +8,7 @@ public class ConexaoDB {
 
     private static final String URL     = "jdbc:mysql://localhost:3306/bd_api";
     private static final String USUARIO = "root";
-    private static final String SENHA   = "0511";
+    private static final String SENHA   = "1234";
 
     private ConexaoDB() {}
 
