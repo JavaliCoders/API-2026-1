@@ -122,7 +122,7 @@ A plataforma desenvolvida pela equipe JavaliCoders centraliza todo o ciclo de co
 
 #### 🎯 Sprint 3 - Inteligência e Valor Agregado
 
-- **Status**: ⏳ Não iniciada
+- **Status**: ⏳ Em andamento
 - **Período**: 11/05 a 31/05
 - **Objetivo Principal**: Adicionar filtros avançados, movimentações manuais de estoque e dashboard gerencial
 - **Principais Entregas**:
