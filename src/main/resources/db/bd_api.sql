@@ -24,6 +24,7 @@ CREATE TABLE tb_usuario(
   REFERENCES tb_perfil (id_perfil)
   );
   
+  
 
 CREATE TABLE tb_setor (
   id_setor INT auto_increment PRIMARY KEY NOT NULL,
@@ -60,6 +61,7 @@ CREATE TABLE tb_produto (
   status ENUM('ATIVO', 'INATIVO') NOT NULL,
   saldo INT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id_produto`));
+  
 
 CREATE TABLE tb_pedido (
   id_pedido INT auto_increment NOT NULL,
@@ -108,17 +110,6 @@ CREATE TABLE tb_fornecedor (
   PRIMARY KEY (id_fornecedor)
   );
 
-CREATE TABLE tb_fornecedor_produto (
-  id_fornecedor INT NOT NULL,
-  id_produto INT NOT NULL,
-  id_produto_fornecedor INT auto_increment NOT NULL,
-  preco_uni DECIMAL(8,2) NOT NULL,
-  PRIMARY KEY (id_produto_fornecedor),
-  FOREIGN KEY (id_fornecedor)
-  REFERENCES tb_fornecedor (id_fornecedor),
-  FOREIGN KEY (id_produto)
-  REFERENCES tb_produto (id_produto)
-  );
 
 CREATE TABLE tb_anexo (
   id_anexo INT auto_increment NOT NULL,
@@ -242,18 +233,15 @@ CREATE TABLE tb_movimentacao (
 
 CREATE TABLE tb_historico (
   id_historico INT auto_increment NOT NULL,
-  entidade_tipo VARCHAR(50) NOT NULL,
-  entidade_id INT NOT NULL,
-  acao VARCHAR(50) NOT NULL,
-  descricao TEXT NULL,
+  entidade_tipo ENUM ('Usuário','Pedido','Compra','Cotação','Nota fiscal','Produto','Fornecedor') not null,
+  acao ENUM('Cadastro','Alteração','Cancelamento','Exclusão','Aprovação','Negação','Entrada','Conferência','Saída') not null,
   id_usuario INT NOT NULL,
   data DATETIME NOT NULL,
   PRIMARY KEY (id_historico),
     FOREIGN KEY (id_usuario)
     REFERENCES tb_usuario (id_usuario)
     );
-
-
+    
 CREATE TABLE tb_notificacao (
   id_notificacao INT auto_increment NOT NULL,
   id_usuario INT NOT NULL,

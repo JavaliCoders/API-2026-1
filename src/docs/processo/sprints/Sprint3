@@ -1,0 +1,29 @@
+## 📊 Backlog da Sprint 3
+
+### SPRINT 3 - Inteligência e Valor Agregado
+
+| Rank | Prioridade | User Story | Story Points | Sprint | Status |
+|------| --- | --- |--------------| --- | --- |
+| 20   | Média | Como funcionário, quero filtrar os produtos do estoque de acordo com a quantidade, para facilitar a visualização de produtos que precisam ser comprados. | 2            | 3 | ⏳ |
+| 21   | Média | Como diretor/financeiro, quero poder acessar pedidos, cotações e compras pesquisando por um produto, para facilitar o acesso ao histórico de compra de um produto. | 3            | 3 | ⏳ |
+| 22   | Média | Como operador de estoque, quero registrar manualmente a entrada de material no estoque, para corrigir ou ajustar o saldo quando houver reposição ou erro de contagem. | 2            | 3 | ⏳ |
+| 23   | Média | Como operador de estoque, quero registrar manualmente a saída de um produto do estoque, para manter o controle correto do saldo de estoque. | 2            | 3 | ⏳ |
+| 24   | Alta | Como funcionário, quero visualizar o histórico de movimentações do estoque, para acompanhar entradas, saídas e ajustes realizados. | 5            | 3 | ⏳ |
+| 25   | Alta | Como diretor/administrador, quero visualizar um dashboard visual com indicadores, para acompanhar o desempenho das compras e do funcionamento dos processos. | 8            | 3 | ⏳ |
+
+## 📝 DoR e DoD <a name="dor-dod"></a>
+
+### DoR - Definition of Ready
+
+- User Stories escritas no formato "Como [persona], quero [ação] para que [objetivo]"
+- As US contêm critérios de aceitação definidos
+- Subtarefas divididas a partir das US
+- Priorização atribuída (Alta, Média, Baixa)
+- Story Points estimados
+
+### DoD - Definition of Done
+
+- Funcionalidade implementada e testada
+- Código revisado via Pull Request
+- Documentação atualizada
+- Vídeo demonstrativo do incremento entregue
