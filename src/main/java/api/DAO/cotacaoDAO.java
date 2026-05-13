@@ -8,7 +8,7 @@ import javafx.collections.ObservableList;
 import java.sql.*;
 import java.time.LocalDateTime;
 
-public class cotacaoDAO {
+public class CotacaoDAO {
 
     // ── INSERT cotação + anexo em transação única ─────────────
     public static int inserir(double valorTotal, int idPedido,

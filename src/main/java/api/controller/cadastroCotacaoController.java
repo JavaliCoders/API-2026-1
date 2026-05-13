@@ -1,6 +1,6 @@
 package api.controller;
 
-import api.DAO.cotacaoDAO;
+import api.DAO.CotacaoDAO;
 import api.DAO.fornecedorDAO;
 import api.model.*;
 import api.service.HistoricoService;
@@ -139,7 +139,7 @@ public class cadastroCotacaoController implements Initializable {
         // ✅ Converte valor UMA vez só
         double valor = Double.parseDouble(fieldValorTotal.getText().replace(",", "."));
 
-        int idCotacao = cotacaoDAO.inserir(
+        int idCotacao = CotacaoDAO.inserir(
                 valor,
                 pedido.getIdPedido(),
                 fieldFornecedor.getValue().getIdFornecedor(),
@@ -154,7 +154,7 @@ public class cadastroCotacaoController implements Initializable {
         }
 
         // ATUALIZA STATUS
-        cotacaoDAO.marcarPedidoEmCotacao(pedido.getIdPedido());
+        CotacaoDAO.marcarPedidoEmCotacao(pedido.getIdPedido());
 
         // HISTÓRICO
         HistoricoService.registrar("Cotação", "Cadastro", idCotacao,
@@ -244,7 +244,7 @@ public class cadastroCotacaoController implements Initializable {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/cotacao.fxml"));
             Node tela = loader.load();
-            cotacaoController ctrl = loader.getController();
+            CotacaoController ctrl = loader.getController();
             ctrl.setAreaPrincipal(areaPrincipal);
             ctrl.filtrarPorPedido(pedidoOrigem);
             anchorar(tela);

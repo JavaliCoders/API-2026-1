@@ -236,7 +236,7 @@ public class indexController implements Initializable {
                 c.setAreaPrincipal(areaPrincipal);
             else if (controller instanceof cadastroCompraController c)
                 c.setAreaPrincipal(areaPrincipal);
-            else if (controller instanceof cotacaoController c)
+            else if (controller instanceof CotacaoController c)
                 c.setAreaPrincipal(areaPrincipal);
             else if (controller instanceof notaFiscalController c)
                 c.setAreaPrincipal(areaPrincipal);
