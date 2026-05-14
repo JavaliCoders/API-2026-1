@@ -1,0 +1,4 @@
+abr. 07, 2026 1:35:29 AM com.sun.javafx.application.PlatformImpl startup
+WARNING: Unsupported JavaFX configuration: classes were loaded from 'unnamed module @232b13b0'
+Config externa carregada.
+Perfil logado: DIRETOR
