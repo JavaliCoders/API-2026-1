@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="api.controller.notaFiscalController"
+      spacing="24"
+      style="-fx-background-color:#f0f2f5; -fx-padding:24;">
+
+    <VBox style="-fx-background-color:white; -fx-background-radius:12;
+                 -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.07),10,0,0,2);
+                 -fx-padding:24;" VBox.vgrow="ALWAYS">
+
+        <HBox alignment="CENTER_LEFT" spacing="16" style="-fx-padding:0 0 20 0;">
+            <VBox HBox.hgrow="ALWAYS" spacing="4">
+                <Label text="Notas Fiscais"
+                       style="-fx-font-size:20px; -fx-font-weight:bold; -fx-text-fill:#0f172a;"/>
+                <Label text="Registre e acompanhe as notas fiscais recebidas"
+                       style="-fx-font-size:13px; -fx-text-fill:#475569;"/>
+            </VBox>
+            <Button text="+ Nova Nota Fiscal" onAction="#onNovaNotaFiscal"
+                    style="-fx-background-color:#2563eb; -fx-text-fill:white; -fx-font-weight:bold;
+                           -fx-background-radius:8; -fx-padding:10 20; -fx-font-size:13px; -fx-cursor:hand;
+                           -fx-border-color:transparent;"/>
+        </HBox>
+
+        <!-- Filtros -->
+        <HBox spacing="12" style="-fx-padding:0 0 20 0;" alignment="CENTER_LEFT">
+            <TextField fx:id="fieldBusca" promptText="🔍  Buscar por nota, pedido ou fornecedor"
+                       prefWidth="280"
+                       style="-fx-background-color:#f8fafc; -fx-border-color:#cbd5e1;
+                              -fx-border-radius:8; -fx-background-radius:8;
+                              -fx-padding:10 14; -fx-font-size:13px; -fx-text-fill:#0f172a;"/>
+            <ComboBox fx:id="filtroStatus" promptText="Todos os status" prefWidth="165"
+                      style="-fx-background-color:#f8fafc; -fx-border-color:#cbd5e1;
+                             -fx-border-radius:8; -fx-background-radius:8; -fx-font-size:13px;"/>
+            <DatePicker fx:id="filtroDataInicio" promptText="Data início" prefWidth="145"
+                        style="-fx-background-color:#f8fafc; -fx-border-color:#cbd5e1;
+                               -fx-border-radius:8; -fx-background-radius:8; -fx-font-size:13px;"/>
+            <DatePicker fx:id="filtroDataFim" promptText="Data fim" prefWidth="145"
+                        style="-fx-background-color:#f8fafc; -fx-border-color:#cbd5e1;
+                               -fx-border-radius:8; -fx-background-radius:8; -fx-font-size:13px;"/>
+            <Button text="Limpar" onAction="#onLimparFiltros"
+                    style="-fx-background-color:#f1f5f9; -fx-text-fill:#475569;
+                           -fx-background-radius:8; -fx-border-color:#cbd5e1;
+                           -fx-border-radius:8; -fx-padding:10 16; -fx-font-size:13px; -fx-cursor:hand;"/>
+        </HBox>
+
+        <!-- Tabela -->
+        <TableView fx:id="tabelaNotas" VBox.vgrow="ALWAYS" maxHeight="Infinity" minHeight="0"
+                   style="-fx-background-color:transparent; -fx-border-color:transparent;
+                          -fx-table-cell-border-color:transparent; -fx-font-size:13px;">
+            <columns>
+                <TableColumn fx:id="colNumero"     text="Nº Nota"       prefWidth="110"/>
+                <TableColumn fx:id="colPedido"     text="Pedido"        prefWidth="105"/>
+                <TableColumn fx:id="colFornecedor" text="Fornecedor"    prefWidth="155"/>
+                <TableColumn fx:id="colEmissao"    text="Emissão"       prefWidth="105"/>
+                <TableColumn fx:id="colRegistro"   text="Registrada em" prefWidth="135"/>
+                <TableColumn fx:id="colValor"      text="Valor"         prefWidth="110"/>
+                <TableColumn fx:id="colStatus"     text="Status"        prefWidth="115"/>
+                <TableColumn fx:id="colAcoes"      text="Ações"         prefWidth="130"/>
+            </columns>
+            <placeholder>
+                <Label text="Nenhuma nota fiscal encontrada."
+                       style="-fx-text-fill:#475569; -fx-font-size:13px;"/>
+            </placeholder>
+        </TableView>
+    </VBox>
+</VBox>

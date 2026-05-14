@@ -66,6 +66,11 @@ public class estoqueController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         configurarFiltros();
         configurarColunas();
+
+        if (!PermissaoUtil.temPermissao("FINANCEIRO")) {
+            tabelaProdutos.getColumns().remove(colAcoes);
+        }
+
         carregarDados();
         configurarBusca();
         configurarSelecao(); // ← listener de seleção da tabela

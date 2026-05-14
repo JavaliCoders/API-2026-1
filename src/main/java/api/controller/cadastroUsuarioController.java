@@ -3,6 +3,7 @@ package api.controller;
 import api.DAO.UsuarioDAO;
 import api.model.Perfil;
 import api.model.Usuario;
+import api.service.HistoricoService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -149,6 +150,16 @@ public class cadastroUsuarioController implements Initializable {
                     fieldPerfil.getValue()
             );
             sucesso = UsuarioDAO.inserir(novo);
+
+            if (sucesso) {
+                HistoricoService.registrar(
+                        "Usuário",
+                        "Cadastro",
+                        novo.getIdUsuario(),
+                        "Usuário \"" + novo.getNome() + "\" cadastrado"
+                );
+            }
+
             exibirAlerta(sucesso,
                     "Usuário \"" + novo.getNome() + "\" cadastrado com sucesso!",
                     "Erro ao cadastrar. Verifique a conexão com o banco.");
@@ -168,6 +179,16 @@ public class cadastroUsuarioController implements Initializable {
                     fieldPerfil.getValue()
             );
             sucesso = UsuarioDAO.atualizar(editado);
+
+            if (sucesso) {
+                HistoricoService.registrar(
+                        "Usuário",
+                        "Alteração",
+                        editado.getIdUsuario(),
+                        "Usuário \"" + editado.getNome() + "\" alterado"
+                );
+            }
+
             exibirAlerta(sucesso,
                     "Usuário \"" + editado.getNome() + "\" atualizado com sucesso!",
                     "Erro ao atualizar. Verifique a conexão com o banco.");

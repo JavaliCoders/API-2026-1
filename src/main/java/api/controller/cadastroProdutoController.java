@@ -2,6 +2,7 @@ package api.controller;
 
 import api.DAO.produtoDAO;
 import api.model.Produto;
+import api.service.HistoricoService;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -133,6 +134,15 @@ public class cadastroProdutoController implements Initializable {
                     0
             );
             sucesso = produtoDAO.inserir(novo);
+
+            if (sucesso) {
+                HistoricoService.registrar(
+                        "Produto",
+                        "Cadastro",
+                        novo.getIdProduto(),
+                        "Produto \"" + novo.getProduto() + "\" cadastrado"
+                );
+            }
             exibirAlerta(sucesso,
                     "Produto \"" + novo.getProduto() + "\" cadastrado com sucesso!",
                     "Erro ao cadastrar. Verifique a conexão com o banco.");
@@ -149,6 +159,15 @@ public class cadastroProdutoController implements Initializable {
                     produtoEdicao.getSaldo()
             );
             sucesso = produtoDAO.atualizar(editado);
+
+            if (sucesso) {
+                HistoricoService.registrar(
+                        "Produto",
+                        "Alteração",
+                        editado.getIdProduto(),
+                        "Produto \"" + editado.getProduto() + "\" alterado"
+                );
+            }
             exibirAlerta(sucesso,
                     "Produto \"" + editado.getProduto() + "\" atualizado com sucesso!",
                     "Erro ao atualizar. Verifique a conexão com o banco.");
@@ -159,6 +178,7 @@ public class cadastroProdutoController implements Initializable {
             voltarParaEstoque();
         }
     }
+
 
     @FXML
     private void onCancelar() {
