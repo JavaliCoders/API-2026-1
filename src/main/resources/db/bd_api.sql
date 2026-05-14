@@ -43,11 +43,12 @@ INSERT INTO tb_setor (setor) VALUES
 CREATE TABLE tb_centrocusto (
   id_centrocusto INT AUTO_INCREMENT NOT NULL,
   centro_custo VARCHAR(80) NOT NULL,
+  status enum ("ATIVO", "INATIVO"),
   PRIMARY KEY (id_centrocusto)
 );
 
-INSERT INTO tb_centrocusto (centro_custo) VALUES
-('Manutenção'),('Limpeza'),('Administrativo'),('Informática'),('Infraestrutura');
+INSERT INTO tb_centrocusto (centro_custo, status) VALUES
+('Manutenção', "ATIVO"),('Limpeza', "ATIVO"),('Administrativo', "ATIVO"),('Informática', "ATIVO"),('Infraestrutura', "ATIVO");
 -- IDs: 1=Manut, 2=Limpeza, 3=Admin, 4=Info, 5=Infra
 
 CREATE TABLE tb_produto (

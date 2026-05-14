@@ -104,6 +104,15 @@
                    style="-fx-text-fill: rgb(210,210,216); -fx-font-size: 16px;"/>
          </HBox>
 
+                <!-- Menu Centro de custo -->
+                <HBox fx:id="menuCentroCusto" alignment="CENTER_LEFT" spacing="12"
+                      style="-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 12 16; -fx-cursor: hand;"
+                      onMouseClicked="#onCentroCustoClicked">
+                    <Label fx:id="iconCentro" text="📤" style="-fx-font-size: 20px; -fx-text-fill: rgb(210,210,216);"/>
+                    <Label fx:id="textoCentro" text="Centros de Custo"
+                           style="-fx-text-fill: rgb(210,210,216); -fx-font-size: 16px;"/>
+                </HBox>
+
 
                 <!-- ── Menu Notificações (com badge) ── -->
                 <HBox fx:id="menuNotificacoes" alignment="CENTER_LEFT" spacing="12"
