@@ -69,7 +69,7 @@ public class pedidoDAO {
         }
     }
 
-    // ── SELECT pedidos para atendimento ────────────────
+    // ── SELECT pedidos para atendimento (CA1) ────────────────
     public static ObservableList<Pedido> listarParaAtendimento() {
         ObservableList<Pedido> lista = FXCollections.observableArrayList();
         String sql = """

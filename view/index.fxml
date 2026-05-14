@@ -49,6 +49,11 @@
                       onMouseClicked="#onComprasClicked">
                     <Label fx:id="iconCompras" text="R$" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: rgb(210,210,216);"/>
                     <Label fx:id="textoCompras" text="Compras"
+                <HBox fx:id="menuAprovacaoCotacao" alignment="CENTER_LEFT" spacing="12"
+                      style="-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 12 16; -fx-cursor: hand;"
+                      onMouseClicked="#onAprovacaoCotacaoClicked">
+                    <Label fx:id="iconAprovacaoCotacao" text="✓" style="-fx-font-size: 20px; -fx-text-fill: rgb(210,210,216);"/>
+                    <Label fx:id="textoAprovacaoCotacao" text="Aprovar Cotação"
                            style="-fx-text-fill: rgb(210,210,216); -fx-font-size: 16px;"/>
                 </HBox>
 
