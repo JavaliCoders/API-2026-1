@@ -13,11 +13,10 @@ public class MainApp extends Application {
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader loader = new FXMLLoader(
                 getClass().getResource("/view/login.fxml"));
-        AnchorPane root = loader.load(); // ← AnchorPane, não StackPane
+        AnchorPane root = loader.load();
 
         Scene scene = new Scene(root, 900, 600);
 
-        // Aplica CSS do login se existir
         try {
             scene.getStylesheets().add(
                     getClass().getResource("/style/loginStyle.css").toExternalForm());

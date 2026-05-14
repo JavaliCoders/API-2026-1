@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!--
+    StackPane como raiz: permite empilhar o overlay de atendimento
+    sobre a tabela de pedidos (mesmo padrão do estoque.fxml).
+-->
+<StackPane xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="api.controller.saidaEstoqueController"
+           style="-fx-background-color: #f0f2f5;">
+
+    <!-- ── CAMADA 1: Tabela de pedidos prontos para atendimento ── -->
+    <VBox spacing="24" style="-fx-padding: 24;">
+
+        <VBox style="-fx-background-color: white; -fx-background-radius: 12;
+                     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 10, 0, 0, 2);
+                     -fx-padding: 24;" VBox.vgrow="ALWAYS">
+
+            <!-- Título -->
+            <VBox spacing="4" style="-fx-padding: 0 0 20 0;">
+                <Label text="Atendimento de Pedidos"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+                <Label text="Pedidos recebidos aguardando retirada do material pelo solicitante"
+                       style="-fx-font-size: 13px; -fx-text-fill: #475569;"/>
+            </VBox>
+
+            <!-- Filtros -->
+            <HBox spacing="12" style="-fx-padding: 0 0 20 0;" alignment="CENTER_LEFT">
+                <TextField fx:id="fieldBusca"
+                           promptText="🔍  Buscar por pedido, solicitante ou setor"
+                           prefWidth="340"
+                           style="-fx-background-color: #f8fafc; -fx-border-color: #cbd5e1;
+                                  -fx-border-radius: 8; -fx-background-radius: 8;
+                                  -fx-padding: 10 14; -fx-font-size: 13px; -fx-text-fill: #0f172a;"/>
+                <Button text="Limpar" onAction="#onLimparFiltros"
+                        style="-fx-background-color: #f1f5f9; -fx-text-fill: #475569;
+                               -fx-background-radius: 8; -fx-border-color: #cbd5e1;
+                               -fx-border-radius: 8; -fx-padding: 10 16; -fx-font-size: 13px; -fx-cursor: hand;"/>
+            </HBox>
+
+            <!-- Tabela -->
+            <TableView fx:id="tabelaPedidos" VBox.vgrow="ALWAYS" maxHeight="Infinity" minHeight="0"
+                       style="-fx-background-color: transparent; -fx-border-color: transparent;
+                              -fx-table-cell-border-color: transparent; -fx-font-size: 13px;">
+                <columns>
+                    <TableColumn fx:id="colNum"         text="Nº Pedido"    prefWidth="110"/>
+                    <TableColumn fx:id="colSolicitante" text="Solicitante"  prefWidth="170"/>
+                    <TableColumn fx:id="colSetor"       text="Setor"        prefWidth="130"/>
+                    <TableColumn fx:id="colData"        text="Abertura"     prefWidth="120"/>
+                    <TableColumn fx:id="colStatus"      text="Status"       prefWidth="120"/>
+                    <TableColumn fx:id="colAcoes"       text="Ações"        prefWidth="130"/>
+                </columns>
+                <placeholder>
+                    <Label text="Nenhum pedido recebido aguardando atendimento."
+                           style="-fx-text-fill: #475569; -fx-font-size: 13px;"/>
+                </placeholder>
+            </TableView>
+
+        </VBox>
+    </VBox>
+
+    <!-- ── CAMADA 2: Overlay de atendimento ── -->
+    <StackPane fx:id="overlayAtendimento"
+               visible="false" managed="false"
+               style="-fx-background-color: rgba(0,0,0,0.45);">
+
+        <VBox spacing="0" maxWidth="680" maxHeight="560"
+              style="-fx-background-color: white; -fx-background-radius: 16;
+                     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 20, 0, 0, 4);">
+
+            <!-- Cabeçalho azul -->
+            <HBox alignment="CENTER_LEFT" spacing="12"
+                  style="-fx-background-color: #2563eb;
+                         -fx-background-radius: 16 16 0 0; -fx-padding: 20 20 16 20;">
+                <VBox HBox.hgrow="ALWAYS" spacing="6">
+                    <Label text="Atender Pedido"
+                           style="-fx-font-size: 14px; -fx-text-fill: #bfdbfe;"/>
+                    <HBox spacing="20">
+                        <VBox spacing="2">
+                            <Label text="PEDIDO"
+                                   style="-fx-font-size: 11px; -fx-text-fill: #bfdbfe; -fx-font-weight: bold;"/>
+                            <Label fx:id="labelNumPedido"
+                                   style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                        </VBox>
+                        <VBox spacing="2">
+                            <Label text="SOLICITANTE"
+                                   style="-fx-font-size: 11px; -fx-text-fill: #bfdbfe; -fx-font-weight: bold;"/>
+                            <Label fx:id="labelSolicitante"
+                                   style="-fx-font-size: 15px; -fx-text-fill: white;"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+                <Button text="✕" onAction="#fecharAtendimento"
+                        style="-fx-background-color: rgba(255,255,255,0.2);
+                               -fx-text-fill: white; -fx-font-size: 14px;
+                               -fx-background-radius: 50; -fx-cursor: hand;
+                               -fx-border-color: transparent; -fx-padding: 6 10;"/>
+            </HBox>
+
+            <!-- Instrução -->
+            <Label text="⚠  Selecione os itens e registre a saída para o solicitante. O saldo será reduzido no estoque."
+                   wrapText="true"
+                   style="-fx-font-size: 13px; -fx-text-fill: #92400e;
+                          -fx-background-color: #fef3c7; -fx-padding: 10 16;"/>
+
+            <!-- Tabela de itens -->
+            <TableView fx:id="tabelaItens" VBox.vgrow="ALWAYS" maxHeight="Infinity" minHeight="0"
+                       style="-fx-background-color: #f8fafc; -fx-border-color: transparent;
+                              -fx-table-cell-border-color: transparent; -fx-font-size: 13px;">
+                <columns>
+                    <TableColumn fx:id="colItemProduto"     text="Produto"        prefWidth="200"/>
+                    <TableColumn fx:id="colItemUnidade"     text="Un."            prefWidth="60"/>
+                    <TableColumn fx:id="colItemQtdRecebida" text="Qtd Recebida"   prefWidth="115"/>
+                    <TableColumn fx:id="colItemAtendir"     text="Ação"           prefWidth="140"/>
+                </columns>
+                <placeholder>
+                    <Label text="Nenhum item encontrado."
+                           style="-fx-text-fill: #94a3b8;"/>
+                </placeholder>
+            </TableView>
+
+            <!-- Rodapé -->
+            <HBox alignment="CENTER_RIGHT"
+                  style="-fx-padding: 16 20;
+                         -fx-border-color: #f1f5f9 transparent transparent transparent;
+                         -fx-border-width: 1;">
+                <Button text="Fechar" onAction="#fecharAtendimento"
+                        style="-fx-background-color: #f1f5f9; -fx-text-fill: #475569;
+                               -fx-font-size: 13px; -fx-font-weight: bold;
+                               -fx-background-radius: 8; -fx-padding: 10 24;
+                               -fx-cursor: hand; -fx-border-color: transparent;"/>
+            </HBox>
+        </VBox>
+    </StackPane>
+
+</StackPane>
