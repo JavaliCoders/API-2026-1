@@ -26,6 +26,7 @@ public class indexController implements Initializable {
     @FXML private HBox menuEstoque;
     @FXML private HBox menuFornecedores;
     @FXML private HBox menuPedidos;
+    @FXML private HBox menuCompras;
     @FXML private HBox menuAprovacaoCotacao;
     @FXML private HBox menuUsuarios;
 
@@ -33,6 +34,7 @@ public class indexController implements Initializable {
     @FXML private Label textoEstoque;
     @FXML private Label textoFornecedores;
     @FXML private Label textoPedidos;
+    @FXML private Label textoCompras;
     @FXML private Label textoAprovacaoCotacao;
     @FXML private Label textoSair;
     @FXML private Label labelSistema;
@@ -41,6 +43,7 @@ public class indexController implements Initializable {
     // Ícones dos botões
     @FXML private Label iconEstoque;
     @FXML private Label iconPedidos;
+    @FXML private Label iconCompras;
     @FXML private Label iconAprovacaoCotacao;
     @FXML private Label iconFornecedores;
     @FXML private Label iconSair;
@@ -92,6 +95,8 @@ public class indexController implements Initializable {
         if (!PermissaoUtil.temPermissao("FINANCEIRO")) {
             menuFornecedores.setVisible(false);
             menuFornecedores.setManaged(false);
+            menuCompras.setVisible(false);
+            menuCompras.setManaged(false);
         }
 
 
@@ -114,6 +119,7 @@ public class indexController implements Initializable {
     private void ocultarTextos() {
         // Oculta todos os textos
         Label[] textos = {labelSistema, textoEstoque, textoFornecedores,
+                textoPedidos, textoCompras, textoSair, textoUsuarios};
                 textoPedidos, textoAprovacaoCotacao, textoSair, textoUsuarios};
         for (Label l : textos) {
             l.setVisible(false);
@@ -124,6 +130,7 @@ public class indexController implements Initializable {
         hboxTopo.setAlignment(javafx.geometry.Pos.CENTER);
 
         // Ajusta menus: centraliza ícone, zera spacing, reduz padding
+        HBox[] menus = {menuEstoque, menuFornecedores, menuPedidos, menuCompras, menuUsuarios};
         HBox[] menus = {menuEstoque, menuFornecedores, menuPedidos, menuAprovacaoCotacao, menuUsuarios};
         for (HBox m : menus) {
             m.setAlignment(javafx.geometry.Pos.CENTER);
@@ -144,6 +151,7 @@ public class indexController implements Initializable {
     private void exibirTextos() {
         // Reexibe todos os textos
         Label[] textos = {labelSistema, textoEstoque, textoFornecedores,
+                textoPedidos, textoCompras, textoSair,textoUsuarios};
                 textoPedidos, textoAprovacaoCotacao, textoSair,textoUsuarios};
         for (Label l : textos) {
             l.setVisible(true);
@@ -154,6 +162,7 @@ public class indexController implements Initializable {
         hboxTopo.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
 
         // Restaura menus
+        HBox[] menus = {menuEstoque, menuFornecedores, menuPedidos, menuCompras, menuUsuarios};
         HBox[] menus = {menuEstoque, menuFornecedores, menuPedidos, menuAprovacaoCotacao, menuUsuarios};
         for (HBox m : menus) {
             m.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
@@ -201,6 +210,10 @@ public class indexController implements Initializable {
             ((cadastroPedidoController) controller).setAreaPrincipal(areaPrincipal);
             }else if (controller instanceof editarPedidoController) {
             ((editarPedidoController) controller).setAreaPrincipal(areaPrincipal);
+            }else if (controller instanceof compraController) {
+            ((compraController) controller).setAreaPrincipal(areaPrincipal);
+            }else if (controller instanceof cadastroCompraController) {
+            ((cadastroCompraController) controller).setAreaPrincipal(areaPrincipal);
             }
 
         AnchorPane.setTopAnchor(tela, 0.0);
@@ -211,6 +224,7 @@ public class indexController implements Initializable {
         areaPrincipal.getChildren().setAll(tela);
         labelPagina.setText(subtitulo);
         btnAcao.setText(textoBotao);
+            if (fxmlPath.contains("estoque.fxml")) {
             if (fxmlPath.contains("aprovacaoCotacao.fxml")) {
                 btnAcao.setVisible(false);
                 btnAcao.setManaged(false);
@@ -258,6 +272,9 @@ public class indexController implements Initializable {
     }
 
     @FXML
+    private void onComprasClicked() {
+        ativarMenu(menuCompras);
+        carregarTela("/view/compra.fxml", "Registre compras realizadas", "+ Nova Compra");
     private void onAprovacaoCotacaoClicked() {
         ativarMenu(menuAprovacaoCotacao);
         carregarTela("/view/aprovacaoCotacao.fxml", "Aprovação de cotações pendentes", "");
@@ -288,6 +305,8 @@ private void onBtnAcao() {
         carregarTela("/view/cadastroUsuario.fxml", "Cadastro de Usuário", "+ Novo Usuário");
     } else if (btnAcao.getText().equals("+ Novo Pedido")) {
         carregarTela("/view/cadastroPedido.fxml", "Novo Pedido", "+ Novo Pedido");
+    } else if (btnAcao.getText().equals("+ Nova Compra")) {
+        carregarTela("/view/cadastroCompra.fxml", "Registrar Compra", "+ Nova Compra");
     } else {
         carregarTela("/view/cadastroProduto.fxml", "Cadastro de Produto", "+ Novo Produto");
     }
@@ -296,6 +315,7 @@ private void onBtnAcao() {
     // ── Utilitários ───────────────────────────────────────────
 
     private void ativarMenu(HBox menuAtivo) {
+        HBox[] menus = {menuEstoque, menuFornecedores, menuPedidos, menuCompras, menuUsuarios};
         HBox[] menus = {menuEstoque, menuFornecedores, menuPedidos, menuAprovacaoCotacao, menuUsuarios};
         for (HBox m : menus) {
             m.setStyle(sidebarExpandida ? MENU_INATIVO : MENU_INATIVO_MINI);
@@ -304,6 +324,7 @@ private void onBtnAcao() {
     }
 
     private void configurarHover() {
+        HBox[] menus = {menuFornecedores, menuPedidos, menuCompras, menuEstoque, menuUsuarios};
         HBox[] menus = {menuFornecedores, menuPedidos, menuAprovacaoCotacao, menuEstoque, menuUsuarios};
         for (HBox menu : menus) {
             menu.setOnMouseEntered(e -> {
