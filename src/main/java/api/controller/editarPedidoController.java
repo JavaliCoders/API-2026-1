@@ -4,7 +4,10 @@ import api.DAO.centroCustoDAO;
 import api.DAO.pedidoDAO;
 import api.DAO.produtoDAO;
 import api.DAO.SetorDAO;
+import api.model.Pedido;
 import api.model.*;
+import api.service.HistoricoService;
+import api.service.NotificacaoService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -17,9 +20,11 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
@@ -330,6 +335,24 @@ public class editarPedidoController implements Initializable {
                 pedidoEdicao.getIdPedido(), itensPedido);
 
         if (itensOk) {
+
+            HistoricoService.registrar(
+                    "Pedido",
+                    "Alteração",
+                    pedidoEdicao.getIdPedido(),
+                    "Pedido " + fieldNumPedido.getText() +
+                            " alterado por " + SessaoUsuario.getInstancia().getNomeUsuarioLogado() +
+                            " com total de R$ " + labelTotal.getText()
+            );
+
+            NotificacaoService.notificarPedidoAlterado(
+                    pedidoEdicao.getIdPedido(),
+                    fieldNumPedido.getText(),
+                    total,
+                    SessaoUsuario.getInstancia().getNomeUsuarioLogado(),
+                    fieldData.getText()
+            );
+
             Alert alerta = new Alert(Alert.AlertType.INFORMATION);
             alerta.setTitle("Sucesso");
             alerta.setHeaderText(null);

@@ -5,6 +5,8 @@ import api.DAO.pedidoDAO;
 import api.DAO.produtoDAO;
 import api.DAO.SetorDAO;
 import api.model.*;
+import api.service.HistoricoService;
+import api.service.NotificacaoService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -354,6 +356,23 @@ public class cadastroPedidoController implements Initializable {
         boolean itensOk = pedidoDAO.inserirItens(idPedido, itensPedido);
 
         if (itensOk) {
+
+            HistoricoService.registrar(
+                    "Pedido",
+                    "Cadastro",
+                    idPedido,
+                    "Pedido " + fieldNumPedido.getText() +
+                            " criado por " + SessaoUsuario.getInstancia().getNomeUsuarioLogado() +
+                            " com total de R$ " + labelTotal.getText()
+            );
+            NotificacaoService.notificarNovoPedido(
+                    idPedido,
+                    fieldNumPedido.getText(),
+                    total,
+                    SessaoUsuario.getInstancia().getNomeUsuarioLogado(),
+                    fieldData.getText()
+            );
+
             Alert alerta = new Alert(Alert.AlertType.INFORMATION);
             alerta.setTitle("Sucesso");
             alerta.setHeaderText(null);

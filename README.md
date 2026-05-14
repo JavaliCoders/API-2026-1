@@ -66,6 +66,7 @@ A plataforma desenvolvida pela equipe JavaliCoders centraliza todo o ciclo de co
 | 23   | Média | Como operador de estoque, quero registrar manualmente a saída de um produto do estoque, para manter o controle correto do saldo de estoque. | 2            | 3 | ⏳ |
 | 24   | Alta | Como funcionário, quero visualizar o histórico de movimentações do estoque, para acompanhar entradas, saídas e ajustes realizados. | 5            | 3 | ✅ |
 | 25   | Alta | Como diretor/administrador, quero visualizar um dashboard visual com indicadores, para acompanhar o desempenho das compras e do funcionamento dos processos. | 8            | 3 | ⏳ |
+| 26   | Média | Como funcionário, quero visualizar o histórico de ações do sistema, para acompanhar o processo de compras e ações realizadas por cada usuário. | 8       | 3 | ⏳ |
 
 ---
 

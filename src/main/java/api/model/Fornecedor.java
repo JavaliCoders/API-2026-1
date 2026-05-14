@@ -1,46 +1,55 @@
 package api.model;
 
 import javafx.beans.property.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 public class Fornecedor {
 
     private final IntegerProperty idFornecedor;
     private final StringProperty  nome;
     private final StringProperty  cnpj;
-    private final StringProperty  tipoPagamento;
     private final DoubleProperty  pedidoMinimo;
     private final StringProperty  status;
+    private ObservableList<FormaPagamento> formasPagamento =
+            FXCollections.observableArrayList();
 
-    // Construtor com ID (busca do banco)
     public Fornecedor(int idFornecedor, String nome, String cnpj,
-                      String tipoPagamento, double pedidoMinimo, String status) {
-        this.idFornecedor  = new SimpleIntegerProperty(idFornecedor);
-        this.nome          = new SimpleStringProperty(nome);
-        this.cnpj          = new SimpleStringProperty(cnpj);
-        this.tipoPagamento = new SimpleStringProperty(tipoPagamento);
-        this.pedidoMinimo  = new SimpleDoubleProperty(pedidoMinimo);
-        this.status        = new SimpleStringProperty(status);
-    }
-
-    // Construtor sem ID (novo cadastro)
-    public Fornecedor(String nome, String cnpj, String tipoPagamento,
                       double pedidoMinimo, String status) {
-        this(0, nome, cnpj, tipoPagamento, pedidoMinimo, status);
+        this.idFornecedor = new SimpleIntegerProperty(idFornecedor);
+        this.nome         = new SimpleStringProperty(nome);
+        this.cnpj         = new SimpleStringProperty(cnpj);
+        this.pedidoMinimo = new SimpleDoubleProperty(pedidoMinimo);
+        this.status       = new SimpleStringProperty(status);
     }
 
-    // Getters
-    public int    getIdFornecedor()  { return idFornecedor.get(); }
-    public String getNome()          { return nome.get(); }
-    public String getCnpj()          { return cnpj.get(); }
-    public String getTipoPagamento() { return tipoPagamento.get(); }
-    public double getPedidoMinimo()  { return pedidoMinimo.get(); }
-    public String getStatus()        { return status.get(); }
+    public Fornecedor(String nome, String cnpj, double pedidoMinimo, String status) {
+        this(0, nome, cnpj, pedidoMinimo, status);
+    }
 
-    // Properties
-    public IntegerProperty idFornecedorProperty()  { return idFornecedor; }
-    public StringProperty  nomeProperty()          { return nome; }
-    public StringProperty  cnpjProperty()          { return cnpj; }
-    public StringProperty  tipoPagamentoProperty() { return tipoPagamento; }
-    public DoubleProperty  pedidoMinimoProperty()  { return pedidoMinimo; }
-    public StringProperty  statusProperty()        { return status; }
+    public int    getIdFornecedor() { return idFornecedor.get(); }
+    public String getNome()         { return nome.get(); }
+    public String getCnpj()         { return cnpj.get(); }
+    public double getPedidoMinimo() { return pedidoMinimo.get(); }
+    public String getStatus()       { return status.get(); }
+
+    public ObservableList<FormaPagamento> getFormasPagamento() { return formasPagamento; }
+    public void setFormasPagamento(ObservableList<FormaPagamento> formas) {
+        this.formasPagamento = formas;
+    }
+
+    // Retorna string formatada para exibir na tabela/detalhes
+    public String getFormasPagamentoTexto() {
+        if (formasPagamento == null || formasPagamento.isEmpty()) return "-";
+        return formasPagamento.stream()
+                .map(FormaPagamento::getForma)
+                .reduce((a, b) -> a + ", " + b)
+                .orElse("-");
+    }
+
+    public IntegerProperty idFornecedorProperty() { return idFornecedor; }
+    public StringProperty  nomeProperty()         { return nome; }
+    public StringProperty  cnpjProperty()         { return cnpj; }
+    public DoubleProperty  pedidoMinimoProperty() { return pedidoMinimo; }
+    public StringProperty  statusProperty()       { return status; }
 }

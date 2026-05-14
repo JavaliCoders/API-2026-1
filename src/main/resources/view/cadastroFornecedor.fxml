@@ -29,7 +29,7 @@
                          -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 10, 0, 0, 2);
                          -fx-padding: 24;">
 
-                <!-- Linha 1: Nome -->
+                <!-- Nome -->
                 <VBox spacing="6">
                     <Label text="Nome *"
                            style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
@@ -41,7 +41,7 @@
                            style="-fx-text-fill: #ef4444; -fx-font-size: 11px;"/>
                 </VBox>
 
-                <!-- Linha 2: CNPJ -->
+                <!-- CNPJ -->
                 <VBox spacing="6">
                     <Label text="CNPJ *"
                            style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
@@ -53,20 +53,20 @@
                            style="-fx-text-fill: #ef4444; -fx-font-size: 11px;"/>
                 </VBox>
 
-                <!-- Linha 3: Tipo Pagamento + Status -->
-                <HBox spacing="16">
-                    <VBox spacing="6" HBox.hgrow="ALWAYS">
-                        <Label text="Tipo de Pagamento *"
-                               style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
-                        <ComboBox fx:id="fieldTipoPagamento" promptText="Selecione"
-                                  maxWidth="Infinity"
-                                  style="-fx-background-color: #f8fafc; -fx-border-color: #cbd5e1;
-                                         -fx-border-radius: 8; -fx-background-radius: 8;
-                                         -fx-font-size: 13px;"/>
-                        <Label fx:id="erroTipoPagamento" text=""
-                               style="-fx-text-fill: #ef4444; -fx-font-size: 11px;"/>
-                    </VBox>
+                <!-- Formas de Pagamento -->
+                <VBox spacing="8">
+                    <Label text="Formas de Pagamento *"
+                           style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+                    <FlowPane fx:id="painelFormasPagamento" hgap="16" vgap="10"
+                              style="-fx-background-color: #f8fafc; -fx-border-color: #cbd5e1;
+                                     -fx-border-radius: 8; -fx-background-radius: 8;
+                                     -fx-padding: 12;"/>
+                    <Label fx:id="erroFormasPagamento" text=""
+                           style="-fx-text-fill: #ef4444; -fx-font-size: 11px;"/>
+                </VBox>
 
+                <!-- Status + Pedido Mínimo -->
+                <HBox spacing="16">
                     <VBox spacing="6" prefWidth="160">
                         <Label text="Status *"
                                style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
@@ -78,19 +78,18 @@
                         <Label fx:id="erroStatus" text=""
                                style="-fx-text-fill: #ef4444; -fx-font-size: 11px;"/>
                     </VBox>
-                </HBox>
 
-                <!-- Linha 4: Pedido Mínimo -->
-                <VBox spacing="6" prefWidth="200">
-                    <Label text="Pedido Mínimo (R$)"
-                           style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
-                    <TextField fx:id="fieldPedidoMinimo" promptText="Ex: 500,00"
-                               style="-fx-background-color: #f8fafc; -fx-border-color: #cbd5e1;
-                                      -fx-border-radius: 8; -fx-background-radius: 8;
-                                      -fx-padding: 10 14; -fx-font-size: 13px; -fx-text-fill: #0f172a;"/>
-                    <Label text="Campo opcional."
-                           style="-fx-text-fill: #9ca3af; -fx-font-size: 11px;"/>
-                </VBox>
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label text="Pedido Mínimo (R$)"
+                               style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+                        <TextField fx:id="fieldPedidoMinimo" promptText="Ex: 500,00"
+                                   style="-fx-background-color: #f8fafc; -fx-border-color: #cbd5e1;
+                                          -fx-border-radius: 8; -fx-background-radius: 8;
+                                          -fx-padding: 10 14; -fx-font-size: 13px; -fx-text-fill: #0f172a;"/>
+                        <Label text="Campo opcional."
+                               style="-fx-text-fill: #9ca3af; -fx-font-size: 11px;"/>
+                    </VBox>
+                </HBox>
 
                 <!-- Botões -->
                 <HBox spacing="12" alignment="CENTER_RIGHT" style="-fx-padding: 8 0 0 0;">

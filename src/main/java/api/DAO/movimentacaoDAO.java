@@ -1,159 +1,99 @@
 package api.DAO;
 
 import api.connection.ConexaoDB;
-import api.model.*;
+import api.model.Movimentacao;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.sql.*;
+import java.time.LocalDate;
 
 public class movimentacaoDAO {
 
-    // método de registrar saída do estoque para atendimento do pedido
-    public static boolean registrarSaida(int idPedido, int idProduto,
-                                         int idPedidoProduto, int quantidade,
-                                         int idUsuario) {
-        String sqlMovimentacao = """
-                INSERT INTO tb_movimentacao
-                    (id_produto, `tipo_movimentação`, quantidade,
-                     id_usuario, id_pedido, data)
-                VALUES (?, 'SAÍDA', ?, ?, ?, NOW())
-                """;
-
-        //reduz saldo do produto no estoque
-        String sqlSaldo = """
-                UPDATE tb_produto
-                SET saldo = saldo - ?
-                WHERE id_produto = ?
-                """;
-
-        //atualiza qtd_recebida do item do pedido
-        String sqlItem = """
-                UPDATE tb_pedido_produto
-                SET qtd_recebida = qtd_recebida + ?
-                WHERE id_pedido_produto = ?
-                """;
-
-        //verifica se todos os itens do pedido foram atendidos
-        String sqlVerifica = """
-                SELECT COUNT(*) AS total,
-                       SUM(CASE WHEN qtd_recebida >= qtd_aprovada THEN 1 ELSE 0 END) AS atendidos
-                FROM tb_pedido_produto
-                WHERE id_pedido = ?
-                """;
-
-        //finaliza o pedido quando todos os itens estão atendidos
-        String sqlFinaliza = """
-                UPDATE tb_pedido SET status = 'FINALIZADO'
-                WHERE id_pedido = ?
-                """;
-
-        //registra no histórico quando pedido é finalizado
-        String sqlHistorico = """
-                INSERT INTO tb_historico (entidade_tipo, acao, id_usuario, data)
-                VALUES ('Pedido', 'Saída', ?, NOW())
-                """;
-
-        try (Connection con = ConexaoDB.getConexao()) {
-            con.setAutoCommit(false);
-
-            // registra movimentação de saída
-            try (PreparedStatement ps = con.prepareStatement(sqlMovimentacao)) {
-                ps.setInt(1, idProduto);
-                ps.setInt(2, quantidade);
-                ps.setInt(3, idUsuario);
-                ps.setInt(4, idPedido);
-                ps.executeUpdate();
-            }
-
-            try (PreparedStatement ps = con.prepareStatement(sqlSaldo)) {
-                ps.setInt(1, quantidade);
-                ps.setInt(2, idProduto);
-                ps.executeUpdate();
-            }
-
-            try (PreparedStatement ps = con.prepareStatement(sqlItem)) {
-                ps.setInt(1, quantidade);
-                ps.setInt(2, idPedidoProduto);
-                ps.executeUpdate();
-            }
-
-            // verifica se todos os itens foram atendidos
-            boolean todosAtendidos = false;
-            try (PreparedStatement ps = con.prepareStatement(sqlVerifica)) {
-                ps.setInt(1, idPedido);
-                ResultSet rs = ps.executeQuery();
-                if (rs.next()) {
-                    int total     = rs.getInt("total");
-                    int atendidos = rs.getInt("atendidos");
-                    todosAtendidos = total > 0 && total == atendidos;
-                }
-            }
-
-            if (todosAtendidos) {
-                try (PreparedStatement ps = con.prepareStatement(sqlFinaliza)) {
-                    ps.setInt(1, idPedido);
-                    ps.executeUpdate();
-                }
-                //registra no histórico
-                try (PreparedStatement ps = con.prepareStatement(sqlHistorico)) {
-                    ps.setInt(1, idUsuario);
-                    ps.executeUpdate();
-                }
-            }
-
-            con.commit();
-            return true;
-
-        } catch (SQLException e) {
-            System.err.println("Erro ao registrar saída: " + e.getMessage());
-            return false;
-        }
+    // ── SELECT todas as movimentações ─────────────────────────
+    public static ObservableList<Movimentacao> listarTodas() {
+        return listar(null, null, null);
     }
 
-    // método de listar movimentações de um pedido
-    public static ObservableList<Movimentacao> listarPorPedido(int idPedido) {
+    // ── SELECT com filtros ────────────────────────────────────
+    public static ObservableList<Movimentacao> listar(LocalDate dataInicio,
+                                                      LocalDate dataFim,
+                                                      String tipo) {
         ObservableList<Movimentacao> lista = FXCollections.observableArrayList();
-        String sql = """
-                SELECT m.*, p.produto, u.nome AS nome_usuario
-                FROM tb_movimentacao m
-                JOIN tb_produto  p ON m.id_produto  = p.id_produto
-                JOIN tb_usuario  u ON m.id_usuario  = u.id_usuario
-                WHERE m.id_pedido = ?
-                ORDER BY m.data ASC
-                """;
+
+        StringBuilder sql = new StringBuilder("""
+                SELECT mv.id_movimentacao,
+                       pr.produto         AS nome_produto,
+                       mv.tipo_movimentação AS tipo,
+                       mv.quantidade,
+                       u.nome             AS nome_usuario,
+                       p.num_pedido,
+                       nf.numero_nota,
+                       mv.data,
+                       mv.observacao
+                FROM tb_movimentacao mv
+                JOIN tb_produto pr ON pr.id_produto = mv.id_produto
+                JOIN tb_usuario  u  ON u.id_usuario  = mv.id_usuario
+                LEFT JOIN tb_pedido  p  ON p.id_pedido   = mv.id_pedido
+                LEFT JOIN tb_notasfiscal nf ON nf.id_nota = mv.id_nota
+                WHERE 1=1
+                """);
+
+        if (dataInicio != null) sql.append(" AND mv.data >= ?");
+        if (dataFim    != null) sql.append(" AND mv.data <= ?");
+        if (tipo != null && !tipo.isBlank() && !tipo.equals("Todos"))
+            sql.append(" AND mv.tipo_movimentação = ?");
+
+        sql.append(" ORDER BY mv.data DESC");
 
         try (Connection con = ConexaoDB.getConexao();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+             PreparedStatement ps = con.prepareStatement(sql.toString())) {
+            int idx = 1;
+            if (dataInicio != null) ps.setTimestamp(idx++, Timestamp.valueOf(dataInicio.atStartOfDay()));
+            if (dataFim    != null) ps.setTimestamp(idx++, Timestamp.valueOf(dataFim.atTime(23, 59, 59)));
+            if (tipo != null && !tipo.isBlank() && !tipo.equals("Todos"))
+                ps.setString(idx, tipo);
 
-            ps.setInt(1, idPedido);
             ResultSet rs = ps.executeQuery();
-
             while (rs.next()) {
-                Produto prod = new Produto(
-                        rs.getInt("id_produto"),
-                        rs.getString("produto"),
-                        "", "", 0, 0, "ATIVO", 0
-                );
-                Usuario usuario = new Usuario(
-                        rs.getInt("id_usuario"),
-                        rs.getString("nome_usuario"),
-                        "", "", "", "ATIVO", new Perfil()
-                );
                 lista.add(new Movimentacao(
                         rs.getInt("id_movimentacao"),
-                        prod,
-                        rs.getString("tipo_movimentação"),
+                        rs.getString("nome_produto"),
+                        rs.getString("tipo"),
                         rs.getInt("quantidade"),
-                        usuario,
+                        rs.getString("nome_usuario"),
+                        rs.getString("num_pedido"),
+                        rs.getString("numero_nota"),
                         rs.getTimestamp("data").toLocalDateTime(),
                         rs.getString("observacao")
                 ));
             }
-
         } catch (SQLException e) {
             System.err.println("Erro ao listar movimentações: " + e.getMessage());
         }
         return lista;
+    }
+
+    // ── INSERT movimentação manual de saída ───────────────────
+    public static boolean inserirSaida(int idProduto, int quantidade,
+                                       int idUsuario, int idPedido, String observacao) {
+        String sql = """
+                INSERT INTO tb_movimentacao
+                    (id_produto, tipo_movimentação, quantidade, id_usuario, id_pedido, data, observacao)
+                VALUES (?, 'SAÍDA', ?, ?, ?, NOW(), ?)
+                """;
+        try (Connection con = ConexaoDB.getConexao();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt   (1, idProduto);
+            ps.setInt   (2, quantidade);
+            ps.setInt   (3, idUsuario);
+            ps.setInt   (4, idPedido);
+            ps.setString(5, observacao);
+            ps.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            System.err.println("Erro ao inserir saída: " + e.getMessage());
+            return false;
+        }
     }
 }
