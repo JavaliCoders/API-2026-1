@@ -42,18 +42,17 @@ A plataforma desenvolvida pela equipe JavaliCoders centraliza todo o ciclo de co
 
 | Rank | Prioridade | User Story | Story Points | Sprint | Status |
 |------|------------|------------|--------------|--------|--------|
-| 9   | Alta       | Como diretor/administrador, quero aprovar pedidos de compra, para autorizar cotação.                                                                | 3            | 2 | ⏳ |
-| 10  | Alta       | Como diretor/administrador, quero negar pedidos, para bloquear compras desnecessárias.                                                              | 1            | 2 | ⏳ |
-| 11  | Média      | Como financeiro/diretoria, quero cancelar pedidos que não foram aprovados, para indicar que não serão realizados.                                   | 1            | 2 | ⏳ |
-| 12  | Alta       | Como financeiro, quero registrar uma cotação realizada, para um pedido de compra, para solicitar aprovação da diretoria antes de realizar a compra. | 3            | 2 | ⏳ |
-| 13  | Alta       | Como diretor ou financeiro, quero visualizar as cotações de um pedido,para analisar fornecedores e tomar decisão de aprovação ou compra.            | 2            | 2 | ⏳ |
-| 14  | Alta       | Como diretor, quero aprovar ou rejeitar uma cotação, para autorizar ou negar a compra.                                                              | 2            | 2 | ⏳ |
-| 15  | Média      | Como financeiro, quero registrar que a compra de um pedido foi realizada, para atualizar o status do pedido e iniciar o acompanhamento da entrega.  | 3            | 2 | ⏳ |
-| 16  | Média      | Como funcionário, quero filtrar os pedidos, para encontrar mais facilmente o pedido desejado.                                                       | 2            | 2 | ⏳ |
-| 17  | Alta       | Como operacional, quero registrar a nota fiscal, para iniciar o processo de recebimento.                                                            | 2            | 2 | ⏳ |
-| 18  | Alta       | Como operador de conferência, quero conferir os produtos recebidos, para validar a entrega.                                                         | 5            | 2 | ⏳ |
-| 19  | Alta       | Como operador de estoque, quero registrar a saída do material, para atender ao pedido.                                                              | 5            | 2 | ⏳ |
-| 20   | Alta | Como funcionário, quero visualizar o histórico de movimentações do estoque, para acompanhar entradas, saídas e ajustes realizados. | 5            | 3 | ⏳ |
+| 9   | Alta       | Como diretor/administrador, quero aprovar pedidos de compra, para autorizar cotação.                                                                | 3            | 2 | ✅ |
+| 10  | Alta       | Como diretor/administrador, quero negar pedidos, para bloquear compras desnecessárias.                                                              | 1            | 2 | ✅ |
+| 11  | Média      | Como financeiro/diretoria, quero cancelar pedidos que não foram aprovados, para indicar que não serão realizados.                                   | 1            | 2 | ✅ |
+| 12  | Alta       | Como financeiro, quero registrar uma cotação realizada, para um pedido de compra, para solicitar aprovação da diretoria antes de realizar a compra. | 3            | 2 | ✅ |
+| 13  | Alta       | Como diretor ou financeiro, quero visualizar as cotações de um pedido,para analisar fornecedores e tomar decisão de aprovação ou compra.            | 2            | 2 | ✅ |
+| 14  | Alta       | Como diretor, quero aprovar ou rejeitar uma cotação, para autorizar ou negar a compra.                                                              | 2            | 2 | ✅ |
+| 15  | Média      | Como financeiro, quero registrar que a compra de um pedido foi realizada, para atualizar o status do pedido e iniciar o acompanhamento da entrega.  | 3            | 2 | ✅ |
+| 16  | Média      | Como funcionário, quero filtrar os pedidos, para encontrar mais facilmente o pedido desejado.                                                       | 2            | 2 | ✅ |
+| 17  | Alta       | Como operacional, quero registrar a nota fiscal, para iniciar o processo de recebimento.                                                            | 2            | 2 | ✅ |
+| 18  | Alta       | Como operador de conferência, quero conferir os produtos recebidos, para validar a entrega.                                                         | 5            | 2 | ✅ |
+| 19  | Alta       | Como operador de estoque, quero registrar a saída do material, para atender ao pedido.                                                              | 5            | 2 | ✅ |
 
 ---
 
@@ -61,10 +60,11 @@ A plataforma desenvolvida pela equipe JavaliCoders centraliza todo o ciclo de co
 
 | Rank | Prioridade | User Story | Story Points | Sprint | Status |
 |------|------------|------------|--------------|--------|--------|
-| 21   | Média | Como funcionário, quero filtrar os produtos do estoque de acordo com a quantidade, para facilitar a visualização de produtos que precisam ser comprados. | 2            | 3 | ⏳ |
-| 22   | Média | Como diretor/financeiro, quero poder acessar pedidos, cotações e compras pesquisando por um produto, para facilitar o acesso ao histórico de compra de um produto. | 3            | 3 | ⏳ |
-| 23   | Média | Como operador de estoque, quero registrar manualmente a entrada de material no estoque, para corrigir ou ajustar o saldo quando houver reposição ou erro de contagem. | 2            | 3 | ⏳ |
-| 24   | Média | Como operador de estoque, quero registrar manualmente a saída de um produto do estoque, para manter o controle correto do saldo de estoque. | 2            | 3 | ⏳ |
+| 20   | Média | Como funcionário, quero filtrar os produtos do estoque de acordo com a quantidade, para facilitar a visualização de produtos que precisam ser comprados. | 2            | 3 | ⏳ |
+| 21   | Média | Como diretor/financeiro, quero poder acessar pedidos, cotações e compras pesquisando por um produto, para facilitar o acesso ao histórico de compra de um produto. | 3            | 3 | ⏳ |
+| 22   | Média | Como operador de estoque, quero registrar manualmente a entrada de material no estoque, para corrigir ou ajustar o saldo quando houver reposição ou erro de contagem. | 2            | 3 | ⏳ |
+| 23   | Média | Como operador de estoque, quero registrar manualmente a saída de um produto do estoque, para manter o controle correto do saldo de estoque. | 2            | 3 | ⏳ |
+| 24   | Alta | Como funcionário, quero visualizar o histórico de movimentações do estoque, para acompanhar entradas, saídas e ajustes realizados. | 5            | 3 | ✅ |
 | 25   | Alta | Como diretor/administrador, quero visualizar um dashboard visual com indicadores, para acompanhar o desempenho das compras e do funcionamento dos processos. | 8            | 3 | ⏳ |
 | 26   | Média | Como funcionário, quero visualizar o histórico de ações do sistema, para acompanhar o processo de compras e ações realizadas por cada usuário. | 8       | 3 | ⏳ |
 
@@ -95,7 +95,7 @@ A plataforma desenvolvida pela equipe JavaliCoders centraliza todo o ciclo de co
 
 #### 🏁 Sprint 1 - Fundação Operacional
 
-- **Status**: ⏳ Em andamento
+- **Status**: ✅ Concluída
 - **Período**: 16/03 a 05/04
 - **Objetivo Principal**: Estruturar autenticação, cadastros base (usuários, produtos, fornecedores) e criação de pedidos
 - **Principais Entregas**:
@@ -109,7 +109,7 @@ A plataforma desenvolvida pela equipe JavaliCoders centraliza todo o ciclo de co
 
 #### 🎯 Sprint 2 - Ciclo Completo de Logística
 
-- **Status**: ⏳ Não iniciada
+- **Status**: ✅ Concluída
 - **Período**: 13/04 a 03/05
 - **Objetivo Principal**: Implementar fluxo completo de aprovação, cotação, recebimento e entrega
 - **Principais Entregas**:
@@ -123,7 +123,7 @@ A plataforma desenvolvida pela equipe JavaliCoders centraliza todo o ciclo de co
 
 #### 🎯 Sprint 3 - Inteligência e Valor Agregado
 
-- **Status**: ⏳ Não iniciada
+- **Status**: ⏳ Em andamento
 - **Período**: 11/05 a 31/05
 - **Objetivo Principal**: Adicionar filtros avançados, movimentações manuais de estoque e dashboard gerencial
 - **Principais Entregas**:
@@ -349,10 +349,10 @@ java -jar API-2026-1.jar
       <td><a href="https://www.linkedin.com/in/caiomoreiradearaujo/"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
     </tr>
     <tr>
-      <td>Mateus Borges</td>
+      <td>João Schmidt</td>
       <td>Developer</td>
-      <td><a href="https://github.com/MGBorgess"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
-      <td><a href="https://www.linkedin.com/in/matheus-de-oliveira-b68bbb383/"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
+      <td><a href="https://github.com/Joao-Schmidt29"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
+      <td><a href="https://www.linkedin.com/in/jo%C3%A3o-gabriel-schmidt-silva-7728a0212/"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
     </tr>
   </table>
 </div>

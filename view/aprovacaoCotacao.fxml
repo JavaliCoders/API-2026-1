@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx/21"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="api.controller.AprovacaoCotacaoController"
+           style="-fx-background-color: #f0f2f5;">
+
+    <VBox spacing="24" style="-fx-padding: 24;">
+        <VBox style="-fx-background-color: white; -fx-background-radius: 12;
+                     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 10, 0, 0, 2);
+                     -fx-padding: 24;" VBox.vgrow="ALWAYS">
+
+            <VBox spacing="4" style="-fx-padding: 0 0 20 0;">
+                <Label text="Aprovação de Cotações"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+                <Label text="Analise as cotações aguardando decisão da diretoria"
+                       style="-fx-font-size: 13px; -fx-text-fill: #475569;"/>
+            </VBox>
+
+            <HBox spacing="12" style="-fx-padding: 0 0 20 0;" alignment="CENTER_LEFT">
+                <TextField fx:id="searchPedido"
+                           promptText="Buscar por pedido"
+                           prefWidth="180" onKeyReleased="#onSearch"
+                           style="-fx-background-color: #f8fafc; -fx-border-color: #cbd5e1;
+                                  -fx-border-radius: 8; -fx-background-radius: 8;
+                                  -fx-padding: 10 14; -fx-font-size: 13px;"/>
+                <TextField fx:id="searchFornecedor"
+                           promptText="Buscar por fornecedor"
+                           prefWidth="220" onKeyReleased="#onSearch"
+                           style="-fx-background-color: #f8fafc; -fx-border-color: #cbd5e1;
+                                  -fx-border-radius: 8; -fx-background-radius: 8;
+                                  -fx-padding: 10 14; -fx-font-size: 13px;"/>
+                <ComboBox fx:id="filtroStatus" promptText="Status"
+                          prefWidth="210" onAction="#onFiltroStatus"
+                          style="-fx-background-color: #f8fafc; -fx-border-color: #cbd5e1;
+                                 -fx-border-radius: 8; -fx-background-radius: 8;
+                                 -fx-font-size: 13px;"/>
+            </HBox>
+
+            <ScrollPane fitToWidth="true" fitToHeight="true" VBox.vgrow="ALWAYS"
+                        hbarPolicy="AS_NEEDED" vbarPolicy="AS_NEEDED"
+                        style="-fx-background-color: transparent; -fx-background: transparent;
+                               -fx-border-color: transparent;">
+                <TableView fx:id="tabelaCotacoes" minWidth="820"
+                           style="-fx-background-color: transparent; -fx-border-color: transparent;
+                                  -fx-table-cell-border-color: transparent; -fx-font-size: 13px;">
+                    <columns>
+                        <TableColumn fx:id="colId" text="COD" prefWidth="70"/>
+                        <TableColumn fx:id="colPedido" text="Pedido" prefWidth="120"/>
+                        <TableColumn fx:id="colFornecedor" text="Fornecedor" prefWidth="210"/>
+                        <TableColumn fx:id="colData" text="Data" prefWidth="150"/>
+                        <TableColumn fx:id="colValor" text="Valor Total" prefWidth="120"/>
+                        <TableColumn fx:id="colStatus" text="Status" prefWidth="170"/>
+                        <TableColumn fx:id="colAcoes" text="Ações" prefWidth="80"/>
+                    </columns>
+                    <placeholder>
+                        <Label text="Nenhuma cotação encontrada."
+                               style="-fx-text-fill: #475569; -fx-font-size: 13px;"/>
+                    </placeholder>
+                </TableView>
+            </ScrollPane>
+        </VBox>
+    </VBox>
+
+    <StackPane fx:id="overlayDetalhes" visible="false" managed="false"
+               style="-fx-background-color: rgba(0,0,0,0.45);">
+
+        <VBox spacing="0" maxWidth="680" maxHeight="620"
+              style="-fx-background-color: white; -fx-background-radius: 16;
+                     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 20, 0, 0, 4);">
+
+            <HBox alignment="CENTER_LEFT" spacing="12"
+                  style="-fx-background-color: #2563eb;
+                         -fx-background-radius: 16 16 0 0; -fx-padding: 20 20 16 20;">
+                <VBox HBox.hgrow="ALWAYS" spacing="4">
+                    <Label text="Análise da Cotação"
+                           style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #bfdbfe;"/>
+                    <Label fx:id="detalheTitulo"
+                           style="-fx-font-size: 17px; -fx-font-weight: bold;
+                                  -fx-text-fill: white; -fx-wrap-text: true;"/>
+                </VBox>
+                <Button text="X" onAction="#fecharDetalhes"
+                        style="-fx-background-color: rgba(255,255,255,0.2);
+                               -fx-text-fill: white; -fx-font-size: 14px;
+                               -fx-background-radius: 50; -fx-cursor: hand;
+                               -fx-border-color: transparent; -fx-padding: 6 10;"/>
+            </HBox>
+
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                        style="-fx-background-color: transparent; -fx-background: transparent;
+                               -fx-border-color: transparent;">
+                <VBox spacing="0" style="-fx-padding: 20;">
+
+                    <HBox spacing="24" style="-fx-padding: 0 0 16 0;
+                          -fx-border-color: transparent transparent #f1f5f9 transparent; -fx-border-width: 1;">
+                        <VBox spacing="3" HBox.hgrow="ALWAYS">
+                            <Label text="COTAÇÃO"
+                                   style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #94a3b8;"/>
+                            <Label fx:id="detalheCod"
+                                   style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+                        </VBox>
+                        <VBox spacing="3" HBox.hgrow="ALWAYS">
+                            <Label text="PEDIDO"
+                                   style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #94a3b8;"/>
+                            <Label fx:id="detalhePedido"
+                                   style="-fx-font-size: 14px; -fx-text-fill: #0f172a;"/>
+                        </VBox>
+                        <VBox spacing="6" HBox.hgrow="ALWAYS">
+                            <Label text="STATUS"
+                                   style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #94a3b8;"/>
+                            <Label fx:id="detalheStatus"
+                                   style="-fx-font-size: 12px; -fx-font-weight: bold;
+                                          -fx-background-radius: 6; -fx-padding: 4 12;"/>
+                        </VBox>
+                    </HBox>
+
+                    <HBox spacing="24" style="-fx-padding: 16 0;
+                          -fx-border-color: transparent transparent #f1f5f9 transparent; -fx-border-width: 1;">
+                        <VBox spacing="3" HBox.hgrow="ALWAYS">
+                            <Label text="FORNECEDOR"
+                                   style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #94a3b8;"/>
+                            <Label fx:id="detalheFornecedor"
+                                   style="-fx-font-size: 14px; -fx-text-fill: #0f172a; -fx-wrap-text: true;"/>
+                        </VBox>
+                        <VBox spacing="3" HBox.hgrow="ALWAYS">
+                            <Label text="DATA DA COTAÇÃO"
+                                   style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #94a3b8;"/>
+                            <Label fx:id="detalheData"
+                                   style="-fx-font-size: 14px; -fx-text-fill: #0f172a;"/>
+                        </VBox>
+                        <VBox spacing="3" HBox.hgrow="ALWAYS">
+                            <Label text="VALOR TOTAL"
+                                   style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #94a3b8;"/>
+                            <Label fx:id="detalheValor"
+                                   style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+                        </VBox>
+                    </HBox>
+
+                    <HBox spacing="24" style="-fx-padding: 16 0;
+                          -fx-border-color: transparent transparent #f1f5f9 transparent; -fx-border-width: 1;">
+                        <VBox spacing="3" HBox.hgrow="ALWAYS">
+                            <Label text="SOLICITANTE"
+                                   style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #94a3b8;"/>
+                            <Label fx:id="detalheSolicitante"
+                                   style="-fx-font-size: 13px; -fx-text-fill: #334155;"/>
+                        </VBox>
+                        <VBox spacing="3" HBox.hgrow="ALWAYS">
+                            <Label text="SETOR"
+                                   style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #94a3b8;"/>
+                            <Label fx:id="detalheSetor"
+                                   style="-fx-font-size: 13px; -fx-text-fill: #334155;"/>
+                        </VBox>
+                        <VBox spacing="3" HBox.hgrow="ALWAYS">
+                            <Label text="CENTRO DE CUSTO"
+                                   style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #94a3b8;"/>
+                            <Label fx:id="detalheCentro"
+                                   style="-fx-font-size: 13px; -fx-text-fill: #334155;"/>
+                        </VBox>
+                    </HBox>
+
+                    <HBox spacing="16" alignment="CENTER_LEFT" style="-fx-padding: 16 0;
+                          -fx-border-color: transparent transparent #f1f5f9 transparent; -fx-border-width: 1;">
+                        <VBox spacing="3" HBox.hgrow="ALWAYS">
+                            <Label text="ANEXO"
+                                   style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #94a3b8;"/>
+                            <Label fx:id="detalheAnexo"
+                                   style="-fx-font-size: 13px; -fx-text-fill: #334155; -fx-wrap-text: true;"/>
+                        </VBox>
+                        <Button fx:id="btnAbrirAnexo" text="Abrir anexo" onAction="#abrirAnexo"
+                                style="-fx-background-color: #f1f5f9; -fx-text-fill: #475569;
+                                       -fx-font-size: 13px; -fx-font-weight: bold;
+                                       -fx-background-radius: 8; -fx-padding: 9 16;
+                                       -fx-cursor: hand; -fx-border-color: transparent;"/>
+                    </HBox>
+
+                    <VBox spacing="6" style="-fx-padding: 16 0 0 0;">
+                        <Label text="PARECER DA DIRETORIA"
+                               style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #94a3b8;"/>
+                        <TextArea fx:id="txtParecer" prefHeight="96" wrapText="true"
+                                  promptText="Registre uma justificativa quando necessário."
+                                  style="-fx-control-inner-background: #f8fafc; -fx-border-color: #cbd5e1;
+                                         -fx-border-radius: 8; -fx-background-radius: 8; -fx-font-size: 13px;"/>
+                    </VBox>
+                </VBox>
+            </ScrollPane>
+
+            <HBox alignment="CENTER_RIGHT" spacing="10"
+                  style="-fx-padding: 16 20;
+                         -fx-border-color: #f1f5f9 transparent transparent transparent;
+                         -fx-border-width: 1;">
+                <Button text="Fechar" onAction="#fecharDetalhes"
+                        style="-fx-background-color: #f1f5f9; -fx-text-fill: #475569;
+                               -fx-font-size: 13px; -fx-font-weight: bold;
+                               -fx-background-radius: 8; -fx-padding: 10 22;
+                               -fx-cursor: hand; -fx-border-color: transparent;"/>
+                <Button fx:id="btnNegar" text="Reprovar" onAction="#onNegarCotacao"
+                        style="-fx-background-color: #fee2e2; -fx-text-fill: #dc2626;
+                               -fx-font-size: 13px; -fx-font-weight: bold;
+                               -fx-background-radius: 8; -fx-padding: 10 22;
+                               -fx-cursor: hand; -fx-border-color: transparent;"/>
+                <Button fx:id="btnAprovar" text="Aprovar" onAction="#onAprovarCotacao"
+                        style="-fx-background-color: #16a34a; -fx-text-fill: white;
+                               -fx-font-size: 13px; -fx-font-weight: bold;
+                               -fx-background-radius: 8; -fx-padding: 10 24;
+                               -fx-cursor: hand; -fx-border-color: transparent;"/>
+            </HBox>
+        </VBox>
+    </StackPane>
+</StackPane>
