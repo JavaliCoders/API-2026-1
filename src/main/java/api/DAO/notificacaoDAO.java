@@ -18,7 +18,6 @@ public class notificacaoDAO {
                     (id_usuario, titulo, mensagem, entidade_tipo, entidade_id, lida, data)
                 VALUES (?, ?, ?, ?, ?, 0, NOW())
                 """;
-
         try (Connection con = ConexaoDB.getConexao();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
@@ -27,15 +26,11 @@ public class notificacaoDAO {
             ps.setString(3, n.getMensagem());
             ps.setString(4, n.getEntidadeTipo());
 
-            if (n.getEntidadeId() != null) {
-                ps.setInt(5, n.getEntidadeId());
-            } else {
-                ps.setNull(5, Types.INTEGER);
-            }
+            if (n.getEntidadeId() != null) ps.setInt(5, n.getEntidadeId());
+            else                           ps.setNull(5, Types.INTEGER);
 
             ps.executeUpdate();
             return true;
-
         } catch (SQLException e) {
             System.err.println("Erro ao inserir notificação: " + e.getMessage());
             return false;
@@ -50,107 +45,102 @@ public class notificacaoDAO {
                 WHERE id_usuario = ?
                 ORDER BY data DESC
                 """;
-
         try (Connection con = ConexaoDB.getConexao();
              PreparedStatement ps = con.prepareStatement(sql)) {
-
             ps.setInt(1, idUsuario);
             ResultSet rs = ps.executeQuery();
-
             while (rs.next()) lista.add(mapear(rs));
-
         } catch (SQLException e) {
             System.err.println("Erro ao listar notificações: " + e.getMessage());
         }
         return lista;
     }
 
-    // ── Contar não lidas de um usuário ────────────────────────
+    // ── Contar não lidas ──────────────────────────────────────
     public static int contarNaoLidas(int idUsuario) {
         String sql = "SELECT COUNT(*) FROM tb_notificacao WHERE id_usuario = ? AND lida = 0";
-
         try (Connection con = ConexaoDB.getConexao();
              PreparedStatement ps = con.prepareStatement(sql)) {
-
             ps.setInt(1, idUsuario);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return rs.getInt(1);
-
         } catch (SQLException e) {
             System.err.println("Erro ao contar não lidas: " + e.getMessage());
         }
         return 0;
     }
 
-    // ── Marcar uma notificação como lida ──────────────────────
+    // ── Marcar uma como lida ──────────────────────────────────
     public static boolean marcarComoLida(int idNotificacao) {
         String sql = "UPDATE tb_notificacao SET lida = 1 WHERE id_notificacao = ?";
-
         try (Connection con = ConexaoDB.getConexao();
              PreparedStatement ps = con.prepareStatement(sql)) {
-
             ps.setInt(1, idNotificacao);
             ps.executeUpdate();
             return true;
-
         } catch (SQLException e) {
             System.err.println("Erro ao marcar como lida: " + e.getMessage());
             return false;
         }
     }
 
-    // ── Marcar todas como lidas para um usuário ───────────────
+    // ── Marcar todas como lidas ───────────────────────────────
     public static boolean marcarTodasComoLidas(int idUsuario) {
         String sql = "UPDATE tb_notificacao SET lida = 1 WHERE id_usuario = ? AND lida = 0";
-
         try (Connection con = ConexaoDB.getConexao();
              PreparedStatement ps = con.prepareStatement(sql)) {
-
             ps.setInt(1, idUsuario);
             ps.executeUpdate();
             return true;
-
         } catch (SQLException e) {
             System.err.println("Erro ao marcar todas como lidas: " + e.getMessage());
             return false;
         }
     }
 
-    // ── Excluir uma notificação específica ────────────────────
+    // ── Excluir uma notificação ───────────────────────────────
     public static boolean excluir(int idNotificacao) {
         String sql = "DELETE FROM tb_notificacao WHERE id_notificacao = ?";
-
         try (Connection con = ConexaoDB.getConexao();
              PreparedStatement ps = con.prepareStatement(sql)) {
-
             ps.setInt(1, idNotificacao);
             ps.executeUpdate();
             return true;
-
         } catch (SQLException e) {
             System.err.println("Erro ao excluir notificação: " + e.getMessage());
             return false;
         }
     }
 
-    // ── Excluir todas as notificações lidas de um usuário ─────
+    // ── Excluir todas as lidas de um usuário ──────────────────
     public static boolean excluirTodasLidas(int idUsuario) {
         String sql = "DELETE FROM tb_notificacao WHERE id_usuario = ? AND lida = 1";
-
         try (Connection con = ConexaoDB.getConexao();
              PreparedStatement ps = con.prepareStatement(sql)) {
-
             ps.setInt(1, idUsuario);
             ps.executeUpdate();
             return true;
-
         } catch (SQLException e) {
             System.err.println("Erro ao excluir notificações lidas: " + e.getMessage());
             return false;
         }
     }
 
-    // ── Buscar IDs dos usuários por perfil ────────────────────
+    // ── Buscar email de um usuário específico ─────────────────
+    public static String buscarEmailUsuario(int idUsuario) {
+        String sql = "SELECT email FROM tb_usuario WHERE id_usuario = ?";
+        try (Connection con = ConexaoDB.getConexao();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, idUsuario);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return rs.getString("email");
+        } catch (SQLException e) {
+            System.err.println("Erro ao buscar email do usuário: " + e.getMessage());
+        }
+        return null;
+    }
+
+    // ── Buscar usuários por perfil ────────────────────────────
     public static List<int[]> buscarDiretores() {
         return buscarUsuariosPorPerfil("DIRETOR");
     }
@@ -163,23 +153,18 @@ public class notificacaoDAO {
                 JOIN tb_perfil p ON u.id_perfil = p.id_perfil
                 WHERE p.perfil = ? AND u.status = 'ATIVO'
                 """;
-
         try (Connection con = ConexaoDB.getConexao();
              PreparedStatement ps = con.prepareStatement(sql)) {
-
             ps.setString(1, perfil);
             ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                lista.add(new int[]{rs.getInt("id_usuario")});
-            }
-
+            while (rs.next()) lista.add(new int[]{rs.getInt("id_usuario")});
         } catch (SQLException e) {
             System.err.println("Erro ao buscar usuários por perfil: " + e.getMessage());
         }
         return lista;
     }
 
-    // ── Buscar emails dos DIRETOREs ativos ────────────────────
+    // ── Buscar emails dos diretores ───────────────────────────
     public static List<String> buscarEmailsDiretores() {
         List<String> emails = new ArrayList<>();
         String sql = """
@@ -188,13 +173,10 @@ public class notificacaoDAO {
                 JOIN tb_perfil p ON u.id_perfil = p.id_perfil
                 WHERE p.perfil = 'DIRETOR' AND u.status = 'ATIVO'
                 """;
-
         try (Connection con = ConexaoDB.getConexao();
              Statement st = con.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
-
             while (rs.next()) emails.add(rs.getString("email"));
-
         } catch (SQLException e) {
             System.err.println("Erro ao buscar emails diretores: " + e.getMessage());
         }
@@ -205,7 +187,6 @@ public class notificacaoDAO {
     private static Notificacao mapear(ResultSet rs) throws SQLException {
         Integer entidadeId = rs.getInt("entidade_id");
         if (rs.wasNull()) entidadeId = null;
-
         return new Notificacao(
                 rs.getInt   ("id_notificacao"),
                 rs.getInt   ("id_usuario"),

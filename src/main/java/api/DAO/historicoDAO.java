@@ -17,9 +17,8 @@ public class historicoDAO {
                 "(entidade_tipo, acao, entidade_id, descricao, id_usuario, data) " +
                 "VALUES (?, ?, ?, ?, ?, NOW())";
 
-        try {
-            Connection conn = ConexaoDB.getConexao();
-            PreparedStatement stmt = conn.prepareStatement(sql);
+        try (Connection conn = ConexaoDB.getConexao();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, entidade);
             stmt.setString(2, acao);

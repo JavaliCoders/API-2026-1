@@ -97,4 +97,31 @@ public class fornecedorDAO {
                 FormaPagamentoDAO.listarPorFornecedor(f.getIdFornecedor()));
         return f;
     }
+
+    public static ObservableList<Fornecedor> listarAtivos() {
+        ObservableList<Fornecedor> lista = FXCollections.observableArrayList();
+
+        String sql = "SELECT * FROM tb_fornecedor WHERE status = 'ATIVO'";
+
+        try (Connection con = ConexaoDB.getConexao();
+             Statement st = con.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+
+            while (rs.next()) {
+                Fornecedor f = new Fornecedor(
+                        rs.getInt("id_fornecedor"),
+                        rs.getString("nome"),
+                        rs.getString("cnpj"),
+                        rs.getDouble("pedido_minimo"),
+                        rs.getString("status")
+                );
+                lista.add(f);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return lista;
+    }
 }

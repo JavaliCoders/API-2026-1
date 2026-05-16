@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="api.controller.registroNotaFiscalController"
+      spacing="24"
+      style="-fx-background-color:#f0f2f5; -fx-padding:24;">
+
+    <VBox style="-fx-background-color:white; -fx-background-radius:12;
+                 -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.07),10,0,0,2);
+                 -fx-padding:32;" maxWidth="760">
+
+        <!-- Título -->
+        <VBox spacing="4" style="-fx-padding:0 0 28 0;">
+            <Label text="Registrar Nota Fiscal"
+                   style="-fx-font-size:20px; -fx-font-weight:bold; -fx-text-fill:#0f172a;"/>
+            <Label text="Preencha os dados da nota fiscal recebida"
+                   style="-fx-font-size:13px; -fx-text-fill:#475569;"/>
+        </VBox>
+
+        <!-- Formulário -->
+        <VBox spacing="18">
+
+            <!-- Linha 1: Número e Compra -->
+            <HBox spacing="16">
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <Label text="Número da Nota Fiscal *"
+                           style="-fx-font-size:13px; -fx-font-weight:bold; -fx-text-fill:#374151;"/>
+                    <TextField fx:id="fieldNumeroNota" promptText="Ex: 000123456"
+                               style="-fx-background-color:#f8fafc; -fx-border-color:#cbd5e1;
+                                      -fx-border-radius:8; -fx-background-radius:8;
+                                      -fx-padding:10 14; -fx-font-size:13px; -fx-text-fill:#0f172a;"/>
+                </VBox>
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <Label text="Data de Emissão *"
+                           style="-fx-font-size:13px; -fx-font-weight:bold; -fx-text-fill:#374151;"/>
+                    <DatePicker fx:id="fieldDataEmissao"
+                                style="-fx-background-color:#f8fafc; -fx-border-color:#cbd5e1;
+                                       -fx-border-radius:8; -fx-background-radius:8; -fx-font-size:13px;"
+                                maxWidth="Infinity"/>
+                </VBox>
+            </HBox>
+
+            <!-- Linha 2: Valor e Total de Itens -->
+            <HBox spacing="16">
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <Label text="Valor Total (R$) *"
+                           style="-fx-font-size:13px; -fx-font-weight:bold; -fx-text-fill:#374151;"/>
+                    <TextField fx:id="fieldValorTotal" promptText="Ex: 1500,00"
+                               style="-fx-background-color:#f8fafc; -fx-border-color:#cbd5e1;
+                                      -fx-border-radius:8; -fx-background-radius:8;
+                                      -fx-padding:10 14; -fx-font-size:13px; -fx-text-fill:#0f172a;"/>
+                </VBox>
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <Label text="Total de Itens *"
+                           style="-fx-font-size:13px; -fx-font-weight:bold; -fx-text-fill:#374151;"/>
+                    <TextField fx:id="fieldTotalItens" promptText="Ex: 5"
+                               style="-fx-background-color:#f8fafc; -fx-border-color:#cbd5e1;
+                                      -fx-border-radius:8; -fx-background-radius:8;
+                                      -fx-padding:10 14; -fx-font-size:13px; -fx-text-fill:#0f172a;"/>
+                </VBox>
+            </HBox>
+
+            <!-- Linha 3: Compra relacionada -->
+            <VBox spacing="6">
+                <Label text="Compra Relacionada *"
+                       style="-fx-font-size:13px; -fx-font-weight:bold; -fx-text-fill:#374151;"/>
+                <ComboBox fx:id="comboCompra" promptText="Selecione a compra"
+                          maxWidth="Infinity"
+                          style="-fx-background-color:#f8fafc; -fx-border-color:#cbd5e1;
+                                 -fx-border-radius:8; -fx-background-radius:8; -fx-font-size:13px;"/>
+            </VBox>
+
+            <!-- Linha 4: Anexo -->
+            <VBox spacing="8">
+                <Label text="Documento da Nota Fiscal (PDF/Imagem)"
+                       style="-fx-font-size:13px; -fx-font-weight:bold; -fx-text-fill:#374151;"/>
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Button fx:id="btnAnexar" text="📎  Selecionar arquivo" onAction="#onAnexar"
+                            style="-fx-background-color:#f1f5f9; -fx-text-fill:#1e40af;
+                                   -fx-background-radius:8; -fx-border-color:#bfdbfe;
+                                   -fx-border-radius:8; -fx-padding:10 20; -fx-font-size:13px;
+                                   -fx-font-weight:bold; -fx-cursor:hand;"/>
+                    <Label fx:id="labelAnexo" text="Nenhum arquivo selecionado"
+                           style="-fx-font-size:13px; -fx-text-fill:#94a3b8;"/>
+                </HBox>
+            </VBox>
+
+            <!-- Erro -->
+            <Label fx:id="labelErro" wrapText="true"
+                   style="-fx-text-fill:#dc2626; -fx-font-size:13px;
+                          -fx-background-color:#fee2e2; -fx-background-radius:6; -fx-padding:10 14;"/>
+
+        </VBox>
+
+        <!-- Botões -->
+        <HBox spacing="12" alignment="CENTER_RIGHT" style="-fx-padding:28 0 0 0;">
+            <Button fx:id="btnCancelar" text="Cancelar" onAction="#onCancelar"
+                    style="-fx-background-color:#f1f5f9; -fx-text-fill:#475569;
+                           -fx-background-radius:8; -fx-border-color:#cbd5e1;
+                           -fx-border-radius:8; -fx-padding:10 24; -fx-font-size:13px;
+                           -fx-font-weight:bold; -fx-cursor:hand;"/>
+            <Button fx:id="btnSalvar" text="💾  Registrar Nota" onAction="#onSalvar"
+                    style="-fx-background-color:#2563eb; -fx-text-fill:white;
+                           -fx-background-radius:8; -fx-border-color:transparent;
+                           -fx-padding:10 24; -fx-font-size:13px;
+                           -fx-font-weight:bold; -fx-cursor:hand;"/>
+        </HBox>
+
+    </VBox>
+</VBox>

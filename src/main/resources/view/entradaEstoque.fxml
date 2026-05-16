@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="api.controller.entradaEstoqueController"
+      spacing="24"
+      style="-fx-background-color:#f0f2f5; -fx-padding:24;">
+
+    <VBox style="-fx-background-color:white; -fx-background-radius:12;
+                 -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.07),10,0,0,2);
+                 -fx-padding:32;" VBox.vgrow="ALWAYS">
+
+        <!-- Título -->
+        <VBox spacing="4" style="-fx-padding:0 0 20 0;">
+            <Label text="Entrada no Estoque"
+                   style="-fx-font-size:20px; -fx-font-weight:bold; -fx-text-fill:#0f172a;"/>
+            <Label text="Confira os itens conferidos e registre a entrada no estoque"
+                   style="-fx-font-size:13px; -fx-text-fill:#475569;"/>
+        </VBox>
+
+        <!-- Info da nota — card verde claro -->
+        <HBox spacing="32" style="-fx-background-color:#f0fdf4; -fx-background-radius:10;
+                                   -fx-border-color:#bbf7d0; -fx-border-radius:10;
+                                   -fx-padding:16 20; -fx-margin:0 0 20 0;">
+            <VBox spacing="3">
+                <Label text="NOTA FISCAL" style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#16a34a;"/>
+                <Label fx:id="labelNumNota" style="-fx-font-size:15px; -fx-font-weight:bold; -fx-text-fill:#0f172a;"/>
+            </VBox>
+            <VBox spacing="3">
+                <Label text="PEDIDO" style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#16a34a;"/>
+                <Label fx:id="labelPedido" style="-fx-font-size:14px; -fx-text-fill:#0f172a;"/>
+            </VBox>
+            <VBox spacing="3">
+                <Label text="FORNECEDOR" style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#16a34a;"/>
+                <Label fx:id="labelFornecedor" style="-fx-font-size:14px; -fx-text-fill:#0f172a;"/>
+            </VBox>
+            <VBox spacing="3">
+                <Label text="VALOR" style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#16a34a;"/>
+                <Label fx:id="labelValor" style="-fx-font-size:14px; -fx-font-weight:bold; -fx-text-fill:#0f172a;"/>
+            </VBox>
+            <VBox spacing="3">
+                <Label text="EMISSÃO" style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#16a34a;"/>
+                <Label fx:id="labelEmissao" style="-fx-font-size:14px; -fx-text-fill:#0f172a;"/>
+            </VBox>
+            <VBox spacing="3">
+                <Label text="CONFERIDO POR" style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#16a34a;"/>
+                <Label fx:id="labelConferidoPor" style="-fx-font-size:14px; -fx-text-fill:#0f172a;"/>
+            </VBox>
+        </HBox>
+
+        <!-- Instrução -->
+        <Label text="✅  Itens abaixo foram conferidos. Ao confirmar, os saldos serão atualizados e as movimentações registradas."
+               wrapText="true"
+               style="-fx-font-size:13px; -fx-text-fill:#166534;
+                      -fx-background-color:#dcfce7; -fx-background-radius:8; -fx-padding:10 14;
+                      -fx-margin:0 0 12 0;"/>
+
+        <!-- Tabela -->
+        <TableView fx:id="tabelaItens" VBox.vgrow="ALWAYS" maxHeight="Infinity" minHeight="0"
+                   style="-fx-background-color:#f8fafc; -fx-border-color:#e2e8f0;
+                          -fx-border-radius:8; -fx-background-radius:8; -fx-font-size:13px;">
+            <columns>
+                <TableColumn fx:id="colProduto"     text="Produto"        prefWidth="200"/>
+                <TableColumn fx:id="colUnidade"     text="Un."            prefWidth="55"/>
+                <TableColumn fx:id="colQtdRecebida" text="Qtd Recebida"   prefWidth="115"/>
+                <TableColumn fx:id="colQtdRejeitada" text="Qtd Rejeitada" prefWidth="115"/>
+                <TableColumn fx:id="colMotivo"      text="Motivo"         prefWidth="220"/>
+                <TableColumn fx:id="colStatus"      text="Status"         prefWidth="100"/>
+            </columns>
+            <placeholder>
+                <Label text="Nenhum item conferido encontrado." style="-fx-text-fill:#94a3b8;"/>
+            </placeholder>
+        </TableView>
+
+        <!-- Botões -->
+        <HBox spacing="12" alignment="CENTER_RIGHT" style="-fx-padding:20 0 0 0;">
+            <Button fx:id="btnCancelar" text="Voltar" onAction="#onCancelar"
+                    style="-fx-background-color:#f1f5f9; -fx-text-fill:#475569;
+                           -fx-background-radius:8; -fx-border-color:#cbd5e1;
+                           -fx-border-radius:8; -fx-padding:10 24; -fx-font-size:13px;
+                           -fx-font-weight:bold; -fx-cursor:hand;"/>
+            <Button fx:id="btnDarEntrada" text="📦  Confirmar Entrada no Estoque" onAction="#onDarEntrada"
+                    style="-fx-background-color:#16a34a; -fx-text-fill:white;
+                           -fx-background-radius:8; -fx-border-color:transparent;
+                           -fx-padding:10 24; -fx-font-size:13px;
+                           -fx-font-weight:bold; -fx-cursor:hand;"/>
+        </HBox>
+
+    </VBox>
+</VBox>
