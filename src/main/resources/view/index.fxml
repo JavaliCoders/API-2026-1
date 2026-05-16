@@ -1,171 +1,214 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
-<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
-<BorderPane xmlns="http://javafx.com/javafx/17"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="api.controller.indexController"
-            prefWidth="1100" prefHeight="650"
-            style="-fx-background-color: #f0f2f5;">
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
-    <left>
-        <VBox fx:id="sidebar" prefWidth="220" spacing="0"
-              style="-fx-background-color: #0d0d1a;">
+<BorderPane prefHeight="650" prefWidth="1100"
+	style="-fx-background-color: #f0f2f5;"
+	xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+	fx:controller="api.controller.indexController">
 
-            <HBox fx:id="hboxTopo" alignment="CENTER_LEFT" spacing="10"
-                  style="-fx-padding: 24 20 24 20;
-             -fx-border-color: transparent transparent #1e1e35 transparent;
-             -fx-border-width: 1;">
-                <Label fx:id="labelSistema" text="Gestão de compras"
-                       style="-fx-text-fill: #3b82f6; -fx-font-size: 16px; -fx-font-weight: bold;"/>
-                <Label fx:id="iconMenu" text="☰"
-                       style="-fx-text-fill: rgb(210,210,216); -fx-font-size: 18px; -fx-cursor: hand;"
-                       onMouseClicked="#toggleSidebar"/>
-            </HBox>
+	<left>
+		<VBox fx:id="sidebar" prefWidth="220" spacing="0"
+			style="-fx-background-color: #0d0d1a;">
 
-            <VBox spacing="4" style="-fx-padding: 16 12 0 12;">
+			<HBox fx:id="hboxTopo" alignment="CENTER_LEFT" spacing="10"
+				style="-fx-padding: 24 20 24 20;              -fx-border-color: transparent transparent #1e1e35 transparent;              -fx-border-width: 1;">
+				<Label fx:id="labelSistema"
+					style="-fx-text-fill: #3b82f6; -fx-font-size: 16px; -fx-font-weight: bold;"
+					text="Gestão de compras" />
+				<Label fx:id="iconMenu" onMouseClicked="#toggleSidebar"
+					style="-fx-text-fill: rgb(210,210,216); -fx-font-size: 18px; -fx-cursor: hand;"
+					text="☰" />
+			</HBox>
 
-                <HBox fx:id="menuEstoque" alignment="CENTER_LEFT" spacing="12"
-                      style="-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 12 16; -fx-cursor: hand;"
-                      onMouseClicked="#onEstoqueClicked">
-                    <Label fx:id="iconEstoque" text="📦" style="-fx-font-size: 20px; -fx-text-fill: rgb(210,210,216);"/>
-                    <Label fx:id="textoEstoque" text="Estoque"
-                           style="-fx-text-fill: rgb(210,210,216); -fx-font-size: 16px;"/>
-                </HBox>
+			<VBox spacing="4" style="-fx-padding: 16 12 0 12;">
 
-                <HBox fx:id="menuPedidos" alignment="CENTER_LEFT" spacing="12"
-                      style="-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 12 16; -fx-cursor: hand;"
-                      onMouseClicked="#onPedidosClicked">
-                    <Label fx:id="iconPedidos" text="🛒" style="-fx-font-size: 20px; -fx-text-fill: rgb(210,210,216);"/>
-                    <Label fx:id="textoPedidos" text="Pedidos"
-                           style="-fx-text-fill: rgb(210,210,216); -fx-font-size: 16px;"/>
-                </HBox>
+				<HBox fx:id="menuEstoque" alignment="CENTER_LEFT"
+					onMouseClicked="#onEstoqueClicked" spacing="12"
+					style="-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 12 16; -fx-cursor: hand;">
+					<Label fx:id="iconEstoque"
+						style="-fx-font-size: 20px; -fx-text-fill: rgb(210,210,216);"
+						text="📦" />
+					<Label fx:id="textoEstoque"
+						style="-fx-text-fill: rgb(210,210,216); -fx-font-size: 16px;"
+						text="Estoque" />
+				</HBox>
 
-                <!-- ── Menu Cotações (DIRETOR e FINANCEIRO) ── -->
-                <HBox fx:id="menuCotacoes" alignment="CENTER_LEFT" spacing="12"
-                      style="-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 12 16; -fx-cursor: hand;"
-                      onMouseClicked="#onCotacoesClicked">
-                    <Label fx:id="iconCotacoes" text="📄" style="-fx-font-size: 20px; -fx-text-fill: rgb(210,210,216);"/>
-                    <Label fx:id="textoCotacoes" text="Cotações"
-                           style="-fx-text-fill: rgb(210,210,216); -fx-font-size: 16px;"/>
-                </HBox>
+				<HBox fx:id="menuPedidos" alignment="CENTER_LEFT"
+					onMouseClicked="#onPedidosClicked" spacing="12"
+					style="-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 12 16; -fx-cursor: hand;">
+					<Label fx:id="iconPedidos"
+						style="-fx-font-size: 20px; -fx-text-fill: rgb(210,210,216);"
+						text="🛒" />
+					<Label fx:id="textoPedidos"
+						style="-fx-text-fill: rgb(210,210,216); -fx-font-size: 16px;"
+						text="Pedidos" />
+				</HBox>
 
-                <HBox fx:id="menuFornecedores" alignment="CENTER_LEFT" spacing="12"
-                      style="-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 12 16; -fx-cursor: hand;"
-                      onMouseClicked="#onFornecedoresClicked">
-                    <Label fx:id="iconFornecedores" text="🏢" style="-fx-font-size: 20px; -fx-text-fill: rgb(210,210,216); "/>
-                    <Label fx:id="textoFornecedores" text="Fornecedores"
-                           style="-fx-text-fill: rgb(210,210,216); -fx-font-size: 16px;"/>
-                </HBox>
+				<!-- ── Menu Cotações (DIRETOR e FINANCEIRO) ── -->
+				<HBox fx:id="menuCotacoes" alignment="CENTER_LEFT"
+					onMouseClicked="#onCotacoesClicked" spacing="12"
+					style="-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 12 16; -fx-cursor: hand;">
+					<Label fx:id="iconCotacoes"
+						style="-fx-font-size: 20px; -fx-text-fill: rgb(210,210,216);"
+						text="📄" />
+					<Label fx:id="textoCotacoes"
+						style="-fx-text-fill: rgb(210,210,216); -fx-font-size: 16px;"
+						text="Cotações" />
+				</HBox>
 
-                <HBox fx:id="menuUsuarios" alignment="CENTER_LEFT" spacing="12"
-                      style="-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 12 16; -fx-cursor: hand;"
-                      onMouseClicked="#onUsuariosClicked">
-                    <Label fx:id="iconUsuarios" text="👤" style="-fx-font-size: 20px; -fx-text-fill: rgb(210,210,216); "/>
-                    <Label fx:id="textoUsuarios" text="Usuários"
-                           style="-fx-text-fill: rgb(210,210,216); -fx-font-size: 16px;"/>
-                </HBox>
+				<HBox fx:id="menuFornecedores" alignment="CENTER_LEFT"
+					onMouseClicked="#onFornecedoresClicked" spacing="12"
+					style="-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 12 16; -fx-cursor: hand;">
+					<Label fx:id="iconFornecedores"
+						style="-fx-font-size: 20px; -fx-text-fill: rgb(210,210,216); "
+						text="🏢" />
+					<Label fx:id="textoFornecedores"
+						style="-fx-text-fill: rgb(210,210,216); -fx-font-size: 16px;"
+						text="Fornecedores" />
+				</HBox>
 
-                <!-- Menu Compras -->
-                <HBox fx:id="menuCompras" alignment="CENTER_LEFT" spacing="12"
-                      style="-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 12 16; -fx-cursor: hand;"
-                      onMouseClicked="#onComprasClicked">
-                    <Label fx:id="iconCompras" text="R$" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: rgb(210,210,216);"/>
-                    <Label fx:id="textoCompras" text="Compras"
-                           style="-fx-text-fill: rgb(210,210,216); -fx-font-size: 16px;"/>
-                </HBox>
+				<HBox fx:id="menuUsuarios" alignment="CENTER_LEFT"
+					onMouseClicked="#onUsuariosClicked" spacing="12"
+					style="-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 12 16; -fx-cursor: hand;">
+					<Label fx:id="iconUsuarios"
+						style="-fx-font-size: 20px; -fx-text-fill: rgb(210,210,216); "
+						text="👤" />
+					<Label fx:id="textoUsuarios"
+						style="-fx-text-fill: rgb(210,210,216); -fx-font-size: 16px;"
+						text="Usuários" />
+				</HBox>
 
-                <HBox fx:id="menuNotaFiscal" alignment="CENTER_LEFT" spacing="12"
-                       style="-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 12 16; -fx-cursor: hand;"
-                       onMouseClicked="#onNotaFiscalClicked">
-                     <Label fx:id="iconNotaFiscal" text="🧾" style="-fx-font-size: 20px; -fx-text-fill: rgb(210,210,216);"/>
-                     <Label fx:id="textoNotaFiscal" text="Nota Fiscal"
-                            style="-fx-text-fill: rgb(210,210,216); -fx-font-size: 16px;"/>
-                 </HBox>
+				<!-- Menu Compras -->
+				<HBox fx:id="menuCompras" alignment="CENTER_LEFT"
+					onMouseClicked="#onComprasClicked" spacing="12"
+					style="-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 12 16; -fx-cursor: hand;">
+					<Label fx:id="iconCompras"
+						style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: rgb(210,210,216);"
+						text="R$" />
+					<Label fx:id="textoCompras"
+						style="-fx-text-fill: rgb(210,210,216); -fx-font-size: 16px;"
+						text="Compras" />
+				</HBox>
 
-             <!-- Menu Movimentação -->
-             <HBox fx:id="menuMovimentacao" alignment="CENTER_LEFT" spacing="12"
-                   style="-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 12 16; -fx-cursor: hand;"
-                   onMouseClicked="#onMovimentacaoClicked">
-                 <Label fx:id="iconMovimentacao" text="🔄" style="-fx-font-size: 20px; -fx-text-fill: rgb(210,210,216);"/>
-                 <Label fx:id="textoMovimentacao" text="Movimentações"
-                        style="-fx-text-fill: rgb(210,210,216); -fx-font-size: 16px;"/>
-             </HBox>
+				<HBox fx:id="menuNotaFiscal" alignment="CENTER_LEFT"
+					onMouseClicked="#onNotaFiscalClicked" spacing="12"
+					style="-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 12 16; -fx-cursor: hand;">
+					<Label fx:id="iconNotaFiscal"
+						style="-fx-font-size: 20px; -fx-text-fill: rgb(210,210,216);"
+						text="🧾" />
+					<Label fx:id="textoNotaFiscal"
+						style="-fx-text-fill: rgb(210,210,216); -fx-font-size: 16px;"
+						text="Nota Fiscal" />
+				</HBox>
 
-         <!-- Menu Saída de Estoque -->
-         <HBox fx:id="menuSaida" alignment="CENTER_LEFT" spacing="12"
-               style="-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 12 16; -fx-cursor: hand;"
-               onMouseClicked="#onSaidaClicked">
-             <Label fx:id="iconSaida" text="📤" style="-fx-font-size: 20px; -fx-text-fill: rgb(210,210,216);"/>
-            <Label fx:id="textoSaida" text="Saída de Estoque"
-                   style="-fx-text-fill: rgb(210,210,216); -fx-font-size: 16px;"/>
-         </HBox>
+				<!-- Menu Movimentação -->
+				<HBox fx:id="menuMovimentacao" alignment="CENTER_LEFT"
+					onMouseClicked="#onMovimentacaoClicked" spacing="12"
+					style="-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 12 16; -fx-cursor: hand;">
+					<Label fx:id="iconMovimentacao"
+						style="-fx-font-size: 20px; -fx-text-fill: rgb(210,210,216);"
+						text="🔄" />
+					<Label fx:id="textoMovimentacao"
+						style="-fx-text-fill: rgb(210,210,216); -fx-font-size: 16px;"
+						text="Movimentações" />
+				</HBox>
+				
+				<!-- Menu Histórico Ações do Sistema -->
+				<HBox fx:id="menuHistorico" alignment="CENTER_LEFT"
+					onMouseClicked="#onHistoricoClicked" spacing="12"
+					style="-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 12 16; -fx-cursor: hand;">
+					<children>
+						<Label fx:id="iconHistorico"
+							style="-fx-font-size: 20px; -fx-text-fill: rgb(210,210,216);"
+							text="🕒" />
+						<Label fx:id="textoHistorico"
+							style="-fx-text-fill: rgb(210,210,216); -fx-font-size: 16px;"
+							text="Histórico" />
+					</children>
+				</HBox>
+
+				<!-- Menu Saída de Estoque -->
+				<HBox fx:id="menuSaida" alignment="CENTER_LEFT"
+					onMouseClicked="#onSaidaClicked" spacing="12"
+					style="-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 12 16; -fx-cursor: hand;">
+					<Label fx:id="iconSaida"
+						style="-fx-font-size: 20px; -fx-text-fill: rgb(210,210,216);"
+						text="📤" />
+					<Label fx:id="textoSaida"
+						style="-fx-text-fill: rgb(210,210,216); -fx-font-size: 16px;"
+						text="Saída de Estoque" />
+				</HBox>
 
 
-                <!-- ── Menu Notificações (com badge) ── -->
-                <HBox fx:id="menuNotificacoes" alignment="CENTER_LEFT" spacing="12"
-                      style="-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 12 16; -fx-cursor: hand;"
-                      onMouseClicked="#onNotificacoesClicked">
-                    <StackPane>
-                        <Label fx:id="iconNotificacoes" text="🔔"
-                               style="-fx-font-size: 20px; -fx-text-fill: rgb(210,210,216);"/>
-                        <Label fx:id="badgeNotificacoes" text="0"
-                               alignment="CENTER"
-                               style="-fx-background-color: #ef4444; -fx-text-fill: white;
-                                      -fx-font-size: 9px; -fx-font-weight: bold;
-                                      -fx-background-radius: 10; -fx-padding: 1 4;
-                                      -fx-min-width: 16; -fx-min-height: 16;"
-                               StackPane.alignment="TOP_RIGHT"
-                               visible="false" managed="false"/>
-                    </StackPane>
-                    <Label fx:id="textoNotificacoes" text="Notificações"
-                           style="-fx-text-fill: rgb(210,210,216); -fx-font-size: 16px;"/>
-                </HBox>
+				<!-- ── Menu Notificações (com badge) ── -->
+				<HBox fx:id="menuNotificacoes" alignment="CENTER_LEFT"
+					onMouseClicked="#onNotificacoesClicked" spacing="12"
+					style="-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 12 16; -fx-cursor: hand;">
+					<StackPane>
+						<Label fx:id="iconNotificacoes"
+							style="-fx-font-size: 20px; -fx-text-fill: rgb(210,210,216);"
+							text="🔔" />
+						<Label fx:id="badgeNotificacoes" alignment="CENTER"
+							managed="false"
+							style="-fx-background-color: #ef4444; -fx-text-fill: white;                                       -fx-font-size: 9px; -fx-font-weight: bold;                                       -fx-background-radius: 10; -fx-padding: 1 4;                                       -fx-min-width: 16; -fx-min-height: 16;"
+							text="0" visible="false" StackPane.alignment="TOP_RIGHT" />
+					</StackPane>
+					<Label fx:id="textoNotificacoes"
+						style="-fx-text-fill: rgb(210,210,216); -fx-font-size: 16px;"
+						text="Notificações" />
+				</HBox>
 
-            </VBox>
+			</VBox>
 
-            <Region VBox.vgrow="ALWAYS"/>
+			<Region VBox.vgrow="ALWAYS" />
 
-            <HBox fx:id="hboxSair" alignment="CENTER_LEFT" spacing="12"
-                  style="-fx-padding: 16 28;
-             -fx-border-color: #1e1e35 transparent transparent transparent;
-             -fx-border-width: 1; -fx-cursor: hand;"
-                  onMouseClicked="#onSairClicked">
-                <Label fx:id="iconSair" text="│➔" style="-fx-text-fill: rgb(210,210,216); -fx-font-size: 18px;"/>
-                <Label fx:id="textoSair" text="Sair" style="-fx-text-fill: rgb(210,210,216); -fx-font-size: 16px;"/>
-            </HBox>
-        </VBox>
-    </left>
+			<HBox fx:id="hboxSair" alignment="CENTER_LEFT"
+				onMouseClicked="#onSairClicked" spacing="12"
+				style="-fx-padding: 16 28;              -fx-border-color: #1e1e35 transparent transparent transparent;              -fx-border-width: 1; -fx-cursor: hand;">
+				<Label fx:id="iconSair"
+					style="-fx-text-fill: rgb(210,210,216); -fx-font-size: 18px;"
+					text="│➔" />
+				<Label fx:id="textoSair"
+					style="-fx-text-fill: rgb(210,210,216); -fx-font-size: 16px;"
+					text="Sair" />
+			</HBox>
+		</VBox>
+	</left>
 
-    <center>
-        <VBox spacing="0" style="-fx-background-color: #f0f2f5;">
+	<center>
+		<VBox spacing="0" style="-fx-background-color: #f0f2f5;">
 
-            <HBox alignment="CENTER_LEFT" spacing="12"
-                  style="-fx-background-color: white; -fx-padding: 16 28;
-                         -fx-border-color: transparent transparent #e5e7eb transparent;
-                         -fx-border-width: 1;">
-                <ImageView fitWidth="150" fitHeight="40" preserveRatio="true">
-                    <image>
-                        <Image url="@/images/logoNewe.png"/>
-                    </image>
-                </ImageView>
+			<HBox alignment="CENTER_LEFT" spacing="12"
+				style="-fx-background-color: white; -fx-padding: 16 28;                          -fx-border-color: transparent transparent #e5e7eb transparent;                          -fx-border-width: 1;">
+				<ImageView fitHeight="40" fitWidth="150"
+					preserveRatio="true">
+					<image>
+						<Image url="@/images/logoNewe.png" />
+					</image>
+				</ImageView>
 
-                <Label fx:id="labelPagina" text="Gestão de Compras"
-                       style="-fx-text-fill: #535660; -fx-font-size: 20px;"/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <Button fx:id="btnAcao" text="+ Novo"
-                        style="-fx-background-color: #2563eb; -fx-text-fill: white;
-                               -fx-font-weight: bold; -fx-background-radius: 8;
-                               -fx-padding: 10 20; -fx-cursor: hand; -fx-border-color: transparent;"
-                        onAction="#onBtnAcao"/>
-            </HBox>
+				<Label fx:id="labelPagina"
+					style="-fx-text-fill: #535660; -fx-font-size: 20px;"
+					text="Gestão de Compras" />
+				<Region HBox.hgrow="ALWAYS" />
+				<Button fx:id="btnAcao" onAction="#onBtnAcao"
+					style="-fx-background-color: #2563eb; -fx-text-fill: white;                                -fx-font-weight: bold; -fx-background-radius: 8;                                -fx-padding: 10 20; -fx-cursor: hand; -fx-border-color: transparent;"
+					text="+ Novo" />
+			</HBox>
 
-            <AnchorPane fx:id="areaPrincipal" VBox.vgrow="ALWAYS"
-                        style="-fx-background-color: #f0f2f5;"/>
-        </VBox>
-    </center>
+			<AnchorPane fx:id="areaPrincipal"
+				style="-fx-background-color: #f0f2f5;" VBox.vgrow="ALWAYS" />
+		</VBox>
+	</center>
 
 </BorderPane>

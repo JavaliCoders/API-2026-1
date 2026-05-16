@@ -65,14 +65,17 @@ public class indexController implements Initializable {
 
     @FXML private HBox menuNotaFiscal;
     @FXML private HBox menuMovimentacao;
+    @FXML private HBox menuHistorico;
     @FXML private HBox menuSaida;
 
     @FXML private Label textoNotaFiscal;
     @FXML private Label textoMovimentacao;
+    @FXML private Label textoHistorico;
     @FXML private Label textoSaida;
 
     @FXML private Label iconNotaFiscal;
     @FXML private Label iconMovimentacao;
+    @FXML private Label iconHistorico;
     @FXML private Label iconSaida;
 
     private boolean sidebarExpandida = true;
@@ -170,14 +173,14 @@ public class indexController implements Initializable {
     private HBox[] todosMenus() {
         return new HBox[]{menuEstoque, menuFornecedores, menuPedidos,
                 menuCotacoes, menuCompras, menuUsuarios, menuNotificacoes,
-                menuNotaFiscal, menuMovimentacao, menuSaida};
+                menuNotaFiscal, menuMovimentacao, menuHistorico, menuSaida};
     }
 
     private Label[] todosTextos() {
         return new Label[]{labelSistema, textoEstoque, textoFornecedores,
                 textoPedidos, textoCotacoes, textoCompras, textoSair,
                 textoUsuarios, textoNotificacoes,
-                textoNotaFiscal, textoMovimentacao, textoSaida};
+                textoNotaFiscal, textoMovimentacao, textoHistorico, textoSaida};
     }
 
     private void ocultarTextos() {
@@ -244,6 +247,8 @@ public class indexController implements Initializable {
                 c.setAreaPrincipal(areaPrincipal);
             else if (controller instanceof saidaEstoqueController c)
                 c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof historicoController c)
+                c.setAreaPrincipal(areaPrincipal);
 
             AnchorPane.setTopAnchor   (tela, 0.0);
             AnchorPane.setBottomAnchor(tela, 0.0);
@@ -260,6 +265,7 @@ public class indexController implements Initializable {
                 case "/view/cotacao.fxml",
                      "/view/compra.fxml",
                      "/view/movimentacao.fxml",
+                     "/view/historicoSistema.fxml",
                      "/view/saidaEstoque.fxml",
                      "/view/notaFiscal.fxml"   -> false;
                 default                        -> true;
@@ -313,6 +319,11 @@ public class indexController implements Initializable {
     @FXML private void onMovimentacaoClicked() {
         ativarMenu(menuMovimentacao);
         carregarTela("/view/movimentacao.fxml", "Movimentações de Estoque", "");
+    }
+    
+    @FXML private void onHistoricoClicked() {
+        ativarMenu(menuHistorico);
+        carregarTela("/view/historicoSistema.fxml", "Histórico de Ações no Sistema", "");
     }
 
     @FXML private void onSaidaClicked() {
