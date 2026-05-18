@@ -59,8 +59,9 @@ public class pedidoDAO {
         ObservableList<Pedido> lista = FXCollections.observableArrayList();
         String sql = """
                 SELECT p.*, u.nome AS nome_usuario,
-                       cc.centro_custo, s.setor,
-                       ap.nome AS nome_aprovador
+                        cc.centro_custo, cc.status AS cc_status,
+                s.setor,
+                        ap.nome AS nome_aprovador
                 FROM tb_pedido p
                 JOIN tb_usuario u       ON p.id_solicitante = u.id_usuario
                 JOIN tb_centrocusto cc  ON p.id_centrocusto = cc.id_centrocusto
@@ -69,20 +70,20 @@ public class pedidoDAO {
                 WHERE p.status != 'CANCELADO'
                 ORDER BY p.id_pedido ASC
                 """;
-        try (Connection con = ConexaoDB.getConexao();
-             Statement st = con.createStatement();
-             ResultSet rs = st.executeQuery(sql)) {
-            while (rs.next()) lista.add(mapear(rs));
-        } catch (SQLException e) {
-            System.err.println("Erro ao listar pedidos: " + e.getMessage());
+            try (Connection con = ConexaoDB.getConexao();
+                 Statement st = con.createStatement();
+                 ResultSet rs = st.executeQuery(sql)) {
+                while (rs.next()) lista.add(mapear(rs));
+            } catch (SQLException e) {
+                System.err.println("Erro ao listar pedidos: " + e.getMessage());
+            }
+            return lista;
         }
-        return lista;
-    }
 
-    // ── SELECT itens de um pedido ─────────────────────────────
-    public static ObservableList<PedidoProduto> listarItens(int idPedido) {
-        ObservableList<PedidoProduto> lista = FXCollections.observableArrayList();
-        String sql = """
+        // ── SELECT itens de um pedido ─────────────────────────────
+        public static ObservableList<PedidoProduto> listarItens(int idPedido) {
+            ObservableList<PedidoProduto> lista = FXCollections.observableArrayList();
+            String sql = """
                 SELECT pp.id_pedido_produto,
                        pp.qtd_solicitada,
                        pp.qtd_aprovada,
@@ -256,7 +257,11 @@ public class pedidoDAO {
         Usuario solicitante = new Usuario(
                 rs.getInt("id_solicitante"), rs.getString("nome_usuario"),
                 "", "", "", "ATIVO", new Perfil());
-        CentroCusto cc  = new CentroCusto(rs.getInt("id_centrocusto"), rs.getString("centro_custo"));
+        CentroCusto cc = new CentroCusto(
+                rs.getInt("id_centrocusto"),
+                rs.getString("centro_custo"),
+                rs.getString("cc_status")
+        );
         Setor setor     = new Setor(rs.getInt("id_setor"), rs.getString("setor"));
         Pedido pedido   = new Pedido(
                 rs.getInt("id_pedido"), rs.getString("num_pedido"),

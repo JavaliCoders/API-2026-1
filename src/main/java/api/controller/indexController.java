@@ -35,6 +35,8 @@ public class indexController implements Initializable {
     @FXML private HBox menuUsuarios;
     @FXML private HBox menuCompras;
     @FXML private HBox menuNotificacoes;
+    // ── NOVO ──────────────────────────────────────────────────
+    @FXML private HBox menuCentroCusto;
 
     @FXML private Label textoEstoque;
     @FXML private Label textoFornecedores;
@@ -45,6 +47,8 @@ public class indexController implements Initializable {
     @FXML private Label textoNotificacoes;
     @FXML private Label textoSair;
     @FXML private Label labelSistema;
+    // ── NOVO ──────────────────────────────────────────────────
+    @FXML private Label textoCentro;
 
     @FXML private Label iconEstoque;
     @FXML private Label iconPedidos;
@@ -55,6 +59,8 @@ public class indexController implements Initializable {
     @FXML private Label iconMenu;
     @FXML private Label iconNotificacoes;
     @FXML private Label badgeNotificacoes;
+    // ── NOVO ──────────────────────────────────────────────────
+    @FXML private Label iconCentro;
 
     @FXML private AnchorPane areaPrincipal;
     @FXML private Label      labelPagina;
@@ -124,8 +130,11 @@ public class indexController implements Initializable {
             menuSaida.setManaged(false);
         }
 
-        // ── Movimentação — todos os perfis veem ──────────────
-        // (nenhuma restrição aqui)
+        // ── Centro de Custo — DIRETOR ou FINANCEIRO ──────────  ← NOVO
+        if (!isDiretor && !isFinanceiro) {
+            menuCentroCusto.setVisible(false);
+            menuCentroCusto.setManaged(false);
+        }
 
         carregarTela("/view/estoque.fxml", "Controle e monitore seu inventário", "+ Novo Produto");
         ativarMenu(menuEstoque);
@@ -167,17 +176,19 @@ public class indexController implements Initializable {
         sidebarExpandida = !sidebarExpandida;
     }
 
+    // ── ATUALIZADO: inclui menuCentroCusto nos arrays ─────────
     private HBox[] todosMenus() {
         return new HBox[]{menuEstoque, menuFornecedores, menuPedidos,
                 menuCotacoes, menuCompras, menuUsuarios, menuNotificacoes,
-                menuNotaFiscal, menuMovimentacao, menuSaida};
+                menuNotaFiscal, menuMovimentacao, menuSaida, menuCentroCusto};
     }
 
+    // ── ATUALIZADO: inclui textoCentro nos arrays ─────────────
     private Label[] todosTextos() {
         return new Label[]{labelSistema, textoEstoque, textoFornecedores,
                 textoPedidos, textoCotacoes, textoCompras, textoSair,
                 textoUsuarios, textoNotificacoes,
-                textoNotaFiscal, textoMovimentacao, textoSaida};
+                textoNotaFiscal, textoMovimentacao, textoSaida, textoCentro};
     }
 
     private void ocultarTextos() {
@@ -243,6 +254,11 @@ public class indexController implements Initializable {
             else if (controller instanceof movimentacaoController c)
                 c.setAreaPrincipal(areaPrincipal);
             else if (controller instanceof saidaEstoqueController c)
+                c.setAreaPrincipal(areaPrincipal);
+                // ── NOVO ──────────────────────────────────────────
+            else if (controller instanceof centroCustoController c)
+                c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof cadastroCentroCustoController c)
                 c.setAreaPrincipal(areaPrincipal);
 
             AnchorPane.setTopAnchor   (tela, 0.0);
@@ -320,6 +336,12 @@ public class indexController implements Initializable {
         carregarTela("/view/saidaEstoque.fxml", "Saída de Estoque — Atendimento", "");
     }
 
+    // ── NOVO ──────────────────────────────────────────────────
+    @FXML private void onCentroCustoClicked() {
+        ativarMenu(menuCentroCusto);
+        carregarTela("/view/centroCusto.fxml", "Gerencie os centros de custo", "+ Novo Centro de Custo");
+    }
+
     @FXML private void onNotificacoesClicked() {
         ativarMenu(menuNotificacoes);
         try {
@@ -383,6 +405,9 @@ public class indexController implements Initializable {
             carregarTela("/view/cadastroPedido.fxml", "Novo Pedido", "+ Novo Pedido");
         } else if (btnAcao.getText().equals("+ Nova Nota Fiscal")) {
             carregarTela("/view/registroNotaFiscal.fxml", "Registrar Nota Fiscal", "+ Nova Nota Fiscal");
+            // ── NOVO ──────────────────────────────────────────────
+        } else if (btnAcao.getText().equals("+ Novo Centro de Custo")) {
+            carregarTela("/view/cadastroCentroCusto.fxml", "Cadastro de Centro de Custo", "+ Novo Centro de Custo");
         } else {
             carregarTela("/view/cadastroProduto.fxml", "Cadastro de Produto", "+ Novo Produto");
         }

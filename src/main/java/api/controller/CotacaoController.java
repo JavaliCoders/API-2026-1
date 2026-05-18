@@ -67,6 +67,15 @@ public class CotacaoController implements Initializable {
     @FXML private Label     detalheParecer;
     @FXML private VBox      secaoAprovacaoCotacao;
 
+    @FXML private VBox                          secaoItens;
+    @FXML private TableView<CotacaoItem>        tabelaItensCotacao;
+    @FXML private TableColumn<CotacaoItem, String> colItemProduto;
+    @FXML private TableColumn<CotacaoItem, String> colItemUnidade;
+    @FXML private TableColumn<CotacaoItem, String> colItemQtd;
+    @FXML private TableColumn<CotacaoItem, String> colItemVlrUnit;
+    @FXML private TableColumn<CotacaoItem, String> colItemVlrTotal;
+
+
     private AnchorPane areaPrincipal;
     private Pedido     pedidoFiltro;
 
@@ -79,14 +88,40 @@ public class CotacaoController implements Initializable {
     private final boolean isDiretor    = PermissaoUtil.temPermissao("DIRETOR");
     private final boolean isFinanceiro = PermissaoUtil.temPermissao("FINANCEIRO");
 
+    // ── Substituir initialize() para configurar a tabela de itens ──
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         configurarFiltros();
         configurarColunas();
+        configurarTabelaItensOverlay();
         carregarCotacoes();
 
         tabelaCotacoes.getSelectionModel().selectedItemProperty()
                 .addListener((obs, a, c) -> { if (c != null) abrirOverlay(c); });
+    }
+
+    private void configurarTabelaItensOverlay() {
+        colItemProduto .setCellValueFactory(d ->
+                new SimpleStringProperty(d.getValue().getNomeProduto()));
+        colItemUnidade .setCellValueFactory(d ->
+                new SimpleStringProperty(d.getValue().getUnidade()));
+        colItemQtd     .setCellValueFactory(d ->
+                new SimpleStringProperty(String.valueOf(d.getValue().getQtdCotada())));
+        colItemVlrUnit .setCellValueFactory(d ->
+                new SimpleStringProperty(d.getValue().getValorUnitFormatado()));
+        colItemVlrTotal.setCellValueFactory(d ->
+                new SimpleStringProperty(d.getValue().getValorTotalFormatado()));
+
+        tabelaItensCotacao.setRowFactory(tv -> new TableRow<>() {
+            @Override protected void updateItem(CotacaoItem item, boolean empty) {
+                super.updateItem(item, empty);
+                setStyle(empty || item == null
+                        ? "-fx-background-color:white;"
+                        : (getIndex() % 2 == 0
+                        ? "-fx-background-color:white;"
+                        : "-fx-background-color:#fafafa;"));
+            }
+        });
     }
 
 
@@ -296,8 +331,9 @@ public class CotacaoController implements Initializable {
             }
         });
 
-        // Coluna Ações — só DIRETOR, só AGUARDANDO
-        colAcoes.setVisible(isDiretor);
+        // Substituir o bloco da colAcoes dentro de configurarColunas():
+
+// Coluna Ações — Diretor aprova/nega; cadastrador edita (se AGUARDANDO)
         colAcoes.setCellFactory(col -> new TableCell<>() {
             private final Button btn = new Button("⚙  Ações  ▾");
             {
@@ -312,16 +348,22 @@ public class CotacaoController implements Initializable {
             }
             private void estilo(boolean hover) {
                 btn.setStyle(hover
-                        ? "-fx-background-color:#1e40af; -fx-text-fill:white; -fx-background-radius:6; -fx-border-color:transparent; -fx-padding:7 16; -fx-cursor:hand; -fx-font-size:13px;"
+                        ? "-fx-background-color:#1e40af; -fx-text-fill:white; -fx-background-radius:6; -fx-border-color:transparent; -fx-border-width:1; -fx-padding:7 16; -fx-cursor:hand; -fx-font-size:13px;"
                         : "-fx-background-color:#eff6ff; -fx-text-fill:#1e40af; -fx-background-radius:6; -fx-border-color:#bfdbfe; -fx-border-width:1; -fx-padding:7 16; -fx-cursor:hand; -fx-font-size:13px;");
             }
             @Override protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || getTableRow() == null || getTableRow().getItem() == null) { setGraphic(null); return; }
                 Cotacao c = (Cotacao) getTableRow().getItem();
-                if (isDiretor && c.getStatus().equals("AGUARDANDO_APROVACAO")) {
+                int idLogado = SessaoUsuario.getInstancia().getIdUsuarioLogado();
+                boolean podeAprovar = isDiretor && c.getStatus().equals("AGUARDANDO_APROVACAO");
+                boolean podeEditar  = c.getIdCadastrador() == idLogado
+                        && c.getStatus().equals("AGUARDANDO_APROVACAO");
+                if (podeAprovar || podeEditar) {
                     HBox box = new HBox(btn); box.setAlignment(Pos.CENTER); setGraphic(box);
-                } else { setGraphic(null); }
+                } else {
+                    setGraphic(null);
+                }
             }
         });
 
@@ -339,22 +381,54 @@ public class CotacaoController implements Initializable {
 
     private void mostrarMenuAcoes(Button btn, Cotacao cotacao) {
         ContextMenu menu = new ContextMenu();
+        int idLogado = SessaoUsuario.getInstancia().getIdUsuarioLogado();
 
-        MenuItem mAprovar = new MenuItem("✅   Aprovar cotação");
-        mAprovar.setStyle("-fx-text-fill:#166534; -fx-font-size:15px; -fx-padding:6 10;");
-        mAprovar.setOnAction(e -> onAprovarCotacao(cotacao));
+        if (isDiretor && cotacao.getStatus().equals("AGUARDANDO_APROVACAO")) {
+            MenuItem mAprovar = new MenuItem("✅   Aprovar cotação");
+            mAprovar.setStyle("-fx-text-fill:#166534; -fx-font-size:15px; -fx-padding:6 10;");
+            mAprovar.setOnAction(e -> onAprovarCotacao(cotacao));
 
-        MenuItem mNegar = new MenuItem("❌   Negar cotação");
-        mNegar.setStyle("-fx-text-fill:#991b1b; -fx-font-size:15px; -fx-padding:6 10;");
-        mNegar.setOnAction(e -> onNegarCotacao(cotacao));
+            MenuItem mNegar = new MenuItem("❌   Negar cotação");
+            mNegar.setStyle("-fx-text-fill:#991b1b; -fx-font-size:15px; -fx-padding:6 10;");
+            mNegar.setOnAction(e -> onNegarCotacao(cotacao));
+
+            menu.getItems().addAll(mAprovar, mNegar);
+        }
+
+        if (cotacao.getIdCadastrador() == idLogado
+                && cotacao.getStatus().equals("AGUARDANDO_APROVACAO")) {
+            MenuItem mEditar = new MenuItem("✏   Editar cotação");
+            mEditar.setStyle("-fx-text-fill:#1e40af; -fx-font-size:15px; -fx-padding:6 10;");
+            mEditar.setOnAction(e -> abrirEdicaoCotacao(cotacao));
+            menu.getItems().add(mEditar);
+        }
 
         MenuItem mAnexo = new MenuItem("📎   Ver anexo");
-        mAnexo.setStyle("-fx-text-fill:#1e40af; -fx-font-size:15px; -fx-padding:6 10;");
+        mAnexo.setStyle("-fx-text-fill:#374151; -fx-font-size:15px; -fx-padding:6 10;");
         mAnexo.setOnAction(e -> abrirAnexo(cotacao));
         mAnexo.setDisable(!cotacao.temAnexo());
 
-        menu.getItems().addAll(mAprovar, mNegar, new SeparatorMenuItem(), mAnexo);
+        if (!menu.getItems().isEmpty()) menu.getItems().add(new SeparatorMenuItem());
+        menu.getItems().add(mAnexo);
         menu.show(btn, javafx.geometry.Side.BOTTOM, 0, 0);
+    }
+
+    private void abrirEdicaoCotacao(Cotacao cotacao) {
+        ObservableList<Pedido> pedidos = api.DAO.pedidoDAO.listarTodos();
+        Pedido pedidoCompleto = pedidos.stream()
+                .filter(p -> p.getIdPedido() == cotacao.getIdPedido())
+                .findFirst().orElse(null);
+        if (pedidoCompleto == null) { erro("Pedido não encontrado."); return; }
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/view/cadastroCotacao.fxml"));
+            Node tela = loader.load();
+            cadastroCotacaoController ctrl = loader.getController();
+            ctrl.setAreaPrincipal(areaPrincipal);
+            ctrl.setCotacaoEdicao(cotacao, pedidoCompleto);
+            anchorar(tela);
+            areaPrincipal.getChildren().setAll(tela);
+        } catch (IOException e) { e.printStackTrace(); }
     }
 
     // ── Ações do Diretor ──────────────────────────────────────

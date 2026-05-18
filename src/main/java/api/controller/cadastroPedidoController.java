@@ -85,7 +85,7 @@ public class cadastroPedidoController implements Initializable {
 
     private void carregarCombos() {
         fieldSetor.setItems(SetorDAO.listarTodos());
-        fieldCentroCusto.setItems(centroCustoDAO.listarTodos());
+        fieldCentroCusto.setItems(centroCustoDAO.listarAtivos());
 
         // Carrega todos os produtos ATIVOS para a busca
         todosProdutos = produtoDAO.listarTodos()

@@ -142,6 +142,35 @@
                         </VBox>
                     </HBox>
 
+                    <!-- Itens da cotação — adicionar após "Linha 2: Data de registro" -->
+                    <VBox fx:id="secaoItens" spacing="8"
+                          style="-fx-padding:16 0;
+             -fx-border-color:transparent transparent #f1f5f9 transparent;
+             -fx-border-width:1;">
+                        <Label text="ITENS COTADOS"
+                               style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#94a3b8;"/>
+                        <TableView fx:id="tabelaItensCotacao" prefHeight="160"
+                                   style="-fx-background-color:#f8fafc; -fx-border-color:#e2e8f0;
+                      -fx-border-radius:8; -fx-background-radius:8;
+                      -fx-font-size:13px;">
+                            <columns>
+                                <TableColumn fx:id="colItemProduto"  text="Produto"
+                                             prefWidth="180"/>
+                                <TableColumn fx:id="colItemUnidade"  text="Un."
+                                             prefWidth="50"/>
+                                <TableColumn fx:id="colItemQtd"      text="Qtd Cotada"
+                                             prefWidth="90"/>
+                                <TableColumn fx:id="colItemVlrUnit"  text="Vlr Unitário"
+                                             prefWidth="110"/>
+                                <TableColumn fx:id="colItemVlrTotal" text="Vlr Total"
+                                             prefWidth="110"/>
+                            </columns>
+                            <placeholder>
+                                <Label text="—" style="-fx-text-fill:#94a3b8;"/>
+                            </placeholder>
+                        </TableView>
+                    </VBox>
+
                     <!-- Seção aprovação/negação -->
                     <VBox fx:id="secaoAprovacaoCotacao" spacing="0" visible="false" managed="false"
                           style="-fx-padding:16 0 0 0;">

@@ -146,6 +146,23 @@ CREATE TABLE tb_cotacao (
   FOREIGN KEY (id_anexo)      REFERENCES tb_anexo (id_anexo)
 );
 
+CREATE TABLE tb_cotacao_item (
+  id_cotacao_item  INT AUTO_INCREMENT NOT NULL,
+  id_cotacao       INT NOT NULL,
+  id_pedido_produto INT NOT NULL,
+  qtd_cotada       INT NOT NULL,
+  valor_unitario   DECIMAL(8,2) NOT NULL,
+  valor_total      DECIMAL(8,2) NOT NULL,
+  PRIMARY KEY (id_cotacao_item),
+  FOREIGN KEY (id_cotacao)        REFERENCES tb_cotacao (id_cotacao),
+  FOREIGN KEY (id_pedido_produto) REFERENCES tb_pedido_produto (id_pedido_produto)
+);
+
+-- Adicionar coluna id_cadastrador em tb_cotacao
+ALTER TABLE tb_cotacao
+  ADD COLUMN id_cadastrador INT NULL AFTER id_aprovador,
+  ADD FOREIGN KEY (id_cadastrador) REFERENCES tb_usuario (id_usuario);
+
 CREATE TABLE tb_compra (
   id_compra INT AUTO_INCREMENT NOT NULL,
   id_pedido INT NOT NULL,
