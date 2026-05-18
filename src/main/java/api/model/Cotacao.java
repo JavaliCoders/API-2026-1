@@ -21,25 +21,28 @@ public class Cotacao {
     private int           idAnexo;
     private String        nomeAnexo;
     private String        caminhoAnexo;
+    private int           idCadastrador; // ← NOVO
 
     public Cotacao(int idCotacao, String status, LocalDateTime dataCriacao,
                    LocalDateTime dataAprovacao, String parecer, Usuario aprovador,
                    double valorTotal, int idPedido, String numPedido,
                    Fornecedor fornecedor, int idAnexo,
-                   String nomeAnexo, String caminhoAnexo) {
-        this.idCotacao    = idCotacao;
-        this.status       = status;
-        this.dataCriacao  = dataCriacao;
-        this.dataAprovacao= dataAprovacao;
-        this.parecer      = parecer;
-        this.aprovador    = aprovador;
-        this.valorTotal   = valorTotal;
-        this.idPedido     = idPedido;
-        this.numPedido    = numPedido;
-        this.fornecedor   = fornecedor;
-        this.idAnexo      = idAnexo;
-        this.nomeAnexo    = nomeAnexo;
-        this.caminhoAnexo = caminhoAnexo;
+                   String nomeAnexo, String caminhoAnexo,
+                   int idCadastrador) { // ← NOVO parâmetro
+        this.idCotacao     = idCotacao;
+        this.status        = status;
+        this.dataCriacao   = dataCriacao;
+        this.dataAprovacao = dataAprovacao;
+        this.parecer       = parecer;
+        this.aprovador     = aprovador;
+        this.valorTotal    = valorTotal;
+        this.idPedido      = idPedido;
+        this.numPedido     = numPedido;
+        this.fornecedor    = fornecedor;
+        this.idAnexo       = idAnexo;
+        this.nomeAnexo     = nomeAnexo;
+        this.caminhoAnexo  = caminhoAnexo;
+        this.idCadastrador = idCadastrador; // ← NOVO
     }
 
     public int           getIdCotacao()     { return idCotacao; }
@@ -55,18 +58,19 @@ public class Cotacao {
     public int           getIdAnexo()       { return idAnexo; }
     public String        getNomeAnexo()     { return nomeAnexo; }
     public String        getCaminhoAnexo()  { return caminhoAnexo; }
+    public int           getIdCadastrador() { return idCadastrador; } // ← NOVO
 
-    public void setStatus(String s)              { this.status = s; }
-    public void setDataAprovacao(LocalDateTime d) { this.dataAprovacao = d; }
-    public void setParecer(String p)             { this.parecer = p; }
-    public void setAprovador(Usuario u)          { this.aprovador = u; }
+    public void setStatus(String s)               { this.status = s; }
+    public void setDataAprovacao(LocalDateTime d)  { this.dataAprovacao = d; }
+    public void setParecer(String p)              { this.parecer = p; }
+    public void setAprovador(Usuario u)           { this.aprovador = u; }
 
-    public String getDataCriacaoFormatada()   { return dataCriacao   != null ? dataCriacao.format(FMT)   : ""; }
-    public String getDataAprovacaoFormatada() { return dataAprovacao != null ? dataAprovacao.format(FMT) : "—"; }
-    public String getNomeFornecedor()         { return fornecedor    != null ? fornecedor.getNome()       : ""; }
-    public String getNomeAprovador()          { return aprovador     != null ? aprovador.getNome()        : "—"; }
-    public String getValorFormatado()         { return String.format("R$ %.2f", valorTotal).replace(".", ","); }
-    public boolean temAnexo()                 { return caminhoAnexo != null && !caminhoAnexo.isBlank(); }
+    public String  getDataCriacaoFormatada()   { return dataCriacao   != null ? dataCriacao.format(FMT)   : ""; }
+    public String  getDataAprovacaoFormatada() { return dataAprovacao != null ? dataAprovacao.format(FMT) : "—"; }
+    public String  getNomeFornecedor()         { return fornecedor    != null ? fornecedor.getNome()       : ""; }
+    public String  getNomeAprovador()          { return aprovador     != null ? aprovador.getNome()        : "—"; }
+    public String  getValorFormatado()         { return String.format("R$ %.2f", valorTotal).replace(".", ","); }
+    public boolean temAnexo()                  { return caminhoAnexo != null && !caminhoAnexo.isBlank(); }
 
     public String getStatusFormatado() {
         return switch (status) {

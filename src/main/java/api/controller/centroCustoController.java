@@ -1,9 +1,7 @@
 package api.controller;
 
-import api.DAO.fornecedorDAO;
+import api.DAO.centroCustoDAO;
 import api.model.CentroCusto;
-import api.model.Fornecedor;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -31,20 +29,20 @@ public class centroCustoController implements Initializable {
     @FXML private TextField        searchNome;
     @FXML private ComboBox<String> filtroStatus;
 
-    @FXML private TableView<Fornecedor>            tabelaFornecedores;
-    @FXML private TableColumn<Fornecedor, Integer> colId;
-    @FXML private TableColumn<Fornecedor, String>  colNome;
-    @FXML private TableColumn<Fornecedor, String>  colStatus;
-    @FXML private TableColumn<Fornecedor, Void>    colAcoes;
+    @FXML private TableView<CentroCusto>            tabelaCentroCusto;
+    @FXML private TableColumn<CentroCusto, Integer> colId;
+    @FXML private TableColumn<CentroCusto, String>  colNome;
+    @FXML private TableColumn<CentroCusto, String>  colStatus;
+    @FXML private TableColumn<CentroCusto, Void>    colAcoes;
 
     @FXML private StackPane overlayDetalhes;
     @FXML private Label     detalheNome;
     @FXML private Label     detalheCod;
     @FXML private Label     detalheStatus;
 
-    private AnchorPane             areaPrincipal;
+    private AnchorPane                  areaPrincipal;
     private ObservableList<CentroCusto> todosCentroCusto;
-    private FilteredList<Fornecedor>   CentroCustoFiltrados;
+    private FilteredList<CentroCusto>   centrosCustoFiltrados;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -59,16 +57,19 @@ public class centroCustoController implements Initializable {
         this.areaPrincipal = areaPrincipal;
     }
 
+    // ── Filtros ───────────────────────────────────────────────
+
     private void configurarFiltros() {
         filtroStatus.setItems(FXCollections.observableArrayList(
                 "Todos os status", "ATIVO", "INATIVO"));
         filtroStatus.setValue("Todos os status");
     }
 
+    // ── Colunas ───────────────────────────────────────────────
+
     private void configurarColunas() {
         colId.setCellValueFactory(new PropertyValueFactory<>("idCentroCusto"));
-        colNome.setCellValueFactory(new PropertyValueFactory<>("centro_custo"));
-
+        colNome.setCellValueFactory(new PropertyValueFactory<>("centroCusto"));
 
         // Badge de status
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
@@ -82,8 +83,10 @@ public class centroCustoController implements Initializable {
                 badge.setAlignment(Pos.CENTER);
                 badge.setPrefWidth(70);
                 badge.setStyle(item.equals("ATIVO")
-                        ? "-fx-background-color: #dcfce7; -fx-text-fill: #16a34a; -fx-background-radius: 6; -fx-padding: 4 10;"
-                        : "-fx-background-color: #fee2e2; -fx-text-fill: #dc2626; -fx-background-radius: 6; -fx-padding: 4 10;");
+                        ? "-fx-background-color: #dcfce7; -fx-text-fill: #16a34a;" +
+                          "-fx-background-radius: 6; -fx-padding: 4 10;"
+                        : "-fx-background-color: #fee2e2; -fx-text-fill: #dc2626;" +
+                          "-fx-background-radius: 6; -fx-padding: 4 10;");
                 setGraphic(badge);
                 setText(null);
             }
@@ -92,23 +95,22 @@ public class centroCustoController implements Initializable {
         // Botão editar
         colAcoes.setCellFactory(col -> new TableCell<>() {
             private final Button btnEditar = new Button("✏");
-
             {
                 btnEditar.setStyle(
-                        "-fx-background-color: #dbeafe; -fx-text-fill: #2563eb; " +
-                                "-fx-background-radius: 6; -fx-font-size: 14px; " +
+                        "-fx-background-color: #dbeafe; -fx-text-fill: #2563eb;" +
+                                "-fx-background-radius: 6; -fx-font-size: 14px;" +
                                 "-fx-cursor: hand; -fx-border-color: transparent; -fx-padding: 4 8;");
                 btnEditar.setOnMouseEntered(e -> btnEditar.setStyle(
-                        "-fx-background-color: #2563eb; -fx-text-fill: white; " +
-                                "-fx-background-radius: 6; -fx-font-size: 14px; " +
+                        "-fx-background-color: #2563eb; -fx-text-fill: white;" +
+                                "-fx-background-radius: 6; -fx-font-size: 14px;" +
                                 "-fx-cursor: hand; -fx-border-color: transparent; -fx-padding: 4 8;"));
                 btnEditar.setOnMouseExited(e -> btnEditar.setStyle(
-                        "-fx-background-color: #dbeafe; -fx-text-fill: #2563eb; " +
-                                "-fx-background-radius: 6; -fx-font-size: 14px; " +
+                        "-fx-background-color: #dbeafe; -fx-text-fill: #2563eb;" +
+                                "-fx-background-radius: 6; -fx-font-size: 14px;" +
                                 "-fx-cursor: hand; -fx-border-color: transparent; -fx-padding: 4 8;"));
                 btnEditar.setOnAction(e -> {
-                    Fornecedor f = getTableView().getItems().get(getIndex());
-                    abrirEdicao(f);
+                    CentroCusto cc = getTableView().getItems().get(getIndex());
+                    abrirEdicao(cc);
                 });
             }
 
@@ -123,9 +125,9 @@ public class centroCustoController implements Initializable {
         });
 
         // Zebra striping
-        tabelaFornecedores.setRowFactory(tv -> new TableRow<>() {
+        tabelaCentroCusto.setRowFactory(tv -> new TableRow<>() {
             @Override
-            protected void updateItem(Fornecedor item, boolean empty) {
+            protected void updateItem(CentroCusto item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setStyle("-fx-background-color: white;");
@@ -138,30 +140,26 @@ public class centroCustoController implements Initializable {
         });
     }
 
+    // ── Seleção → overlay ────────────────────────────────────
+
     private void configurarSelecao() {
-        tabelaFornecedores.getSelectionModel().selectedItemProperty().addListener(
+        tabelaCentroCusto.getSelectionModel().selectedItemProperty().addListener(
                 (obs, antigo, novo) -> {
                     if (novo != null) exibirDetalhes(novo);
                 });
     }
 
-    private void exibirDetalhes(Fornecedor f) {
-        detalheNome.setText(f.getNome());
-        detalheCod.setText(String.valueOf(f.getIdFornecedor()));
+    private void exibirDetalhes(CentroCusto cc) {
+        detalheNome.setText(cc.getCentroCusto());
+        detalheCod.setText(String.valueOf(cc.getIdCentroCusto()));
 
-        if (f.getStatus().equals("ATIVO")) {
-            detalheStatus.setText("ATIVO");
-            detalheStatus.setStyle(
-                    "-fx-font-size: 12px; -fx-font-weight: bold; " +
-                            "-fx-background-color: #dcfce7; -fx-text-fill: #16a34a; " +
-                            "-fx-background-radius: 6; -fx-padding: 4 12;");
-        } else {
-            detalheStatus.setText("INATIVO");
-            detalheStatus.setStyle(
-                    "-fx-font-size: 12px; -fx-font-weight: bold; " +
-                            "-fx-background-color: #fee2e2; -fx-text-fill: #dc2626; " +
-                            "-fx-background-radius: 6; -fx-padding: 4 12;");
-        }
+        boolean ativo = "ATIVO".equals(cc.getStatus());
+        detalheStatus.setText(cc.getStatus());
+        detalheStatus.setStyle(
+                "-fx-font-size: 12px; -fx-font-weight: bold;" +
+                        (ativo ? "-fx-background-color: #dcfce7; -fx-text-fill: #16a34a;"
+                                : "-fx-background-color: #fee2e2; -fx-text-fill: #dc2626;") +
+                        "-fx-background-radius: 6; -fx-padding: 4 12;");
 
         overlayDetalhes.setVisible(true);
         overlayDetalhes.setManaged(true);
@@ -171,43 +169,24 @@ public class centroCustoController implements Initializable {
     private void fecharDetalhes() {
         overlayDetalhes.setVisible(false);
         overlayDetalhes.setManaged(false);
-        tabelaFornecedores.getSelectionModel().clearSelection();
+        tabelaCentroCusto.getSelectionModel().clearSelection();
     }
 
-    private void abrirEdicao(Fornecedor fornecedor) {
-        try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/view/cadastroFornecedor.fxml"));
-            Node tela = loader.load();
-
-            cadastroFornecedorController controller = loader.getController();
-            controller.setFornecedorEdicao(fornecedor);
-            controller.setAreaPrincipal(areaPrincipal);
-
-            AnchorPane.setTopAnchor(tela, 0.0);
-            AnchorPane.setBottomAnchor(tela, 0.0);
-            AnchorPane.setLeftAnchor(tela, 0.0);
-            AnchorPane.setRightAnchor(tela, 0.0);
-
-            areaPrincipal.getChildren().setAll(tela);
-
-        } catch (IOException e) {
-            System.err.println("Erro ao abrir edição: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
+    // ── Dados ─────────────────────────────────────────────────
 
     private void carregarDados() {
-        todosCentroCusto     = fornecedorDAO.listarTodos();
-        CentroCustoFiltrados = new FilteredList<>(todosCentroCusto, f -> true);
+        todosCentroCusto      = centroCustoDAO.listarTodos();
+        centrosCustoFiltrados = new FilteredList<>(todosCentroCusto, cc -> true);
 
-        SortedList<Fornecedor> ordenados = new SortedList<>(CentroCustoFiltrados);
-        ordenados.comparatorProperty().bind(tabelaFornecedores.comparatorProperty());
+        SortedList<CentroCusto> ordenados = new SortedList<>(centrosCustoFiltrados);
+        ordenados.comparatorProperty().bind(tabelaCentroCusto.comparatorProperty());
 
         colId.setSortType(TableColumn.SortType.ASCENDING);
-        tabelaFornecedores.getSortOrder().add(colId);
-        tabelaFornecedores.setItems(ordenados);
+        tabelaCentroCusto.getSortOrder().add(colId);
+        tabelaCentroCusto.setItems(ordenados);
     }
+
+    // ── Busca ─────────────────────────────────────────────────
 
     private void configurarBusca() {
         searchCod.textProperty().addListener((obs, a, n)  -> aplicarFiltros());
@@ -220,15 +199,40 @@ public class centroCustoController implements Initializable {
         String nome   = searchNome.getText() == null ? "" : searchNome.getText().toLowerCase();
         String status = filtroStatus.getValue();
 
-        CentroCustoFiltrados.setPredicate(f -> {
-            boolean matchCod    = cod.isEmpty()  || String.valueOf(f.getIdCentroCusto()).contains(cod);
-            boolean matchNome   = nome.isEmpty() || f.getCentroCusto().toLowerCase().contains(nome);
+        centrosCustoFiltrados.setPredicate(cc -> {
+            boolean matchCod    = cod.isEmpty()  || String.valueOf(cc.getIdCentroCusto()).contains(cod);
+            boolean matchNome   = nome.isEmpty() || cc.getCentroCusto().toLowerCase().contains(nome);
             boolean matchStatus = status == null || status.equals("Todos os status")
-                    || f.getStatus().equals(status);
+                    || cc.getStatus().equals(status);
             return matchCod && matchNome && matchStatus;
         });
     }
 
     @FXML private void onSearch()       { aplicarFiltros(); }
     @FXML private void onFiltroStatus() { aplicarFiltros(); }
+
+    // ── Navegação ─────────────────────────────────────────────
+
+    private void abrirEdicao(CentroCusto centroCusto) {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/view/cadastroCentroCusto.fxml"));
+            Node tela = loader.load();
+
+            cadastroCentroCustoController controller = loader.getController();
+            controller.setCentrocustoEdicao(centroCusto);
+            controller.setAreaPrincipal(areaPrincipal);
+
+            AnchorPane.setTopAnchor   (tela, 0.0);
+            AnchorPane.setBottomAnchor(tela, 0.0);
+            AnchorPane.setLeftAnchor  (tela, 0.0);
+            AnchorPane.setRightAnchor (tela, 0.0);
+
+            areaPrincipal.getChildren().setAll(tela);
+
+        } catch (IOException e) {
+            System.err.println("Erro ao abrir edição: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 }

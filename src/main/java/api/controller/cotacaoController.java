@@ -1,6 +1,6 @@
 package api.controller;
 
-import api.DAO.cotacaoDAO;
+import api.DAO.CotacaoDAO;
 import api.model.*;
 import api.service.HistoricoService;
 import api.util.PermissaoUtil;
@@ -29,7 +29,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
-public class cotacaoController implements Initializable {
+public class CotacaoController implements Initializable {
 
     // ── Tabela ────────────────────────────────────────────────
     @FXML private TableView<Cotacao>           tabelaCotacoes;
@@ -109,7 +109,7 @@ public class cotacaoController implements Initializable {
     // ── Dados ─────────────────────────────────────────────────
 
     private void carregarCotacoes() {
-        todasCotacoes     = cotacaoDAO.listarTodas();
+        todasCotacoes     = CotacaoDAO.listarTodas();
         cotacoesFiltradas = new FilteredList<>(todasCotacoes, c -> true);
         tabelaCotacoes.setItems(cotacoesFiltradas);
         reaplicarFiltro();
@@ -297,7 +297,7 @@ public class cotacaoController implements Initializable {
         });
 
         // Coluna Ações — só DIRETOR, só AGUARDANDO
-        colAcoes.setVisible(isDiretor);
+       // colAcoes.setVisible(isDiretor);
         colAcoes.setCellFactory(col -> new TableCell<>() {
             private final Button btn = new Button("⚙  Ações  ▾");
             {
@@ -312,16 +312,22 @@ public class cotacaoController implements Initializable {
             }
             private void estilo(boolean hover) {
                 btn.setStyle(hover
-                        ? "-fx-background-color:#1e40af; -fx-text-fill:white; -fx-background-radius:6; -fx-border-color:transparent; -fx-padding:7 16; -fx-cursor:hand; -fx-font-size:13px;"
+                        ? "-fx-background-color:#1e40af; -fx-text-fill:white; -fx-background-radius:6; -fx-border-color:transparent; -fx-border-width:1; -fx-padding:7 16; -fx-cursor:hand; -fx-font-size:13px;"
                         : "-fx-background-color:#eff6ff; -fx-text-fill:#1e40af; -fx-background-radius:6; -fx-border-color:#bfdbfe; -fx-border-width:1; -fx-padding:7 16; -fx-cursor:hand; -fx-font-size:13px;");
             }
             @Override protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || getTableRow() == null || getTableRow().getItem() == null) { setGraphic(null); return; }
                 Cotacao c = (Cotacao) getTableRow().getItem();
-                if (isDiretor && c.getStatus().equals("AGUARDANDO_APROVACAO")) {
+                int idLogado = SessaoUsuario.getInstancia().getIdUsuarioLogado();
+                boolean podeAprovar = isDiretor && c.getStatus().equals("AGUARDANDO_APROVACAO");
+                boolean podeEditar  = c.getIdCadastrador() == idLogado
+                        && c.getStatus().equals("AGUARDANDO_APROVACAO");
+                if (podeAprovar || podeEditar) {
                     HBox box = new HBox(btn); box.setAlignment(Pos.CENTER); setGraphic(box);
-                } else { setGraphic(null); }
+                } else {
+                    setGraphic(null);
+                }
             }
         });
 
@@ -339,22 +345,54 @@ public class cotacaoController implements Initializable {
 
     private void mostrarMenuAcoes(Button btn, Cotacao cotacao) {
         ContextMenu menu = new ContextMenu();
+        int idLogado = SessaoUsuario.getInstancia().getIdUsuarioLogado();
 
-        MenuItem mAprovar = new MenuItem("✅   Aprovar cotação");
-        mAprovar.setStyle("-fx-text-fill:#166534; -fx-font-size:15px; -fx-padding:6 10;");
-        mAprovar.setOnAction(e -> onAprovarCotacao(cotacao));
+        if (isDiretor && cotacao.getStatus().equals("AGUARDANDO_APROVACAO")) {
+            MenuItem mAprovar = new MenuItem("✅   Aprovar cotação");
+            mAprovar.setStyle("-fx-text-fill:#166534; -fx-font-size:15px; -fx-padding:6 10;");
+            mAprovar.setOnAction(e -> onAprovarCotacao(cotacao));
 
-        MenuItem mNegar = new MenuItem("❌   Negar cotação");
-        mNegar.setStyle("-fx-text-fill:#991b1b; -fx-font-size:15px; -fx-padding:6 10;");
-        mNegar.setOnAction(e -> onNegarCotacao(cotacao));
+            MenuItem mNegar = new MenuItem("❌   Negar cotação");
+            mNegar.setStyle("-fx-text-fill:#991b1b; -fx-font-size:15px; -fx-padding:6 10;");
+            mNegar.setOnAction(e -> onNegarCotacao(cotacao));
+
+            menu.getItems().addAll(mAprovar, mNegar);
+        }
+
+        if (cotacao.getIdCadastrador() == idLogado
+                && cotacao.getStatus().equals("AGUARDANDO_APROVACAO")) {
+            MenuItem mEditar = new MenuItem("✏   Editar cotação");
+            mEditar.setStyle("-fx-text-fill:#1e40af; -fx-font-size:15px; -fx-padding:6 10;");
+            mEditar.setOnAction(e -> abrirEdicaoCotacao(cotacao));
+            menu.getItems().add(mEditar);
+        }
 
         MenuItem mAnexo = new MenuItem("📎   Ver anexo");
-        mAnexo.setStyle("-fx-text-fill:#1e40af; -fx-font-size:15px; -fx-padding:6 10;");
+        mAnexo.setStyle("-fx-text-fill:#374151; -fx-font-size:15px; -fx-padding:6 10;");
         mAnexo.setOnAction(e -> abrirAnexo(cotacao));
         mAnexo.setDisable(!cotacao.temAnexo());
 
-        menu.getItems().addAll(mAprovar, mNegar, new SeparatorMenuItem(), mAnexo);
+        if (!menu.getItems().isEmpty()) menu.getItems().add(new SeparatorMenuItem());
+        menu.getItems().add(mAnexo);
         menu.show(btn, javafx.geometry.Side.BOTTOM, 0, 0);
+    }
+
+    private void abrirEdicaoCotacao(Cotacao cotacao) {
+        ObservableList<Pedido> pedidos = api.DAO.pedidoDAO.listarTodos();
+        Pedido pedidoCompleto = pedidos.stream()
+                .filter(p -> p.getIdPedido() == cotacao.getIdPedido())
+                .findFirst().orElse(null);
+        if (pedidoCompleto == null) { erro("Pedido não encontrado."); return; }
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/view/cadastroCotacao.fxml"));
+            Node tela = loader.load();
+            cadastroCotacaoController ctrl = loader.getController();
+            ctrl.setAreaPrincipal(areaPrincipal);
+            ctrl.setCotacaoEdicao(cotacao, pedidoCompleto);
+            anchorar(tela);
+            areaPrincipal.getChildren().setAll(tela);
+        } catch (IOException e) { e.printStackTrace(); }
     }
 
     // ── Ações do Diretor ──────────────────────────────────────
@@ -368,10 +406,10 @@ public class cotacaoController implements Initializable {
                 false);
         dlg.showAndWait().ifPresent(parecer -> {
             int idAprov = SessaoUsuario.getInstancia().getIdUsuarioLogado();
-            if (cotacaoDAO.aprovar(cotacao.getIdCotacao(), idAprov, parecer)) {
+            if (CotacaoDAO.aprovar(cotacao.getIdCotacao(), idAprov, parecer)) {
 
                 // ✅ ADICIONE ISTO: marca o pedido como EM_COTACAO ao aprovar cotação
-                cotacaoDAO.marcarPedidoEmCotacao(cotacao.getIdPedido());
+                CotacaoDAO.marcarPedidoEmCotacao(cotacao.getIdPedido());
 
                 HistoricoService.registrar("Cotação", "Aprovação", cotacao.getIdCotacao(),
                         "Cotação do pedido " + cotacao.getNumPedido()
@@ -392,7 +430,7 @@ public class cotacaoController implements Initializable {
                 true);
         dlg.showAndWait().ifPresent(parecer -> {
             int idAprov = SessaoUsuario.getInstancia().getIdUsuarioLogado();
-            if (cotacaoDAO.negar(cotacao.getIdCotacao(), idAprov, parecer)) {
+            if (CotacaoDAO.negar(cotacao.getIdCotacao(), idAprov, parecer)) {
                 HistoricoService.registrar("Cotação", "Negação", cotacao.getIdCotacao(),
                         "Cotação do pedido " + cotacao.getNumPedido()
                                 + " negada por " + SessaoUsuario.getInstancia().getNomeUsuarioLogado()

@@ -256,7 +256,11 @@ public class pedidoDAO {
         Usuario solicitante = new Usuario(
                 rs.getInt("id_solicitante"), rs.getString("nome_usuario"),
                 "", "", "", "ATIVO", new Perfil());
-        CentroCusto cc  = new CentroCusto(rs.getInt("id_centrocusto"), rs.getString("centro_custo"));
+        CentroCusto cc = new CentroCusto(
+                rs.getInt("id_centrocusto"),
+                rs.getString("centro_custo"),
+                rs.getString("cc_status")
+        );
         Setor setor     = new Setor(rs.getInt("id_setor"), rs.getString("setor"));
         Pedido pedido   = new Pedido(
                 rs.getInt("id_pedido"), rs.getString("num_pedido"),

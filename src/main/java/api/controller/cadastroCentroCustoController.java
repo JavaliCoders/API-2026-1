@@ -25,7 +25,7 @@ public class cadastroCentroCustoController implements Initializable {
     @FXML private Label labelTitulo;
     @FXML private Label labelSubtitulo;
 
-    private CentroCusto centrocustoEdicao = null; // ✅ tipo correto
+    private CentroCusto centrocustoEdicao = null;
     private AnchorPane  areaPrincipal     = null;
 
     @Override
@@ -38,11 +38,11 @@ public class cadastroCentroCustoController implements Initializable {
         this.areaPrincipal = areaPrincipal;
     }
 
-    public void setCentrocustoEdicao(CentroCusto centroCusto) { // ✅ tipo correto
-        this.centrocustoEdicao = centroCusto;                   // ✅ nome consistente
+    public void setCentrocustoEdicao(CentroCusto centroCusto) {
+        this.centrocustoEdicao = centroCusto;
         labelTitulo.setText("Editar Centro de Custo");
         labelSubtitulo.setText("Altere os dados do centro de custo");
-        fieldNome.setText(centroCusto.getCentroCusto());         // ✅ getCentroCusto()
+        fieldNome.setText(centroCusto.getCentroCusto());
         fieldStatus.setValue(centroCusto.getStatus());
     }
 
@@ -66,7 +66,6 @@ public class cadastroCentroCustoController implements Initializable {
         boolean sucesso;
 
         if (centrocustoEdicao == null) {
-            // ✅ Novo cadastro usando CentroCusto e centroCustoDAO
             CentroCusto novo = new CentroCusto(
                     0,
                     fieldNome.getText().trim(),
@@ -88,7 +87,6 @@ public class cadastroCentroCustoController implements Initializable {
                     "Erro ao cadastrar. Verifique a conexão com o banco.");
 
         } else {
-            // ✅ Edição usando CentroCusto e centroCustoDAO
             CentroCusto editado = new CentroCusto(
                     centrocustoEdicao.getIdCentroCusto(),
                     fieldNome.getText().trim(),
@@ -125,10 +123,10 @@ public class cadastroCentroCustoController implements Initializable {
             centroCustoController controller = loader.getController();
             controller.setAreaPrincipal(areaPrincipal);
 
-            AnchorPane.setTopAnchor(tela, 0.0);
+            AnchorPane.setTopAnchor   (tela, 0.0);
             AnchorPane.setBottomAnchor(tela, 0.0);
-            AnchorPane.setLeftAnchor(tela, 0.0);
-            AnchorPane.setRightAnchor(tela, 0.0);
+            AnchorPane.setLeftAnchor  (tela, 0.0);
+            AnchorPane.setRightAnchor (tela, 0.0);
 
             areaPrincipal.getChildren().setAll(tela);
 
