@@ -7,5 +7,7 @@ api\desktop\TelaPerfil.class
 api\database\Conexao.class
 api\desktop\Login.class
 api\service\AutenticacaoService.class
+api\model\Main.class
 api\desktop\Main.class
 api\javafx\Main.class
+api\model\LoginApp.class

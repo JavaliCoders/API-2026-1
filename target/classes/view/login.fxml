@@ -4,41 +4,95 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.GaussianBlur?>
+<?import javafx.geometry.Rectangle2D?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.shape.SVGPath?>
 
-<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="api.controller.LoginController">
+<AnchorPane prefHeight="720.0" prefWidth="1092.0" styleClass="login-root" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="api.controller.LoginController">
     <children>
-        <VBox alignment="CENTER" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-            <VBox alignment="CENTER" spacing="10.0" styleClass="card">
-                <Label prefHeight="52.0" prefWidth="52.0" styleClass="icon" text="&gt;" />
-                <Label styleClass="title" text="Bem-vindo de volta" />
-                <Label styleClass="subtitle" text="Entre com suas credenciais para acessar o sistema" wrapText="true" />
+        <Label layoutX="70.0" layoutY="90.0" minHeight="190.0" minWidth="520.0" prefHeight="190.0" prefWidth="520.0" styleClass="hero-title" text="TRANSFORMANDO&#10;ENTREGAS EM&#10;IMPACTO POSITIVO" />
 
-                <VBox spacing="5.0">
-                    <Label text="Usuario ou e-mail" />
-                    <TextField fx:id="txtIdentificador" onKeyTyped="#aoDigitar" promptText="diretor ou diretor@email.com" />
+        <AnchorPane layoutX="650.0" layoutY="113.0" prefHeight="538.0" prefWidth="375.0" styleClass="login-card">
+            <children>
+                <Pane layoutX="0.0" layoutY="0.0" prefHeight="433.0" prefWidth="375.0" styleClass="form-image-clip">
+                    <clip>
+                        <Rectangle arcHeight="32.0" arcWidth="32.0" height="433.0" width="375.0" />
+                    </clip>
+                    <children>
+                        <ImageView fitHeight="720.0" fitWidth="1092.0" layoutX="-650.0" layoutY="-113.0" pickOnBounds="true" preserveRatio="false">
+                            <viewport>
+                                <Rectangle2D height="4308.0" minX="581.0" minY="0.0" width="6534.0" />
+                            </viewport>
+                            <image>
+                                <Image url="@../images/login-background.png" />
+                            </image>
+                            <effect>
+                                <GaussianBlur radius="3.5" />
+                            </effect>
+                        </ImageView>
+                    </children>
+                </Pane>
+                <Pane layoutX="0.0" layoutY="0.0" prefHeight="433.0" prefWidth="375.0" styleClass="form-tint" />
+                <Pane layoutX="0.0" layoutY="433.0" prefHeight="105.0" prefWidth="375.0" styleClass="logo-panel" />
+                <Pane layoutX="75.0" layoutY="48.0" prefHeight="45.0" prefWidth="226.0" styleClass="slot-pill" />
+                <Pane layoutX="119.0" layoutY="-113.0" prefHeight="196.0" prefWidth="136.0" styleClass="top-notch" />
+
+                <VBox layoutX="30.0" layoutY="132.0" prefWidth="315.0" spacing="18.0">
+                    <children>
+                        <VBox spacing="8.0">
+                            <children>
+                                <HBox alignment="CENTER_LEFT" spacing="13.0">
+                                    <children>
+                                        <Pane maxHeight="28.0" maxWidth="32.0" minHeight="28.0" minWidth="32.0" prefHeight="28.0" prefWidth="32.0">
+                                            <children>
+                                                <SVGPath content="M20 4H4C2.9 4 2 4.9 2 6v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4.2-8 5-8-5V6l8 5 8-5v2.2z" layoutX="1.0" layoutY="2.0" scaleX="1.25" scaleY="1.25" styleClass="label-icon" />
+                                            </children>
+                                        </Pane>
+                                        <Label styleClass="field-label" text="E-MAIL:" />
+                                    </children>
+                                </HBox>
+                                <TextField fx:id="txtIdentificador" onKeyTyped="#aoDigitar" prefHeight="47.0" prefWidth="313.0" promptText="INSIRA AQUI SEU EMAIL" styleClass="input-field" />
+                            </children>
+                        </VBox>
+
+                        <VBox spacing="8.0">
+                            <children>
+                                <HBox alignment="CENTER_LEFT" spacing="13.0">
+                                    <children>
+                                        <Pane maxHeight="28.0" maxWidth="32.0" minHeight="28.0" minWidth="32.0" prefHeight="28.0" prefWidth="32.0">
+                                            <children>
+                                                <Circle centerX="10.0" centerY="11.0" radius="5.0" styleClass="key-ring" />
+                                                <Rectangle arcHeight="2.0" arcWidth="2.0" height="4.0" layoutX="15.0" layoutY="9.0" width="15.0" styleClass="key-fill" />
+                                                <Rectangle height="7.0" layoutX="25.0" layoutY="12.0" width="4.0" styleClass="key-fill" />
+                                                <Rectangle height="5.0" layoutX="19.0" layoutY="12.0" width="4.0" styleClass="key-fill" />
+                                            </children>
+                                        </Pane>
+                                        <Label styleClass="field-label" text="SENHA:" />
+                                    </children>
+                                </HBox>
+                                <PasswordField fx:id="txtSenha" onKeyTyped="#aoDigitar" prefHeight="47.0" prefWidth="313.0" promptText="INSIRA AQUI SUA SENHA" styleClass="input-field" />
+                            </children>
+                        </VBox>
+                    </children>
                 </VBox>
 
-                <VBox spacing="5.0">
-                    <Label text="Senha" />
-                    <PasswordField fx:id="txtSenha" onKeyTyped="#aoDigitar" promptText="********" />
-                </VBox>
+                <Label fx:id="lblMensagem" alignment="CENTER" layoutX="40.0" layoutY="336.0" managed="false" prefWidth="295.0" text="Erro" textAlignment="CENTER" visible="false" wrapText="true" />
+                <Button defaultButton="true" layoutX="105.0" layoutY="363.0" mnemonicParsing="false" onAction="#entrar" prefHeight="50.0" prefWidth="165.0" styleClass="login-button" text="ENTRAR" />
 
-                <Label fx:id="lblMensagem" managed="false" text="Erro" visible="false" wrapText="true" />
-
-                <Button defaultButton="true" onAction="#entrar" styleClass="btn" text="Entrar" />
-
-                <HBox alignment="CENTER" spacing="5.0">
-                    <Label alignment="CENTER" text="Problemas com o acesso? Entre em contato com o administrador." textAlignment="CENTER" textFill="#838383" wrapText="true">
-                        <font>
-                            <Font name="System Italic" size="11.0" />
-                        </font>
-                    </Label>
-                </HBox>
-            </VBox>
-        </VBox>
+                <ImageView fitHeight="71.0" fitWidth="181.0" layoutX="97.0" layoutY="450.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../images/newe-logo-hires-transparent.png" />
+                    </image>
+                </ImageView>
+            </children>
+        </AnchorPane>
     </children>
 </AnchorPane>
