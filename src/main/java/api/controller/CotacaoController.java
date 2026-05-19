@@ -67,8 +67,9 @@ public class CotacaoController implements Initializable {
     @FXML private Label     detalheParecer;
     @FXML private VBox      secaoAprovacaoCotacao;
 
-    @FXML private VBox                          secaoItens;
-    @FXML private TableView<CotacaoItem>        tabelaItensCotacao;
+    @FXML private Label detalheRegistradoPor;
+    @FXML private VBox  secaoItens;
+    @FXML private TableView<CotacaoItem>           tabelaItensCotacao;
     @FXML private TableColumn<CotacaoItem, String> colItemProduto;
     @FXML private TableColumn<CotacaoItem, String> colItemUnidade;
     @FXML private TableColumn<CotacaoItem, String> colItemQtd;
@@ -100,20 +101,23 @@ public class CotacaoController implements Initializable {
                 .addListener((obs, a, c) -> { if (c != null) abrirOverlay(c); });
     }
 
+    // ── Adicionar método novo ─────────────────────────────────
     private void configurarTabelaItensOverlay() {
         colItemProduto .setCellValueFactory(d ->
                 new SimpleStringProperty(d.getValue().getNomeProduto()));
         colItemUnidade .setCellValueFactory(d ->
                 new SimpleStringProperty(d.getValue().getUnidade()));
         colItemQtd     .setCellValueFactory(d ->
-                new SimpleStringProperty(String.valueOf(d.getValue().getQtdCotada())));
+                new SimpleStringProperty(
+                        String.valueOf(d.getValue().getQtdCotada())));
         colItemVlrUnit .setCellValueFactory(d ->
                 new SimpleStringProperty(d.getValue().getValorUnitFormatado()));
         colItemVlrTotal.setCellValueFactory(d ->
                 new SimpleStringProperty(d.getValue().getValorTotalFormatado()));
 
         tabelaItensCotacao.setRowFactory(tv -> new TableRow<>() {
-            @Override protected void updateItem(CotacaoItem item, boolean empty) {
+            @Override
+            protected void updateItem(CotacaoItem item, boolean empty) {
                 super.updateItem(item, empty);
                 setStyle(empty || item == null
                         ? "-fx-background-color:white;"
@@ -203,7 +207,26 @@ public class CotacaoController implements Initializable {
         detalheStatus     .setText(formatarStatus(c.getStatus()));
         detalheStatus     .setStyle(estiloBadge(c.getStatus()));
 
-        boolean temDecisao = c.getStatus().equals("APROVADO") || c.getStatus().equals("NEGADO");
+        // Cadastrador
+        detalheRegistradoPor.setText(
+                c.getNomeRegistradoPor().isBlank()
+                        ? "—" : c.getNomeRegistradoPor());
+
+        // Itens da cotação
+        ObservableList<CotacaoItem> itens =
+                CotacaoDAO.listarItens(c.getIdCotacao());
+        if (!itens.isEmpty()) {
+            tabelaItensCotacao.setItems(itens);
+            secaoItens.setVisible(true);
+            secaoItens.setManaged(true);
+        } else {
+            secaoItens.setVisible(false);
+            secaoItens.setManaged(false);
+        }
+
+        // Seção de aprovação/negação
+        boolean temDecisao = c.getStatus().equals("APROVADO")
+                || c.getStatus().equals("NEGADO");
         if (temDecisao) {
             detalheAprovador.setText(c.getNomeAprovador());
             detalheAprovador.setStyle(c.getStatus().equals("NEGADO")
@@ -211,7 +234,8 @@ public class CotacaoController implements Initializable {
                     : "-fx-font-size:14px; -fx-text-fill:#166534; -fx-font-weight:bold;");
             detalheDataAprovacao.setText(c.getDataAprovacaoFormatada());
             String parecer = c.getParecer();
-            detalheParecer.setText(parecer != null && !parecer.isBlank() ? parecer : "Sem parecer.");
+            detalheParecer.setText(
+                    parecer != null && !parecer.isBlank() ? parecer : "Sem parecer.");
             secaoAprovacaoCotacao.setVisible(true);
             secaoAprovacaoCotacao.setManaged(true);
         } else {
@@ -545,7 +569,8 @@ public class CotacaoController implements Initializable {
                 .findFirst().orElse(null);
         if (pedidoCompleto == null) { erro("Pedido não encontrado."); return; }
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/cadastroCotacao.fxml"));
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/view/cadastroCotacao.fxml"));
             Node tela = loader.load();
             cadastroCotacaoController ctrl = loader.getController();
             ctrl.setAreaPrincipal(areaPrincipal);
