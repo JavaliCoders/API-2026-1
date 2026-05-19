@@ -186,22 +186,24 @@ public class CotacaoDAO {
         ObservableList<Cotacao> lista = FXCollections.observableArrayList();
         String where = filtroIdPedido != null ? "WHERE c.id_pedido = ?" : "";
         String sql = """
-                SELECT c.*,
-                       p.num_pedido,
-                       f.nome          AS nome_fornecedor,
-                       f.cnpj          AS cnpj_fornecedor,
-                       f.pedido_minimo,
-                       f.status        AS status_fornecedor,
-                       an.id_anexo     AS id_anexo_col,
-                       an.nome_arq,
-                       an.caminho_arquivo,
-                       ua.nome         AS nome_aprovador
-                FROM tb_cotacao c
-                JOIN tb_pedido      p  ON c.id_pedido     = p.id_pedido
-                JOIN tb_fornecedor  f  ON c.id_fornecedor = f.id_fornecedor
-                JOIN tb_anexo       an ON c.id_anexo      = an.id_anexo
-                LEFT JOIN tb_usuario ua ON c.id_aprovador = ua.id_usuario
-                """ + where + "\nORDER BY c.data_criacao DESC";
+            SELECT c.*,
+                   p.num_pedido,
+                   f.nome          AS nome_fornecedor,
+                   f.cnpj          AS cnpj_fornecedor,
+                   f.pedido_minimo,
+                   f.status        AS status_fornecedor,
+                   an.id_anexo     AS id_anexo_col,
+                   an.nome_arq,
+                   an.caminho_arquivo,
+                   ua.nome         AS nome_aprovador,
+                   uc.nome         AS nome_cadastrador
+            FROM tb_cotacao c
+            JOIN tb_pedido      p  ON c.id_pedido      = p.id_pedido
+            JOIN tb_fornecedor  f  ON c.id_fornecedor  = f.id_fornecedor
+            JOIN tb_anexo       an ON c.id_anexo       = an.id_anexo
+            LEFT JOIN tb_usuario ua ON c.id_aprovador  = ua.id_usuario
+            LEFT JOIN tb_usuario uc ON c.id_cadastrador = uc.id_usuario
+            """ + where + "\nORDER BY c.data_criacao DESC";
 
         try (Connection con = ConexaoDB.getConexao();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -288,7 +290,8 @@ public class CotacaoDAO {
         Usuario aprovador = null;
         int idAprov = rs.getInt("id_aprovador");
         if (!rs.wasNull()) {
-            aprovador = new Usuario(idAprov, rs.getString("nome_aprovador"),
+            aprovador = new Usuario(idAprov,
+                    rs.getString("nome_aprovador"),
                     "", "", "", "ATIVO", new Perfil());
         }
 
@@ -298,6 +301,8 @@ public class CotacaoDAO {
 
         int idCadastrador = rs.getInt("id_cadastrador");
         if (rs.wasNull()) idCadastrador = 0;
+
+        String nomeRegistradoPor = rs.getString("nome_cadastrador");
 
         return new Cotacao(
                 rs.getInt   ("id_cotacao"),
@@ -313,7 +318,8 @@ public class CotacaoDAO {
                 rs.getInt   ("id_anexo_col"),
                 rs.getString("nome_arq"),
                 rs.getString("caminho_arquivo"),
-                idCadastrador // ← NOVO
+                idCadastrador,
+                nomeRegistradoPor
         );
     }
 }
