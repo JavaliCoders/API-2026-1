@@ -21,47 +21,44 @@ public class Cotacao {
     private int           idAnexo;
     private String        nomeAnexo;
     private String        caminhoAnexo;
-    private int           idCadastrador;
-    private String        nomeRegistradoPor; // ← NOVO
+    private int           idCadastrador; // ← NOVO
 
     public Cotacao(int idCotacao, String status, LocalDateTime dataCriacao,
                    LocalDateTime dataAprovacao, String parecer, Usuario aprovador,
                    double valorTotal, int idPedido, String numPedido,
                    Fornecedor fornecedor, int idAnexo,
                    String nomeAnexo, String caminhoAnexo,
-                   int idCadastrador, String nomeRegistradoPor) { // ← NOVO
-        this.idCotacao        = idCotacao;
-        this.status           = status;
-        this.dataCriacao      = dataCriacao;
-        this.dataAprovacao    = dataAprovacao;
-        this.parecer          = parecer;
-        this.aprovador        = aprovador;
-        this.valorTotal       = valorTotal;
-        this.idPedido         = idPedido;
-        this.numPedido        = numPedido;
-        this.fornecedor       = fornecedor;
-        this.idAnexo          = idAnexo;
-        this.nomeAnexo        = nomeAnexo;
-        this.caminhoAnexo     = caminhoAnexo;
-        this.idCadastrador    = idCadastrador;
-        this.nomeRegistradoPor = nomeRegistradoPor; // ← NOVO
+                   int idCadastrador) { // ← NOVO parâmetro
+        this.idCotacao     = idCotacao;
+        this.status        = status;
+        this.dataCriacao   = dataCriacao;
+        this.dataAprovacao = dataAprovacao;
+        this.parecer       = parecer;
+        this.aprovador     = aprovador;
+        this.valorTotal    = valorTotal;
+        this.idPedido      = idPedido;
+        this.numPedido     = numPedido;
+        this.fornecedor    = fornecedor;
+        this.idAnexo       = idAnexo;
+        this.nomeAnexo     = nomeAnexo;
+        this.caminhoAnexo  = caminhoAnexo;
+        this.idCadastrador = idCadastrador; // ← NOVO
     }
 
-    public int           getIdCotacao()        { return idCotacao; }
-    public String        getStatus()           { return status; }
-    public LocalDateTime getDataCriacao()      { return dataCriacao; }
-    public LocalDateTime getDataAprovacao()    { return dataAprovacao; }
-    public String        getParecer()          { return parecer; }
-    public Usuario       getAprovador()        { return aprovador; }
-    public double        getValorTotal()       { return valorTotal; }
-    public int           getIdPedido()         { return idPedido; }
-    public String        getNumPedido()        { return numPedido; }
-    public Fornecedor    getFornecedor()       { return fornecedor; }
-    public int           getIdAnexo()          { return idAnexo; }
-    public String        getNomeAnexo()        { return nomeAnexo; }
-    public String        getCaminhoAnexo()     { return caminhoAnexo; }
-    public int           getIdCadastrador()    { return idCadastrador; }
-    public String        getNomeRegistradoPor(){ return nomeRegistradoPor != null ? nomeRegistradoPor : "—"; } // ← NOVO
+    public int           getIdCotacao()     { return idCotacao; }
+    public String        getStatus()        { return status; }
+    public LocalDateTime getDataCriacao()   { return dataCriacao; }
+    public LocalDateTime getDataAprovacao() { return dataAprovacao; }
+    public String        getParecer()       { return parecer; }
+    public Usuario       getAprovador()     { return aprovador; }
+    public double        getValorTotal()    { return valorTotal; }
+    public int           getIdPedido()      { return idPedido; }
+    public String        getNumPedido()     { return numPedido; }
+    public Fornecedor    getFornecedor()    { return fornecedor; }
+    public int           getIdAnexo()       { return idAnexo; }
+    public String        getNomeAnexo()     { return nomeAnexo; }
+    public String        getCaminhoAnexo()  { return caminhoAnexo; }
+    public int           getIdCadastrador() { return idCadastrador; } // ← NOVO
 
     public void setStatus(String s)               { this.status = s; }
     public void setDataAprovacao(LocalDateTime d)  { this.dataAprovacao = d; }

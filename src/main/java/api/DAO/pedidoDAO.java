@@ -70,20 +70,20 @@ public class pedidoDAO {
                 WHERE p.status != 'CANCELADO'
                 ORDER BY p.id_pedido ASC
                 """;
-            try (Connection con = ConexaoDB.getConexao();
-                 Statement st = con.createStatement();
-                 ResultSet rs = st.executeQuery(sql)) {
-                while (rs.next()) lista.add(mapear(rs));
-            } catch (SQLException e) {
-                System.err.println("Erro ao listar pedidos: " + e.getMessage());
-            }
-            return lista;
+        try (Connection con = ConexaoDB.getConexao();
+             Statement st = con.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+            while (rs.next()) lista.add(mapear(rs));
+        } catch (SQLException e) {
+            System.err.println("Erro ao listar pedidos: " + e.getMessage());
         }
+        return lista;
+    }
 
-        // ── SELECT itens de um pedido ─────────────────────────────
-        public static ObservableList<PedidoProduto> listarItens(int idPedido) {
-            ObservableList<PedidoProduto> lista = FXCollections.observableArrayList();
-            String sql = """
+    // ── SELECT itens de um pedido ─────────────────────────────
+    public static ObservableList<PedidoProduto> listarItens(int idPedido) {
+        ObservableList<PedidoProduto> lista = FXCollections.observableArrayList();
+        String sql = """
                 SELECT pp.id_pedido_produto,
                        pp.qtd_solicitada,
                        pp.qtd_aprovada,

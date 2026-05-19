@@ -576,7 +576,7 @@ public class cadastroCotacaoController implements Initializable {
             Node tela = loader.load();
             CotacaoController ctrl = loader.getController();
             ctrl.setAreaPrincipal(areaPrincipal);
-            // ← sem filtrarPorPedido: volta para a listagem completa
+            if (pedido != null) ctrl.filtrarPorPedido(pedido);
             anchorar(tela);
             areaPrincipal.getChildren().setAll(tela);
         } catch (IOException e) {

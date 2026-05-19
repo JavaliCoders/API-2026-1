@@ -297,9 +297,9 @@ java -jar API-2026-1.jar
 >
 > Padrão de Commits: [Commits](docs/processo/padrao_de_commit.md)
 >
-> Manual de instalação: [Manual de Instalação](src/docs/cliente/manual_de_instalacao.pdf)
+> Manual de instalação: [Manual de Instalação](src/docs/cliente/manual_instalacao.pdf)
 > 
-> Manual do usuário: [Manual do Usuário](src/docs/cliente/user_manual.md)
+> Manual do usuário: [Manual do Usuário](src/docs/cliente/manual_usuario.pdf)
 ---
 
 ## 🎓 Equipe <a name="equipe"></a>

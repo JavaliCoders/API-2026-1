@@ -46,4 +46,5 @@ test/
 .idea/
 .mvn/
 
-config.properties
+### Credenciais locais ###
+src/main/resources/config.properties

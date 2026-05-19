@@ -84,9 +84,9 @@ public class centroCustoController implements Initializable {
                 badge.setPrefWidth(70);
                 badge.setStyle(item.equals("ATIVO")
                         ? "-fx-background-color: #dcfce7; -fx-text-fill: #16a34a;" +
-                          "-fx-background-radius: 6; -fx-padding: 4 10;"
+                        "-fx-background-radius: 6; -fx-padding: 4 10;"
                         : "-fx-background-color: #fee2e2; -fx-text-fill: #dc2626;" +
-                          "-fx-background-radius: 6; -fx-padding: 4 10;");
+                        "-fx-background-radius: 6; -fx-padding: 4 10;");
                 setGraphic(badge);
                 setText(null);
             }
