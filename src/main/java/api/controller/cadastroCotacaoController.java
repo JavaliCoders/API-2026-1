@@ -113,12 +113,17 @@ public class cadastroCotacaoController implements Initializable {
                 boolean jaAdicionado = itensCotacao.stream()
                         .anyMatch(i -> i.getIdPedidoProduto() == item.getIdPedidoProduto());
 
-                // Container principal
+                // Quantidade de referência: aprovada se houver, senão solicitada
+                int qtdReferencia = item.getQtdAprovada() > 0
+                        ? item.getQtdAprovada()
+                        : item.getQtdSolicitada();
+                String labelQtd = item.getQtdAprovada() > 0
+                        ? "Qtd aprovada: " + item.getQtdAprovada()
+                        : "Qtd solicitada: " + item.getQtdSolicitada() + " (sem aprovação)";
+
                 HBox card = new HBox();
                 card.setSpacing(0);
-                card.setStyle("-fx-background-radius: 8; -fx-padding: 0;");
 
-                // Ícone lateral colorido
                 javafx.scene.layout.VBox iconBar = new javafx.scene.layout.VBox();
                 iconBar.setAlignment(javafx.geometry.Pos.CENTER);
                 iconBar.setMinWidth(6);
@@ -126,7 +131,6 @@ public class cadastroCotacaoController implements Initializable {
                         + (jaAdicionado ? "#d1d5db" : "#2563eb")
                         + "; -fx-background-radius: 8 0 0 8;");
 
-                // Conteúdo do card
                 javafx.scene.layout.VBox content = new javafx.scene.layout.VBox();
                 content.setSpacing(2);
                 content.setStyle("-fx-padding: 10 14; -fx-background-color: "
@@ -134,7 +138,6 @@ public class cadastroCotacaoController implements Initializable {
                         + "; -fx-background-radius: 0 8 8 0;");
                 HBox.setHgrow(content, javafx.scene.layout.Priority.ALWAYS);
 
-                // Nome do produto
                 Label nomeLbl = new Label(
                         (jaAdicionado ? "✅  " : "📦  ") + item.getNomeProduto());
                 nomeLbl.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;"
@@ -142,7 +145,6 @@ public class cadastroCotacaoController implements Initializable {
                         + (jaAdicionado ? "#9ca3af;" : "#0f172a;"));
                 nomeLbl.setWrapText(true);
 
-                // Linha de detalhes: unidade + quantidade
                 HBox detalhes = new HBox();
                 detalhes.setSpacing(16);
 
@@ -150,18 +152,17 @@ public class cadastroCotacaoController implements Initializable {
                 unidLbl.setStyle("-fx-font-size: 12px; -fx-text-fill: "
                         + (jaAdicionado ? "#d1d5db;" : "#64748b;"));
 
-                Label qtdLbl = new Label("Qtd solicitada: " + item.getQtdSolicitada());
-                qtdLbl.setStyle("-fx-font-size: 12px; -fx-text-fill: "
-                        + (jaAdicionado ? "#d1d5db;" : "#64748b;"));
+                // ← usa qtdReferencia
+                Label qtdLbl = new Label(labelQtd);
+                qtdLbl.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: "
+                        + (jaAdicionado ? "#d1d5db;" : "#1d4ed8;"));
 
                 detalhes.getChildren().addAll(unidLbl, qtdLbl);
 
-                // Badge "Já adicionado" ou dica de clique
                 Label statusLbl = new Label(
                         jaAdicionado ? "já adicionado" : "clique para selecionar");
                 statusLbl.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;"
-                        + " -fx-background-radius: 20;"
-                        + " -fx-padding: 2 10;"
+                        + " -fx-background-radius: 20; -fx-padding: 2 10;"
                         + " -fx-background-color: "
                         + (jaAdicionado ? "#e5e7eb;" : "#dbeafe;")
                         + " -fx-text-fill: "
@@ -271,17 +272,24 @@ public class cadastroCotacaoController implements Initializable {
     // ── Seleção de produto ────────────────────────────────────
 
     private void selecionarProduto(PedidoProduto pp) {
-        // Bloqueia se já adicionado
         boolean jaAdicionado = itensCotacao.stream()
                 .anyMatch(i -> i.getIdPedidoProduto() == pp.getIdPedidoProduto());
         if (jaAdicionado) return;
 
         this.produtoSelecionado = pp;
 
+        // ← mostra qtd aprovada se houver, senão solicitada
+        int qtdReferencia = pp.getQtdAprovada() > 0
+                ? pp.getQtdAprovada()
+                : pp.getQtdSolicitada();
+        String labelQtd = pp.getQtdAprovada() > 0
+                ? "Qtd aprovada: " + pp.getQtdAprovada()
+                : "Qtd solicitada: " + pp.getQtdSolicitada() + " (sem aprovação)";
+
         labelProdutoSelecionado.setText(
                 pp.getNomeProduto()
                         + "  [" + pp.getUnidadeProduto() + "]"
-                        + "  —  Qtd pedida: " + pp.getQtdSolicitada());
+                        + "  —  " + labelQtd);
 
         boxProdutoSelecionado.setVisible(true);
         boxProdutoSelecionado.setManaged(true);
@@ -333,6 +341,21 @@ public class cadastroCotacaoController implements Initializable {
         }
         if (valorUnit <= 0) {
             erroProduto.setText("O valor deve ser maior que zero.");
+            return;
+        }
+
+        if (qtd <= 0) {
+            erroProduto.setText("A quantidade deve ser maior que zero.");
+            return;
+        }
+
+        int qtdMaxima = produtoSelecionado.getQtdAprovada() > 0
+                ? produtoSelecionado.getQtdAprovada()
+                : produtoSelecionado.getQtdSolicitada();
+        if (qtd > qtdMaxima) {
+            erroProduto.setText("Quantidade máxima permitida: " + qtdMaxima
+                    + " (" + (produtoSelecionado.getQtdAprovada() > 0
+                    ? "qtd aprovada" : "qtd solicitada") + ").");
             return;
         }
 
