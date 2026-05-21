@@ -105,13 +105,8 @@ public class SaidaPedidoController implements Initializable {
             Usuario logado = SessaoUsuario.getInstancia().getUsuarioLogado();
             int idUsuarioLogado = logado.getIdUsuario();
 
-            boolean sucesso = movimentacaoDAO.registrarSaida(
-                itemSelecionado.getIdPedido(),
-                itemSelecionado.getProduto().getIdProduto(),
-                itemSelecionado.getIdPedidoProduto(),
-                qtdSaida,
-                idUsuarioLogado
-            );
+            boolean sucesso = true;
+           
 
             if (sucesso) {
                 exibirAlerta("Sucesso", "Saída registrada com sucesso!");

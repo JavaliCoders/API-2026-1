@@ -83,6 +83,8 @@ public class movimentacaoDAO {
                 VALUES (?, 'SAÍDA', ?, ?, ?, NOW(), ?)
                 """;
         try (Connection con = ConexaoDB.getConexao();
+        
+
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt   (1, idProduto);
             ps.setInt   (2, quantidade);
@@ -95,5 +97,36 @@ public class movimentacaoDAO {
             System.err.println("Erro ao inserir saída: " + e.getMessage());
             return false;
         }
+    }
+
+    public static boolean inserirSaidaManual(int idProduto, int quantidade,
+                                             int idUsuario, String observacao) {
+
+    String sqlMovimentacao = """
+        INSERT INTO tb_movimentacao
+        (id_produto, tipo_movimentação, quantidade, id_usuario, data, observacao)
+        VALUES (?, 'SAIDA_MANUAL', ?, ?, NOW(), ?)
+    """;
+    String sqlEstoque = """
+        UPDATE tb_produto
+        SET quantidade = quantidade - ?
+        WHERE id_produto = ?
+    """;
+    try (Connection con = ConexaoDB.getConexao()) {
+        PreparedStatement ps = con.prepareStatement(sqlEstoque);
+        ps.setInt(1, quantidade);
+        ps.setInt(2, idProduto);
+        ps.executeUpdate();
+        ps = con.prepareStatement(sqlMovimentacao);
+        ps.setInt(1, idProduto);
+        ps.setInt(2, quantidade);
+        ps.setInt(3, idUsuario);
+        ps.setString(4, observacao);
+        ps.executeUpdate();
+        return true;
+    } catch (SQLException e) {
+        System.out.println("Erro saída manual: " + e.getMessage());
+        return false;
+    }
     }
 }
