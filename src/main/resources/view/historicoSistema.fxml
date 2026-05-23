@@ -10,7 +10,11 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="600.0" prefWidth="800.0" spacing="15.0" style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 10, 0, 0, 2); -fx-padding: 24;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="api.controller.historicoController"> <padding>
+<VBox prefHeight="600.0" prefWidth="800.0" spacing="15.0"
+	style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 10, 0, 0, 2); -fx-padding: 24;"
+	xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+	fx:controller="api.controller.historicoSistemaController">
+	<padding>
 		<Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
 	</padding>
 	<children>
@@ -23,13 +27,23 @@
 		<HBox alignment="CENTER_LEFT" spacing="15.0">
 			<children>
 				<Label text="Filtrar por:" />
-				<DatePicker fx:id="datePickerFiltro" prefWidth="150.0" promptText="Data da Ação" style="-fx-background-color: #f8fafc; -fx-border-color: #cbd5e1; -fx-background-radius: 8; -fx-border-radius: 8; -fx-font-size: 13px;" />
-				<ComboBox fx:id="comboTipoAcao" prefWidth="200.0" promptText="Tipo de Ação" style="-fx-background-color: #f8fafc; -fx-border-color: #cbd5e1; -fx-background-radius: 8; -fx-border-radius: 8; -fx-background-size: 12;" />
-				<Button mnemonicParsing="false" onAction="#onFiltrar" style="-fx-background-color: #2563eb; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-border-radius: 8; -fx-padding: 10 20; -fx-cursor: hand;" text="Aplicar Filtro" />
-				<Button mnemonicParsing="false" onAction="#onLimparFiltros" style="-fx-background-color: #f1f5f9; -fx-text-fill: #475569; -fx-background-radius: 8; -fx-border-color: #cbd5e1; -fx-border-radius: 8; -fx-padding: 10 16; -fx-font-size: 12; -fx-cursor: hand;" text="Limpar" />
+				<DatePicker fx:id="datePickerFiltro" prefWidth="150.0"
+					promptText="Data da Ação"
+					style="-fx-background-color: #f8fafc; -fx-border-color: #cbd5e1; -fx-background-radius: 8; -fx-border-radius: 8; -fx-font-size: 13px;" />
+				<ComboBox fx:id="comboTipoAcao" prefWidth="200.0"
+					promptText="Tipo de Ação"
+					style="-fx-background-color: #f8fafc; -fx-border-color: #cbd5e1; -fx-background-radius: 8; -fx-border-radius: 8; -fx-background-size: 12;" />
+				<Button mnemonicParsing="false" onAction="#onFiltrar"
+					style="-fx-background-color: #2563eb; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-border-radius: 8; -fx-padding: 10 20; -fx-cursor: hand;"
+					text="Aplicar Filtro" />
+				<Button mnemonicParsing="false" onAction="#onLimparFiltros"
+					style="-fx-background-color: #f1f5f9; -fx-text-fill: #475569; -fx-background-radius: 8; -fx-border-color: #cbd5e1; -fx-border-radius: 8; -fx-padding: 10 16; -fx-font-size: 12; -fx-cursor: hand;"
+					text="Limpar" />
 			</children>
 		</HBox>
 
-		<ListView fx:id="listViewHistorico" style="-fx-background-color: white; -fx-border-color: #cccccc; -fx-border-radius: 5; -fx-background-radius: 5;" VBox.vgrow="ALWAYS" />
+		<ListView fx:id="listViewHistorico"
+			style="-fx-background-color: white; -fx-border-color: #cccccc; -fx-border-radius: 5; -fx-background-radius: 5;"
+			VBox.vgrow="ALWAYS" />
 	</children>
 </VBox>
