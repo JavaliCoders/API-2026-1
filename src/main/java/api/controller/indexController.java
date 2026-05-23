@@ -35,6 +35,7 @@ public class indexController implements Initializable {
     @FXML private HBox menuUsuarios;
     @FXML private HBox menuCompras;
     @FXML private HBox menuNotificacoes;
+    @FXML private HBox menuHistoricoProduto;
 
     @FXML private Label textoEstoque;
     @FXML private Label textoFornecedores;
@@ -43,6 +44,7 @@ public class indexController implements Initializable {
     @FXML private Label textoUsuarios;
     @FXML private Label textoCompras;
     @FXML private Label textoNotificacoes;
+    @FXML private Label textoHistoricoProduto;
     @FXML private Label textoSair;
     @FXML private Label labelSistema;
 
@@ -54,6 +56,7 @@ public class indexController implements Initializable {
     @FXML private Label iconSair;
     @FXML private Label iconMenu;
     @FXML private Label iconNotificacoes;
+    @FXML private Label iconHistoricoProduto;
     @FXML private Label badgeNotificacoes;
 
     @FXML private AnchorPane areaPrincipal;
@@ -65,14 +68,17 @@ public class indexController implements Initializable {
 
     @FXML private HBox menuNotaFiscal;
     @FXML private HBox menuMovimentacao;
+    @FXML private HBox menuHistoricoSistema;
     @FXML private HBox menuSaida;
 
     @FXML private Label textoNotaFiscal;
     @FXML private Label textoMovimentacao;
+    @FXML private Label textoHistoricoSistema;
     @FXML private Label textoSaida;
 
     @FXML private Label iconNotaFiscal;
     @FXML private Label iconMovimentacao;
+    @FXML private Label iconHistoricoSistema;
     @FXML private Label iconSaida;
 
     private boolean sidebarExpandida = true;
@@ -114,6 +120,8 @@ public class indexController implements Initializable {
         if (!isDiretor && !isFinanceiro) {
             menuCotacoes.setVisible(false);
             menuCotacoes.setManaged(false);
+            menuHistoricoProduto.setVisible(false);
+            menuHistoricoProduto.setManaged(false);
         }
 
         // ── Nota Fiscal e Saída — só ESTOQUE ─────────────────
@@ -170,14 +178,14 @@ public class indexController implements Initializable {
     private HBox[] todosMenus() {
         return new HBox[]{menuEstoque, menuFornecedores, menuPedidos,
                 menuCotacoes, menuCompras, menuUsuarios, menuNotificacoes,
-                menuNotaFiscal, menuMovimentacao, menuSaida};
+                menuNotaFiscal, menuMovimentacao, menuHistoricoProduto, menuHistoricoSistema, menuSaida};
     }
 
     private Label[] todosTextos() {
         return new Label[]{labelSistema, textoEstoque, textoFornecedores,
                 textoPedidos, textoCotacoes, textoCompras, textoSair,
                 textoUsuarios, textoNotificacoes,
-                textoNotaFiscal, textoMovimentacao, textoSaida};
+                textoNotaFiscal, textoMovimentacao, textoHistoricoProduto, textoHistoricoSistema, textoSaida};
     }
 
     private void ocultarTextos() {
@@ -242,6 +250,10 @@ public class indexController implements Initializable {
                 c.setAreaPrincipal(areaPrincipal);
             else if (controller instanceof movimentacaoController c)
                 c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof historicoSistemaController c)
+                c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof historicoProdutoController c)
+                c.setAreaPrincipal(areaPrincipal);
             else if (controller instanceof saidaEstoqueController c)
                 c.setAreaPrincipal(areaPrincipal);
 
@@ -261,6 +273,8 @@ public class indexController implements Initializable {
                      "/view/compra.fxml",
                      "/view/movimentacao.fxml",
                      "/view/saidaEstoque.fxml",
+                     "/view/historicoProduto.fxml",
+                     "/view/historicoSistema.fxml",
                      "/view/notaFiscal.fxml"   -> false;
                 default                        -> true;
             };
@@ -313,6 +327,17 @@ public class indexController implements Initializable {
     @FXML private void onMovimentacaoClicked() {
         ativarMenu(menuMovimentacao);
         carregarTela("/view/movimentacao.fxml", "Movimentações de Estoque", "");
+    }
+    
+    @FXML private void onHistoricoSistemaClicked() {
+        ativarMenu(menuHistoricoSistema);
+        carregarTela("/view/historicoSistema.fxml", "Histórico de Ações no Sistema", "");
+    }
+    
+    @FXML
+    private void onHistoricoProdutoClicked() {
+        ativarMenu(menuHistoricoProduto);
+        carregarTela("/view/historicoProduto.fxml", "Histórico de Compras por Produto", "");
     }
 
     @FXML private void onSaidaClicked() {

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox prefHeight="700.0" prefWidth="900.0" spacing="15.0"
+	style="-fx-background-color: #f8fafc; -fx-padding: 25;"
+	xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+	fx:controller="api.controller.historicoProdutoController">
+
+	<Label text="Histórico de Compras por Produto" textFill="#0f172a">
+		<font>
+			<Font name="Segoe UI Bold" size="24.0" />
+		</font>
+	</Label>
+	<VBox prefHeight="13.0" prefWidth="850.0">
+		<children>
+
+			<HBox alignment="CENTER_LEFT" spacing="10.0">
+				<TextField fx:id="campoBuscaProduto" prefHeight="35.0"
+					prefWidth="350.0"
+					promptText="Digite o nome ou o Nº do produto..."
+					style="-fx-background-radius: 5;" />
+				<Button mnemonicParsing="false" onAction="#onBuscarProduto"
+					prefHeight="35.0" prefWidth="100.0"
+					style="-fx-background-color: #2563eb; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 10 20; -fx-cursor: hand;"
+					text="Buscar" />
+				<Button mnemonicParsing="false" onAction="#onLimpar"
+					prefHeight="35.0" prefWidth="80.0"
+					style="-fx-background-color: #e2e8f0; -fx-text-fill: #475569; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 10 20; -fx-cursor: hand;"
+					text="Limpar" />
+			</HBox>
+			<Label fx:id="labelErro" minHeight="20.0"
+				text="" textFill="RED" visible="false">
+				<font>
+					<Font name="Segoe UI" size="12.0" />
+				</font>
+			</Label>
+		</children>
+	</VBox>
+
+	<Separator />
+
+	<Label text="1. Pedidos Relacionados ao Produto"
+		textFill="#334155">
+		<font>
+			<Font name="Segoe UI Bold" size="16.0" />
+		</font>
+	</Label>
+	<TableView fx:id="tabelaPedidos" prefHeight="200.0"
+		VBox.vgrow="NEVER">
+		<columns>
+			<TableColumn fx:id="colPedidoId" prefWidth="100.0"
+				text="Nº Pedido" />
+			<TableColumn fx:id="colPedidoData" prefWidth="150.0"
+				text="Data do Pedido" />
+			<TableColumn fx:id="colPedidoStatus" prefWidth="150.0"
+				text="Status" />
+			<TableColumn fx:id="colPedidoQtd" prefWidth="150.0"
+				text="Qtd. do Produto" />
+		</columns>
+	</TableView>
+
+	<Label text="2. Detalhes do Pedido Selecionado"
+		textFill="#334155">
+		<font>
+			<Font name="Segoe UI Bold" size="16.0" />
+		</font>
+	</Label>
+
+	<TabPane fx:id="tabPaneDetalhes" tabClosingPolicy="UNAVAILABLE"
+		VBox.vgrow="ALWAYS">
+
+		<Tab text="Cotações e Fornecedores">
+			<HBox spacing="15.0" style="-fx-padding: 15 0 0 0;">
+				<VBox spacing="5.0" HBox.hgrow="ALWAYS">
+					<Label text="Cotações Recebidas" textFill="#64748b">
+						<font>
+							<Font name="Segoe UI Bold" size="12.0" />
+						</font>
+					</Label>
+					<TableView fx:id="tabelaCotacoes" prefHeight="200.0"
+						VBox.vgrow="ALWAYS">
+						<columns>
+							<TableColumn fx:id="colCotacaoFornecedor"
+								prefWidth="200.0" text="Fornecedor" />
+							<TableColumn fx:id="colCotacaoValor"
+								prefWidth="120.0" text="Valor Total" />
+							<TableColumn fx:id="colCotacaoStatus"
+								prefWidth="120.0" text="Status" />
+						</columns>
+					</TableView>
+				</VBox>
+
+				<VBox prefWidth="250.0" spacing="5.0">
+					<Label text="Produtos desta Cotação" textFill="#64748b">
+						<font>
+							<Font name="Segoe UI Bold" size="12.0" />
+						</font>
+					</Label>
+					<ListView fx:id="listaProdutosCotacao"
+						style="-fx-background-radius: 5;" VBox.vgrow="ALWAYS" />
+				</VBox>
+			</HBox>
+		</Tab>
+
+		<Tab text="Compras Relacionadas">
+			<VBox spacing="5.0" style="-fx-padding: 15 0 0 0;">
+				<TableView fx:id="tabelaCompras" prefHeight="200.0"
+					VBox.vgrow="ALWAYS">
+					<columns>
+						<TableColumn fx:id="colCompraId" prefWidth="100.0"
+							text="ID Compra" />
+						<TableColumn fx:id="colCompraNota" prefWidth="150.0"
+							text="Nota Fiscal" />
+						<TableColumn fx:id="colCompraData" prefWidth="150.0"
+							text="Data de Compra" />
+						<TableColumn fx:id="colCompraValor" prefWidth="150.0"
+							text="Valor Faturado" />
+					</columns>
+				</TableView>
+			</VBox>
+		</Tab>
+
+	</TabPane>
+</VBox>
