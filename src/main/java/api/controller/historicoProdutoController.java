@@ -1,6 +1,5 @@
 package api.controller;
 
-//import api.model.HistoricoProduto;
 import api.model.Pedido;
 import api.model.Cotacao;
 import api.model.Compra;
@@ -96,8 +95,8 @@ public class historicoProdutoController implements Initializable {
 
     private void carregarDetalhes(int idPedido) {
         try {
-            tabelaCotacoes.setItems(cotacaoDAO.buscarPorPedidoId(idPedido));
-            tabelaCompras.setItems(compraDAO.buscarPorPedidoId(idPedido));
+        	tabelaCotacoes.setItems(cotacaoDAO.listarPorPedido(idPedido));
+        	tabelaCompras.setItems(compraDAO.listarPorPedido(idPedido));
         } catch (Exception e) {
             mostrarErro("Erro ao carregar os detalhes do pedido.");
         }
