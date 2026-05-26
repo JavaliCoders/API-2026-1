@@ -389,7 +389,8 @@ public class indexController implements Initializable {
                     Stage stage = (Stage) sidebar.getScene().getWindow();
                     stage.setScene(scene);
                     stage.setTitle("Sistema de Pedidos - Login");
-                    stage.setResizable(false);
+                    stage.setResizable(true);
+                    stage.setMaximized(true);
                     stage.show();
                 } catch (IOException e) { e.printStackTrace(); }
             }

@@ -77,7 +77,8 @@ public class saidaEstoqueController implements Initializable {
         ObservableList<Pedido> todos = pedidoDAO.listarTodosIncluindoRecebidos();
         todosPedidos = FXCollections.observableArrayList(
                 todos.stream()
-                        .filter(p -> p.getStatus().equals("RECEBIDO"))
+                        .filter(p -> p.getStatus().equals("RECEBIDO")
+                                || p.getStatus().equals("RECEBIDO_PARCIAL"))
                         .toList());
         pedidosFiltrados = new FilteredList<>(todosPedidos, p -> true);
         tabelaPedidos.setItems(pedidosFiltrados);
@@ -304,7 +305,7 @@ public class saidaEstoqueController implements Initializable {
             if (!okMov) { erro("Erro ao registrar movimentação."); return; }
 
             // Marca item como atendido (zera qtd_recebida para não sair duas vezes)
-            marcarItemAtendido(pp.getIdPedidoProduto());
+            marcarItemAtendido(pp.getIdPedidoProduto(), pp.getQtdRecebida());
 
             // CA6 — Histórico do item
             HistoricoService.registrar("Pedido", "Saída", pedidoEmAtendimento.getIdPedido(),
@@ -348,27 +349,32 @@ public class saidaEstoqueController implements Initializable {
         }
     }
 
-    private void marcarItemAtendido(int idPedidoProduto) {
-        // Zera qtd_recebida para indicar que já foi entregue ao solicitante
+    private void marcarItemAtendido(int idPedidoProduto, int qtdSaiu) {
         try (Connection con = ConexaoDB.getConexao();
              PreparedStatement ps = con.prepareStatement(
-                     "UPDATE tb_pedido_produto SET qtd_recebida = 0 " +
+                     "UPDATE tb_pedido_produto " +
+                             "SET qtd_recebida  = qtd_recebida  - ?, " +
+                             "    qtd_atendida  = COALESCE(qtd_atendida, 0) + ? " +
                              "WHERE id_pedido_produto = ?")) {
-            ps.setInt(1, idPedidoProduto);
+            ps.setInt(1, qtdSaiu);
+            ps.setInt(2, qtdSaiu);
+            ps.setInt(3, idPedidoProduto);
             ps.executeUpdate();
         } catch (Exception e) {
             System.err.println("Erro ao marcar item atendido: " + e.getMessage());
         }
     }
 
+
     // CA5 — Se todos os itens do pedido têm qtd_recebida = 0, está FINALIZADO
     private void verificarFinalizacao() {
         String sql = """
-                SELECT COUNT(*) AS total,
-                       SUM(CASE WHEN qtd_recebida = 0 THEN 1 ELSE 0 END) AS atendidos
-                FROM tb_pedido_produto
-                WHERE id_pedido = ? AND qtd_aprovada > 0
-                """;
+            SELECT COUNT(*)                                                AS total,
+                   SUM(CASE WHEN COALESCE(qtd_atendida,0) >= qtd_aprovada
+                            THEN 1 ELSE 0 END)                            AS atendidos
+            FROM tb_pedido_produto
+            WHERE id_pedido = ? AND qtd_aprovada > 0
+            """;
         try (Connection con = ConexaoDB.getConexao();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, pedidoEmAtendimento.getIdPedido());
@@ -376,18 +382,19 @@ public class saidaEstoqueController implements Initializable {
             if (rs.next()) {
                 int total    = rs.getInt("total");
                 int atendidos = rs.getInt("atendidos");
-                if (total > 0 && total == atendidos) {
-                    try (PreparedStatement fin = con.prepareStatement(
-                            "UPDATE tb_pedido SET status = 'FINALIZADO' " +
-                                    "WHERE id_pedido = ?")) {
-                        fin.setInt(1, pedidoEmAtendimento.getIdPedido());
-                        fin.executeUpdate();
-                    }
-                    // CA6 — Histórico de finalização
+                String novoStatus = (total > 0 && total == atendidos)
+                        ? "FINALIZADO" : "ATENDIDO_PARCIAL";
+                try (PreparedStatement up = con.prepareStatement(
+                        "UPDATE tb_pedido SET status = ? WHERE id_pedido = ?")) {
+                    up.setString(1, novoStatus);
+                    up.setInt   (2, pedidoEmAtendimento.getIdPedido());
+                    up.executeUpdate();
+                }
+                if ("FINALIZADO".equals(novoStatus)) {
                     HistoricoService.registrar("Pedido", "Alteração",
                             pedidoEmAtendimento.getIdPedido(),
                             "Pedido " + pedidoEmAtendimento.getNumPedido()
-                                    + " FINALIZADO após todos os itens atendidos por "
+                                    + " FINALIZADO — todos os itens atendidos por "
                                     + SessaoUsuario.getInstancia().getNomeUsuarioLogado());
                 }
             }

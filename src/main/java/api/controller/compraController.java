@@ -61,6 +61,13 @@ public class compraController implements Initializable {
     @FXML private Label     detalheDataPrevista;
     @FXML private Label     detalheStatus;
 
+    @FXML private TableView<CompraItem>           tabelaItensDetalhe;
+    @FXML private TableColumn<CompraItem, String> colItemProduto;
+    @FXML private TableColumn<CompraItem, String> colItemUnidade;
+    @FXML private TableColumn<CompraItem, String> colItemQtd;
+    @FXML private TableColumn<CompraItem, String> colItemValorUni;
+    @FXML private TableColumn<CompraItem, String> colItemTotal;
+
     private AnchorPane areaPrincipal;
     private Pedido     pedidoFiltro;
 
@@ -74,6 +81,7 @@ public class compraController implements Initializable {
         configurarFiltros();
         configurarColunas();
         carregarCompras();
+        configurarTabelaItens();
 
         tabelaCompras.getSelectionModel().selectedItemProperty()
                 .addListener((obs, a, c) -> { if (c != null) abrirOverlay(c); });
@@ -102,6 +110,34 @@ public class compraController implements Initializable {
         comprasFiltradas = new FilteredList<>(todasCompras, c -> true);
         tabelaCompras.setItems(comprasFiltradas);
         reaplicarFiltro();
+    }
+
+    private void configurarTabelaItens() {
+        colItemProduto .setCellValueFactory(d ->
+                new SimpleStringProperty(d.getValue().getNomeProduto()));
+        colItemUnidade .setCellValueFactory(d ->
+                new SimpleStringProperty(d.getValue().getUnidade()));
+        colItemQtd     .setCellValueFactory(d ->
+                new SimpleStringProperty(
+                        String.valueOf((int) d.getValue().getQtdComprada())));
+        colItemValorUni.setCellValueFactory(d ->
+                new SimpleStringProperty(formatarMoeda(d.getValue().getValorUni())));
+        colItemTotal   .setCellValueFactory(d ->
+                new SimpleStringProperty(formatarMoeda(d.getValue().getValorTotal())));
+
+        for (TableColumn<CompraItem, String> col : new TableColumn[]{
+                colItemProduto, colItemUnidade, colItemQtd,
+                colItemValorUni, colItemTotal}) {
+            col.setCellFactory(c -> new TableCell<>() {
+                @Override protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) { setText(null); return; }
+                    setText(item);
+                    setFont(Font.font("Segoe UI", 13));
+                    setStyle("-fx-text-fill:#0f172a;");
+                }
+            });
+        }
     }
 
     // ── Filtros ───────────────────────────────────────────────
@@ -160,6 +196,9 @@ public class compraController implements Initializable {
 
         overlayDetalhes.setVisible(true);
         overlayDetalhes.setManaged(true);
+        ObservableList<CompraItem> itens =
+                compraDAO.listarItensPorCompra(c.getIdCompra());
+        tabelaItensDetalhe.setItems(itens);
     }
 
     @FXML private void fecharDetalhes() {

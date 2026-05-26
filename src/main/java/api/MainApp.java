@@ -33,7 +33,8 @@ public class MainApp extends Application {
 
         primaryStage.setTitle("Gestão de Compras - Login");
         primaryStage.setScene(scene);
-        primaryStage.setResizable(false);
+        primaryStage.setResizable(true);
+        primaryStage.setMaximized(true);
         primaryStage.show();
     }
 

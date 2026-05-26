@@ -107,6 +107,24 @@
                         style="-fx-background-color:rgba(255,255,255,0.2); -fx-text-fill:white;
                                -fx-font-size:14px; -fx-background-radius:50; -fx-cursor:hand;
                                -fx-border-color:transparent; -fx-padding:6 10;"/>
+                <VBox spacing="8" style="-fx-padding:16 0 0 0;">
+                    <Label text="PRODUTOS COMPRADOS"
+                           style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#94a3b8;"/>
+                    <TableView fx:id="tabelaItensDetalhe" prefHeight="180"
+                               style="-fx-background-color:#f8fafc; -fx-border-color:#e2e8f0;
+                      -fx-border-radius:8; -fx-background-radius:8; -fx-font-size:13px;">
+                        <columns>
+                            <TableColumn fx:id="colItemProduto"  text="Produto"    prefWidth="180"/>
+                            <TableColumn fx:id="colItemUnidade"  text="Un."        prefWidth="50"/>
+                            <TableColumn fx:id="colItemQtd"      text="Qtd"        prefWidth="70"/>
+                            <TableColumn fx:id="colItemValorUni" text="Vlr Unit."  prefWidth="90"/>
+                            <TableColumn fx:id="colItemTotal"    text="Total"      prefWidth="100"/>
+                        </columns>
+                        <placeholder>
+                            <Label text="—" style="-fx-text-fill:#94a3b8;"/>
+                        </placeholder>
+                    </TableView>
+                </VBox>
             </HBox>
 
             <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"

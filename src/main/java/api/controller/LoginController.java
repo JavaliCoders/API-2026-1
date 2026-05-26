@@ -85,12 +85,13 @@ public class LoginController implements Initializable {
             BorderPane root = loader.load();
 
             Stage stage = (Stage) fieldUsuario.getScene().getWindow();
-            Scene scene = new Scene(root, 1100, 650);
+            Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.setTitle("Sistema de Pedidos");
             stage.setMinWidth(900);
             stage.setMinHeight(550);
             stage.setResizable(true);
+            stage.setMaximized(true); // garante tela cheia mesmo na troca de usuário
             stage.show();
 
         } catch (IOException e) {
