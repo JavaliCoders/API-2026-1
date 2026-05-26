@@ -6,13 +6,10 @@ import java.util.Map;
 
 public class PermissaoUtil {
 
-    // FINANCEIRO herda ESTOQUE — mas ESTOQUE não herda FINANCEIRO
-    // ADMIN herda tudo
-    // DIRETOR herda FINANCEIRO e ESTOQUE
     private static final Map<String, List<String>> HERANCA = Map.of(
             "ADMIN",       List.of("ADMIN", "DIRETOR", "FINANCEIRO", "ESTOQUE", "SOLICITANTE"),
-            "DIRETOR",     List.of("DIRETOR", "FINANCEIRO", "ESTOQUE", "SOLICITANTE"),
-            "FINANCEIRO",  List.of("FINANCEIRO", "ESTOQUE"),
+            "DIRETOR",     List.of("DIRETOR"),          // apenas DIRETOR, sem herança
+            "FINANCEIRO",  List.of("FINANCEIRO", "ESTOQUE"), // herda ESTOQUE
             "ESTOQUE",     List.of("ESTOQUE"),
             "SOLICITANTE", List.of("SOLICITANTE")
     );

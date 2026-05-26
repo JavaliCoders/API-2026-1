@@ -81,6 +81,10 @@ public class indexController implements Initializable {
     @FXML private Label iconMovimentacao;
     @FXML private Label iconSaida;
 
+    @FXML private HBox menuHistorico;
+    @FXML private Label textoHistorico;
+    @FXML private Label iconHistorico;
+
     private boolean sidebarExpandida = true;
 
     private static final double SIDEBAR_EXPANDIDA  = 220;
@@ -100,40 +104,37 @@ public class indexController implements Initializable {
 
         boolean isDiretor    = PermissaoUtil.temPermissao("DIRETOR");
         boolean isFinanceiro = PermissaoUtil.temPermissao("FINANCEIRO");
-        boolean isEstoque    = PermissaoUtil.temPermissao("ESTOQUE");
+        boolean isEstoque    = PermissaoUtil.temPermissaoExata("ESTOQUE"); // exata, sem herança
 
-        // ── Usuários — só DIRETOR ────────────────────────────
-        if (!isDiretor) {
-            menuUsuarios.setVisible(false);
-            menuUsuarios.setManaged(false);
-        }
+// Usuários — só DIRETOR (sem herança agora, mas temPermissao("DIRETOR") já é exato)
+        if (!isDiretor) { menuUsuarios.setVisible(false); menuUsuarios.setManaged(false); }
 
-        // ── Fornecedores e Compras — só FINANCEIRO ───────────
+// Fornecedores e Compras — FINANCEIRO (herda ESTOQUE, mas ESTOQUE não tem acesso)
         if (!isFinanceiro) {
-            menuFornecedores.setVisible(false);
-            menuFornecedores.setManaged(false);
-            menuCompras.setVisible(false);
-            menuCompras.setManaged(false);
+            menuFornecedores.setVisible(false); menuFornecedores.setManaged(false);
+            menuCompras.setVisible(false);      menuCompras.setManaged(false);
         }
 
-        // ── Cotações — DIRETOR ou FINANCEIRO ─────────────────
+// Cotações — DIRETOR ou FINANCEIRO
         if (!isDiretor && !isFinanceiro) {
-            menuCotacoes.setVisible(false);
-            menuCotacoes.setManaged(false);
+            menuCotacoes.setVisible(false); menuCotacoes.setManaged(false);
         }
 
-        // ── Nota Fiscal e Saída — só ESTOQUE ─────────────────
-        if (!isEstoque) {
-            menuNotaFiscal.setVisible(false);
-            menuNotaFiscal.setManaged(false);
-            menuSaida.setVisible(false);
-            menuSaida.setManaged(false);
+// Nota Fiscal, Saída, Movimentação — ESTOQUE (e FINANCEIRO por herança)
+        if (!PermissaoUtil.temPermissao("ESTOQUE")) {
+            menuNotaFiscal.setVisible(false);    menuNotaFiscal.setManaged(false);
+            menuSaida.setVisible(false);         menuSaida.setManaged(false);
+            menuMovimentacao.setVisible(false);  menuMovimentacao.setManaged(false);
         }
 
-        // ── Centro de Custo — DIRETOR ou FINANCEIRO ──────────  ← NOVO
+// Centro de Custo — DIRETOR ou FINANCEIRO
         if (!isDiretor && !isFinanceiro) {
-            menuCentroCusto.setVisible(false);
-            menuCentroCusto.setManaged(false);
+            menuCentroCusto.setVisible(false); menuCentroCusto.setManaged(false);
+        }
+
+    // Histórico do Sistema — só DIRETOR
+        if (!isDiretor) {
+            menuHistorico.setVisible(false); menuHistorico.setManaged(false);
         }
 
         carregarTela("/view/estoque.fxml", "Controle e monitore seu inventário", "+ Novo Produto");
@@ -180,7 +181,7 @@ public class indexController implements Initializable {
     private HBox[] todosMenus() {
         return new HBox[]{menuEstoque, menuFornecedores, menuPedidos,
                 menuCotacoes, menuCompras, menuUsuarios, menuNotificacoes,
-                menuNotaFiscal, menuMovimentacao, menuSaida, menuCentroCusto};
+                menuNotaFiscal, menuMovimentacao, menuSaida, menuCentroCusto, menuHistorico};
     }
 
     // ── ATUALIZADO: inclui textoCentro nos arrays ─────────────
@@ -188,7 +189,7 @@ public class indexController implements Initializable {
         return new Label[]{labelSistema, textoEstoque, textoFornecedores,
                 textoPedidos, textoCotacoes, textoCompras, textoSair,
                 textoUsuarios, textoNotificacoes,
-                textoNotaFiscal, textoMovimentacao, textoSaida, textoCentro};
+                textoNotaFiscal, textoMovimentacao, textoSaida, textoCentro, textoHistorico};
     }
 
     private void ocultarTextos() {
@@ -260,6 +261,8 @@ public class indexController implements Initializable {
                 c.setAreaPrincipal(areaPrincipal);
             else if (controller instanceof cadastroCentroCustoController c)
                 c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof historicoSistemaController c)
+                c.setAreaPrincipal(areaPrincipal);
 
             AnchorPane.setTopAnchor   (tela, 0.0);
             AnchorPane.setBottomAnchor(tela, 0.0);
@@ -278,7 +281,9 @@ public class indexController implements Initializable {
                      "/view/movimentacao.fxml",
                      "/view/saidaEstoque.fxml",
                      "/view/notaFiscal.fxml"   -> false;
+                case "/view/historicoSistema.fxml" -> false;
                 default                        -> true;
+
             };
             btnAcao.setVisible(mostraBotao);
             btnAcao.setManaged(mostraBotao);
@@ -340,6 +345,11 @@ public class indexController implements Initializable {
     @FXML private void onCentroCustoClicked() {
         ativarMenu(menuCentroCusto);
         carregarTela("/view/centroCusto.fxml", "Gerencie os centros de custo", "+ Novo Centro de Custo");
+    }
+
+    @FXML private void onHistoricoClicked() {
+        ativarMenu(menuHistorico);
+        carregarTela("/view/historicoSistema.fxml", "Histórico de ações do sistema", "");
     }
 
     @FXML private void onNotificacoesClicked() {
