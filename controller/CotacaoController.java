@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import java.io.File;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
@@ -31,6 +32,7 @@ public class CotacaoController {
 
     @FXML
     public void initialize() {
+        dpDataCotacao.setValue(LocalDate.now());
     }
 
     @FXML
@@ -61,7 +63,10 @@ public class CotacaoController {
         try {
             // 1. Preparar dados (CA2)
             double valorTotal = Double.parseDouble(txtValor.getText().replace(",", "."));
-            LocalDateTime dataCriacao = LocalDateTime.of(dpDataCotacao.getValue(), LocalTime.now());
+            LocalDate dataSelecionada = dpDataCotacao.getValue() == null
+                    ? LocalDate.now()
+                    : dpDataCotacao.getValue();
+            LocalDateTime dataCriacao = LocalDateTime.of(dataSelecionada, LocalTime.now());
             
          // Ordem: nome, cnpj, tipoPagamento, pedidoMinimo, status
          Fornecedor fornecedor = new Fornecedor(
@@ -72,7 +77,9 @@ public class CotacaoController {
              "ATIVO"                  // Status
          );
 
-            Anexo anexo = (arquivoArquivo != null) ? new Anexo(arquivoArquivo.getAbsolutePath()) : null;
+            Anexo anexo = (arquivoArquivo != null)
+                    ? new Anexo("COTACAO", arquivoArquivo.getName(), arquivoArquivo.getAbsolutePath())
+                    : null;
 
             // 2. Criar objeto de modelo (CA5)
             Cotacao novaCotacao = new Cotacao(
@@ -84,8 +91,8 @@ public class CotacaoController {
             );
 
             // 3. Regras de Negócio (CA3 e CA4)
-            //pedidoVinculado.setStatus("EM_COTAÇÃO");
-            pedidoVinculado.statusProperty().set("EM_COTAÇÃO");;
+            //pedidoVinculado.setStatus("EM_COTACAO");
+            pedidoVinculado.statusProperty().set("EM_COTACAO");
             enviarNotificacoes(novaCotacao);
 
             // 4. Persistência Real via DAO
