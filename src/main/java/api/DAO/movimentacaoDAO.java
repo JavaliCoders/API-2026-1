@@ -4,7 +4,7 @@ import api.connection.ConexaoDB;
 import api.model.Movimentacao;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-
+import api.DAO.historicoDAO;
 import java.sql.*;
 import java.time.LocalDate;
 
@@ -90,7 +90,15 @@ public class movimentacaoDAO {
             ps.setInt   (4, idPedido);
             ps.setString(5, observacao);
             ps.executeUpdate();
-            return true;
+
+            historicoDAO.registrar(
+                "MOVIMENTACAO",
+                "SAIDA_MANUAL",
+                idProduto,
+                "Saída manual de " + quantidade + " unidade(s)"
+            );
+
+return true;
         } catch (SQLException e) {
             System.err.println("Erro ao inserir saída: " + e.getMessage());
             return false;
