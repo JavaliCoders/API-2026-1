@@ -1,10 +1,11 @@
 package api.DAO;
-
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import api.connection.ConexaoDB;
 import api.model.Movimentacao;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-
+import api.DAO.historicoDAO;
 import java.sql.*;
 import java.time.LocalDate;
 
@@ -128,5 +129,55 @@ public class movimentacaoDAO {
         System.out.println("Erro saída manual: " + e.getMessage());
         return false;
     }
+    }
+
+    public static boolean inserirEntradaManual(int idProduto, int quantidade,
+                                               int idUsuario, String observacao) {
+
+        String sqlMovimentacao = """
+            INSERT INTO tb_movimentacao
+            (id_produto, tipo_movimentação, quantidade, id_usuario, data, observacao)
+            VALUES (?, 'ENTRADA_MANUAL', ?, ?, NOW(), ?)
+        """;
+
+        String sqlEstoque = """
+            UPDATE tb_produto
+            SET quantidade = quantidade + ?
+            WHERE id_produto = ?
+        """;
+
+        try (Connection con = ConexaoDB.getConexao()) {
+
+            PreparedStatement ps = con.prepareStatement(sqlEstoque);
+
+            ps.setInt(1, quantidade);
+            ps.setInt(2, idProduto);
+
+            ps.executeUpdate();
+
+            ps = con.prepareStatement(sqlMovimentacao);
+
+            ps.setInt(1, idProduto);
+            ps.setInt(2, quantidade);
+            ps.setInt(3, idUsuario);
+            ps.setString(4, observacao);
+
+            ps.executeUpdate();
+
+            historicoDAO.registrar(
+                "MOVIMENTACAO",
+                "ENTRADA_MANUAL",
+                idProduto,
+                "Entrada manual de " + quantidade + " unidade(s)"
+            );
+
+            return true;
+
+        } catch (SQLException e) {
+
+            System.out.println("Erro entrada manual: " + e.getMessage());
+
+            return false;
+        }
     }
 }
