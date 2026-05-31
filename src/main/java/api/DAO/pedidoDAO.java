@@ -342,5 +342,53 @@ public class pedidoDAO {
             e.printStackTrace();
         }
         return lista;
+    
     }
+    public static int totalPedidos() {
+
+    String sql = "SELECT COUNT(*) FROM tb_pedido";
+
+    try (Connection con = ConexaoDB.getConexao();
+         PreparedStatement ps = con.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        if (rs.next()) return rs.getInt(1);
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return 0;
 }
+public static ObservableList<DashboardItem> pedidosPorStatus() {
+
+    ObservableList<DashboardItem> lista =
+            FXCollections.observableArrayList();
+
+    String sql = """
+        SELECT status, COUNT(*) quantidade
+        FROM tb_pedido
+        GROUP BY status
+        """;
+
+    try (Connection con = ConexaoDB.getConexao();
+         PreparedStatement ps = con.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        while (rs.next()) {
+            lista.add(
+                    new DashboardItem(
+                            rs.getString("status"),
+                            rs.getInt("quantidade")
+                    )
+            );
+        }
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return lista;
+}
+}
+

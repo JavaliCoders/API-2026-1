@@ -469,4 +469,72 @@ public class compraDAO {
 
         return lista;
     }
+    public static int totalComprasRealizadas() {
+
+    String sql = """
+        SELECT COUNT(*)
+        FROM tb_compra
+        WHERE status = 'REALIZADA'
+        """;
+
+    try (Connection con = ConexaoDB.getConexao();
+         PreparedStatement ps = con.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        if (rs.next()) return rs.getInt(1);
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return 0;
+}
+public static int totalCompras() {
+
+    String sql = "SELECT COUNT(*) FROM tb_compra";
+
+    try (Connection con = ConexaoDB.getConexao();
+         PreparedStatement ps = con.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        if (rs.next()) {
+            return rs.getInt(1);
+        }
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return 0;
+}
+public static ObservableList<DashboardItem> comprasPorStatus() {
+
+    ObservableList<DashboardItem> lista =
+            FXCollections.observableArrayList();
+
+    String sql = """
+        SELECT status, COUNT(*) quantidade
+        FROM tb_compra
+        GROUP BY status
+        """;
+
+    try (Connection con = ConexaoDB.getConexao();
+         PreparedStatement ps = con.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        while (rs.next()) {
+            lista.add(
+                    new DashboardItem(
+                            rs.getString("status"),
+                            rs.getInt("quantidade")
+                    )
+            );
+        }
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return lista;
+}
 }

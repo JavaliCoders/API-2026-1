@@ -212,4 +212,50 @@ public class cotacaoDAO {
                 rs.getString("caminho_arquivo")
         );
     }
+    public static int totalCotacoes() {
+
+    String sql = "SELECT COUNT(*) FROM tb_cotacao";
+
+    try (Connection con = ConexaoDB.getConexao();
+         PreparedStatement ps = con.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        if (rs.next()) return rs.getInt(1);
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return 0;
+}
+public static ObservableList<DashboardItem> cotacoesPorStatus() {
+
+    ObservableList<DashboardItem> lista =
+            FXCollections.observableArrayList();
+
+    String sql = """
+        SELECT status, COUNT(*) quantidade
+        FROM tb_cotacao
+        GROUP BY status
+        """;
+
+    try (Connection con = ConexaoDB.getConexao();
+         PreparedStatement ps = con.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        while (rs.next()) {
+            lista.add(
+                    new DashboardItem(
+                            rs.getString("status"),
+                            rs.getInt("quantidade")
+                    )
+            );
+        }
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return lista;
+}
 }
