@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="api.controller.cadastroCotacaoController"
+            style="-fx-background-color: #f0f2f5;">
+
+    <ScrollPane fitToWidth="true"
+                AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+                AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
+                style="-fx-background:#f0f2f5; -fx-background-color:#f0f2f5; -fx-border-color:transparent;">
+
+        <VBox spacing="20" style="-fx-padding: 28;">
+
+            <!-- ── Cabeçalho ─────────────────────────────── -->
+            <VBox spacing="4">
+                <Label text="📄  Registrar Cotação"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #111827;"/>
+                <Label fx:id="labelSubtitulo" text=""
+                       style="-fx-font-size: 13px; -fx-text-fill: #6b7280;"/>
+            </VBox>
+
+            <!-- ── Card: Dados do Pedido (leitura) ───────── -->
+            <VBox spacing="12"
+                  style="-fx-background-color:white; -fx-background-radius:12;
+                         -fx-border-color:#e5e7eb; -fx-border-radius:12;
+                         -fx-border-width:1; -fx-padding:20;">
+                <Label text="Dados do Pedido"
+                       style="-fx-font-size:14px; -fx-font-weight:bold; -fx-text-fill:#374151;"/>
+                <HBox spacing="20">
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Nº do Pedido" style="-fx-font-size:12px; -fx-text-fill:#6b7280;"/>
+                        <TextField fx:id="fieldNumPedido" editable="false"
+                                   style="-fx-background-color:#f9fafb; -fx-border-color:#e5e7eb;
+                                          -fx-border-radius:8; -fx-background-radius:8; -fx-padding:8 12;"/>
+                    </VBox>
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Solicitante" style="-fx-font-size:12px; -fx-text-fill:#6b7280;"/>
+                        <TextField fx:id="fieldSolicitante" editable="false"
+                                   style="-fx-background-color:#f9fafb; -fx-border-color:#e5e7eb;
+                                          -fx-border-radius:8; -fx-background-radius:8; -fx-padding:8 12;"/>
+                    </VBox>
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Valor Estimado" style="-fx-font-size:12px; -fx-text-fill:#6b7280;"/>
+                        <TextField fx:id="fieldValorPedido" editable="false"
+                                   style="-fx-background-color:#f9fafb; -fx-border-color:#e5e7eb;
+                                          -fx-border-radius:8; -fx-background-radius:8; -fx-padding:8 12;"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <!-- ── Card: Dados da Cotação ─────────────────── -->
+            <VBox spacing="12"
+                  style="-fx-background-color:white; -fx-background-radius:12;
+                         -fx-border-color:#e5e7eb; -fx-border-radius:12;
+                         -fx-border-width:1; -fx-padding:20;">
+                <Label text="Dados da Cotação"
+                       style="-fx-font-size:14px; -fx-font-weight:bold; -fx-text-fill:#374151;"/>
+                <HBox spacing="20">
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Fornecedor *" style="-fx-font-size:12px; -fx-text-fill:#6b7280;"/>
+                        <ComboBox fx:id="fieldFornecedor" maxWidth="Infinity"
+                                  style="-fx-border-color:#d1d5db; -fx-border-radius:8;
+                                         -fx-background-radius:8; -fx-font-size:13px;"/>
+                        <Label fx:id="erroFornecedor" text=""
+                               style="-fx-text-fill:#dc2626; -fx-font-size:11px;"/>
+                    </VBox>
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Valor Total da Cotação (R$) *"
+                               style="-fx-font-size:12px; -fx-text-fill:#6b7280;"/>
+                        <TextField fx:id="fieldValorTotal" promptText="Ex: 1500,00"
+                                   style="-fx-border-color:#d1d5db; -fx-border-radius:8;
+                                          -fx-background-radius:8; -fx-padding:8 12; -fx-font-size:13px;"/>
+                        <Label fx:id="erroValor" text=""
+                               style="-fx-text-fill:#dc2626; -fx-font-size:11px;"/>
+                    </VBox>
+                </HBox>
+                <VBox spacing="4">
+                    <Label text="Observações" style="-fx-font-size:12px; -fx-text-fill:#6b7280;"/>
+                    <TextArea fx:id="fieldObservacoes"
+                              promptText="Informações adicionais sobre a cotação..."
+                              prefRowCount="3" wrapText="true"
+                              style="-fx-border-color:#d1d5db; -fx-border-radius:8;
+                                     -fx-background-radius:8; -fx-padding:8 12; -fx-font-size:13px;"/>
+                </VBox>
+            </VBox>
+
+            <!-- ── Card: Anexo ────────────────────────────── -->
+            <VBox spacing="12"
+                  style="-fx-background-color:white; -fx-background-radius:12;
+                         -fx-border-color:#e5e7eb; -fx-border-radius:12;
+                         -fx-border-width:1; -fx-padding:20;">
+                <Label text="Anexo da Cotação"
+                       style="-fx-font-size:14px; -fx-font-weight:bold; -fx-text-fill:#374151;"/>
+                <Label text="Anexe o arquivo recebido do fornecedor (PDF, imagem, etc.)."
+                       style="-fx-font-size:12px; -fx-text-fill:#6b7280;" wrapText="true"/>
+
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Button text="📎  Selecionar Arquivo *" onAction="#onSelecionarArquivo"
+                            style="-fx-background-color:#dbeafe; -fx-text-fill:#1e40af;
+                                   -fx-font-weight:bold; -fx-background-radius:8;
+                                   -fx-border-color:transparent; -fx-padding:9 18; -fx-cursor:hand;"/>
+                    <Label fx:id="labelArquivoSelecionado" text="Nenhum arquivo selecionado"
+                           style="-fx-text-fill:#6b7280; -fx-font-size:13px;"/>
+                </HBox>
+                <Label fx:id="erroAnexo" text=""
+                       style="-fx-text-fill:#dc2626; -fx-font-size:11px;"/>
+
+                <HBox fx:id="boxPreviewAnexo" spacing="10" alignment="CENTER_LEFT"
+                      visible="false" managed="false"
+                      style="-fx-background-color:#f0fdf4; -fx-background-radius:8;
+                             -fx-border-color:#86efac; -fx-border-radius:8;
+                             -fx-border-width:1; -fx-padding:10 14;">
+                    <Label text="📄" style="-fx-font-size:18px;"/>
+                    <VBox spacing="2">
+                        <Label fx:id="labelNomeArquivo" text=""
+                               style="-fx-font-weight:bold; -fx-font-size:13px; -fx-text-fill:#166534;"/>
+                        <Label fx:id="labelTamanhoArquivo" text=""
+                               style="-fx-font-size:11px; -fx-text-fill:#4ade80;"/>
+                    </VBox>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="✕" onAction="#onRemoverArquivo"
+                            style="-fx-background-color:transparent; -fx-text-fill:#dc2626;
+                                   -fx-border-color:transparent; -fx-cursor:hand; -fx-font-size:14px;"/>
+                </HBox>
+            </VBox>
+
+            <!-- ── Botões ──────────────────────────────────── -->
+            <HBox spacing="12" alignment="CENTER_RIGHT">
+                <Button text="Cancelar" onAction="#onCancelar"
+                        style="-fx-background-color:#f1f5f9; -fx-text-fill:#475569;
+                               -fx-background-radius:8; -fx-border-color:transparent;
+                               -fx-padding:10 24; -fx-cursor:hand; -fx-font-size:13px;"/>
+                <Button text="💾  Salvar Cotação" onAction="#onSalvar"
+                        style="-fx-background-color:#2563eb; -fx-text-fill:white;
+                               -fx-font-weight:bold; -fx-background-radius:8;
+                               -fx-border-color:transparent; -fx-padding:10 24;
+                               -fx-cursor:hand; -fx-font-size:13px;"/>
+            </HBox>
+
+        </VBox>
+    </ScrollPane>
+</AnchorPane>
