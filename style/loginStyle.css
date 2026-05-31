@@ -1,0 +1,6 @@
+.subtitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: #333;
+    -fx-font-weight: bold;
+    /* -fx-text-alignment: center; */
+}

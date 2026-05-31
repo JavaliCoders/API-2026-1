@@ -1,0 +1,13 @@
+.table-view .column-header {
+    -fx-background-color: linear-gradient(to bottom, #d8d4d4, #8f8989);
+}
+
+.tabel-view {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-table-cell-border-color: transparent;
+    -fx-font-size: 14px;
+}
+.table-view .table-cell {
+    -fx-font-size: 14px;
+}
