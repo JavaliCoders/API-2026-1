@@ -10,7 +10,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.GaussianBlur;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -22,9 +26,22 @@ public class LoginController implements Initializable {
     @FXML private TextField     fieldUsuario;
     @FXML private PasswordField fieldSenha;
     @FXML private Label         labelErro;
+    @FXML private StackPane root;
 
     @Override
-    public void initialize(URL url, ResourceBundle rb) {}
+    public void initialize(URL url, ResourceBundle rb) {
+
+        // No LoginController.initialize()
+        ImageView bg = new ImageView(new Image(getClass().getResource("/images/login-background.png").toExternalForm()));
+        bg.setPreserveRatio(false);
+        bg.fitWidthProperty().bind(root.widthProperty());
+        bg.fitHeightProperty().bind(root.heightProperty());
+        bg.setEffect(new GaussianBlur(14));
+        bg.setOpacity(0.38);
+        root.getChildren().add(0, bg);
+
+
+    }
 
     @FXML
     private void onEntrar() {

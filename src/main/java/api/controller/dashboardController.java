@@ -111,6 +111,8 @@ public class dashboardController implements Initializable {
         configurarIconesFixos();
         configurarToggleGroups();
         carregarDashboard();
+
+
     }
 
     public void setAreaPrincipal(AnchorPane areaPrincipal) {
@@ -220,7 +222,7 @@ public class dashboardController implements Initializable {
     }
 
     private void carregarDashboard() {
-        atualizarEstiloToggles();
+        // atualizarEstiloToggles();
         dashboardData = dashboardDAO.carregar(periodoSelecionado());
         lblFonte.setText(dashboardData.getSourceLabel());
         renderKpis();

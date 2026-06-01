@@ -4,7 +4,7 @@
 }
 
 .background-shade {
-    -fx-background-color: rgba(0, 0, 0, 0.08);
+    -fx-background-color: transparent;
 }
 
 .hero-title {
@@ -26,12 +26,8 @@
 }
 
 .form-tint {
-    -fx-background-color:
-        linear-gradient(to bottom, rgba(94, 74, 148, 0.38) 0%, rgba(199, 104, 110, 0.30) 50%, rgba(55, 58, 126, 0.42) 100%);
-    -fx-background-radius: 16 16 0 0;
-    -fx-border-color: rgba(255, 255, 255, 0.18);
-    -fx-border-width: 1 1 0 1;
-    -fx-border-radius: 16 16 0 0;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
 }
 
 .logo-panel {
