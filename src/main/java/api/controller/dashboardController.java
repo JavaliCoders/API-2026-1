@@ -39,6 +39,8 @@ import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
 import javafx.util.Duration;
 
+import javafx.concurrent.Task;
+
 import java.net.URL;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -111,8 +113,6 @@ public class dashboardController implements Initializable {
         configurarIconesFixos();
         configurarToggleGroups();
         carregarDashboard();
-
-
     }
 
     public void setAreaPrincipal(AnchorPane areaPrincipal) {
@@ -222,12 +222,27 @@ public class dashboardController implements Initializable {
     }
 
     private void carregarDashboard() {
-        // atualizarEstiloToggles();
-        dashboardData = dashboardDAO.carregar(periodoSelecionado());
-        lblFonte.setText(dashboardData.getSourceLabel());
-        renderKpis();
-        renderCharts();
-        renderLists();
+        atualizarEstiloToggles();
+        String periodo = periodoSelecionado();
+
+        Task<DashboardData> task = new Task<>() {
+            @Override
+            protected DashboardData call() {
+                return dashboardDAO.carregar(periodo);
+            }
+        };
+
+        task.setOnSucceeded(e -> {
+            dashboardData = task.getValue();
+            lblFonte.setText(dashboardData.getSourceLabel());
+            renderKpis();
+            renderCharts();
+            renderLists();
+        });
+
+        Thread t = new Thread(task);
+        t.setDaemon(true);
+        t.start();
     }
 
     private String periodoSelecionado() {

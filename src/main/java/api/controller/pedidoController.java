@@ -406,12 +406,16 @@ public class pedidoController implements Initializable {
                 || p.getStatus().equals("APROVADO")
                 || p.getStatus().equals("APROVADO_PARCIALMENTE");
 
+        System.out.println("=== podeFazerCompra ===");
+        System.out.println("Pedido: " + p.getNumPedido());
+        System.out.println("Status: " + p.getStatus());
+        System.out.println("isFinanceiro: " + isFinanceiro);
+        System.out.println("isStatusValido: " + isStatusValido);
 
         if (!isFinanceiro || !isStatusValido) return false;
 
         boolean temCotacao  = compraDAO.pedidoTemCotacaoAprovada(p.getIdPedido());
         boolean temPendente = compraDAO.pedidoTemItensPendentes(p.getIdPedido());
-
         return temCotacao && temPendente;
     }
 

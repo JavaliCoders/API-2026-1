@@ -45,71 +45,114 @@ public class dashboardDAO {
         PeriodWindow anterior = atual.previous();
         String periodoNome = atual.label();
 
-        double valorSolicitacoes = scalarDouble(con, "SELECT COALESCE(SUM(valor_total_estimado), 0) FROM tb_pedido");
-        double valorSolicitacoesAtual = scalarDouble(con,
-                "SELECT COALESCE(SUM(valor_total_estimado), 0) FROM tb_pedido WHERE data_abertura >= ? AND data_abertura < ?",
-                atual.startTs(), atual.endTs());
-        double valorSolicitacoesAnterior = scalarDouble(con,
-                "SELECT COALESCE(SUM(valor_total_estimado), 0) FROM tb_pedido WHERE data_abertura >= ? AND data_abertura < ?",
-                anterior.startTs(), anterior.endTs());
+        // ── Query 1: tb_pedido — 14 scalars → 1 query ──────────────────────────────
+        double valorSolicitacoes, valorSolicitacoesAtual, valorSolicitacoesAnterior;
+        int    totalSolicitacoes, totalSolicitacoesAtual, totalSolicitacoesAnterior;
+        int    aguardando, aprovados, aprovadosAnterior, rejeitados, rejeitadosAnterior, finalizados;
+        LocalDateTime maisAntiga;
+        double horasAprovacao;
 
-        int totalSolicitacoes = scalarInt(con, "SELECT COUNT(*) FROM tb_pedido");
-        int totalSolicitacoesAtual = scalarInt(con,
-                "SELECT COUNT(*) FROM tb_pedido WHERE data_abertura >= ? AND data_abertura < ?",
-                atual.startTs(), atual.endTs());
-        int totalSolicitacoesAnterior = scalarInt(con,
-                "SELECT COUNT(*) FROM tb_pedido WHERE data_abertura >= ? AND data_abertura < ?",
-                anterior.startTs(), anterior.endTs());
+        try (PreparedStatement ps = con.prepareStatement("""
+                SELECT
+                  COALESCE(SUM(valor_total_estimado), 0)                                                                                  AS valor_total,
+                  COALESCE(SUM(CASE WHEN data_abertura >= ? AND data_abertura < ? THEN valor_total_estimado ELSE 0 END), 0)                AS valor_atual,
+                  COALESCE(SUM(CASE WHEN data_abertura >= ? AND data_abertura < ? THEN valor_total_estimado ELSE 0 END), 0)                AS valor_anterior,
+                  COUNT(*)                                                                                                                  AS total,
+                  SUM(CASE WHEN data_abertura >= ? AND data_abertura < ? THEN 1 ELSE 0 END)                                                AS total_atual,
+                  SUM(CASE WHEN data_abertura >= ? AND data_abertura < ? THEN 1 ELSE 0 END)                                                AS total_anterior,
+                  SUM(CASE WHEN status IN ('EM_APROVACAO','AGUARDANDO_APROVACAO') THEN 1 ELSE 0 END)                                        AS aguardando,
+                  MIN(CASE WHEN status IN ('EM_APROVACAO','AGUARDANDO_APROVACAO') THEN data_abertura END)                                   AS mais_antiga,
+                  SUM(CASE WHEN status IN ('APROVADO','APROVADO_PARCIALMENTE') AND data_aprovacao >= ? AND data_aprovacao < ? THEN 1 ELSE 0 END) AS aprovados,
+                  SUM(CASE WHEN status IN ('APROVADO','APROVADO_PARCIALMENTE') AND data_aprovacao >= ? AND data_aprovacao < ? THEN 1 ELSE 0 END) AS aprovados_anterior,
+                  SUM(CASE WHEN status = 'NEGADO' AND data_aprovacao >= ? AND data_aprovacao < ? THEN 1 ELSE 0 END)                         AS rejeitados,
+                  SUM(CASE WHEN status = 'NEGADO' AND data_aprovacao >= ? AND data_aprovacao < ? THEN 1 ELSE 0 END)                         AS rejeitados_anterior,
+                  SUM(CASE WHEN status = 'FINALIZADO' AND data_abertura >= ? AND data_abertura < ? THEN 1 ELSE 0 END)                       AS finalizados,
+                  COALESCE(AVG(CASE WHEN data_aprovacao IS NOT NULL THEN TIMESTAMPDIFF(HOUR, data_abertura, data_aprovacao) END), 0)         AS horas_aprovacao
+                FROM tb_pedido
+                """)) {
+            ps.setTimestamp( 1, atual.startTs());    ps.setTimestamp( 2, atual.endTs());
+            ps.setTimestamp( 3, anterior.startTs()); ps.setTimestamp( 4, anterior.endTs());
+            ps.setTimestamp( 5, atual.startTs());    ps.setTimestamp( 6, atual.endTs());
+            ps.setTimestamp( 7, anterior.startTs()); ps.setTimestamp( 8, anterior.endTs());
+            ps.setTimestamp( 9, atual.startTs());    ps.setTimestamp(10, atual.endTs());
+            ps.setTimestamp(11, anterior.startTs()); ps.setTimestamp(12, anterior.endTs());
+            ps.setTimestamp(13, atual.startTs());    ps.setTimestamp(14, atual.endTs());
+            ps.setTimestamp(15, anterior.startTs()); ps.setTimestamp(16, anterior.endTs());
+            ps.setTimestamp(17, atual.startTs());    ps.setTimestamp(18, atual.endTs());
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            valorSolicitacoes         = rs.getDouble("valor_total");
+            valorSolicitacoesAtual    = rs.getDouble("valor_atual");
+            valorSolicitacoesAnterior = rs.getDouble("valor_anterior");
+            totalSolicitacoes         = rs.getInt   ("total");
+            totalSolicitacoesAtual    = rs.getInt   ("total_atual");
+            totalSolicitacoesAnterior = rs.getInt   ("total_anterior");
+            aguardando                = rs.getInt   ("aguardando");
+            Timestamp tsMaisAntiga    = rs.getTimestamp("mais_antiga");
+            maisAntiga                = tsMaisAntiga != null ? tsMaisAntiga.toLocalDateTime() : null;
+            aprovados                 = rs.getInt   ("aprovados");
+            aprovadosAnterior         = rs.getInt   ("aprovados_anterior");
+            rejeitados                = rs.getInt   ("rejeitados");
+            rejeitadosAnterior        = rs.getInt   ("rejeitados_anterior");
+            finalizados               = rs.getInt   ("finalizados");
+            horasAprovacao            = rs.getDouble("horas_aprovacao");
+        }
 
-        int aguardando = scalarInt(con,
-                "SELECT COUNT(*) FROM tb_pedido WHERE status IN ('EM_APROVACAO', 'AGUARDANDO_APROVACAO')");
-        LocalDateTime maisAntiga = scalarDateTime(con,
-                "SELECT MIN(data_abertura) FROM tb_pedido WHERE status IN ('EM_APROVACAO', 'AGUARDANDO_APROVACAO')");
+        // ── Query 2: tb_compra — 2 scalars → 1 query ───────────────────────────────
+        double valorComprado, valorCompradoAnterior;
+        try (PreparedStatement ps = con.prepareStatement("""
+                SELECT
+                  COALESCE(SUM(CASE WHEN status = 'REALIZADA' AND data >= ? AND data < ? THEN valor_total ELSE 0 END), 0) AS valor_atual,
+                  COALESCE(SUM(CASE WHEN status = 'REALIZADA' AND data >= ? AND data < ? THEN valor_total ELSE 0 END), 0) AS valor_anterior
+                FROM tb_compra
+                """)) {
+            ps.setTimestamp(1, atual.startTs());    ps.setTimestamp(2, atual.endTs());
+            ps.setTimestamp(3, anterior.startTs()); ps.setTimestamp(4, anterior.endTs());
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            valorComprado         = rs.getDouble("valor_atual");
+            valorCompradoAnterior = rs.getDouble("valor_anterior");
+        }
 
-        int aprovados = scalarInt(con,
-                "SELECT COUNT(*) FROM tb_pedido WHERE status IN ('APROVADO', 'APROVADO_PARCIALMENTE') AND data_aprovacao >= ? AND data_aprovacao < ?",
-                atual.startTs(), atual.endTs());
-        int aprovadosAnterior = scalarInt(con,
-                "SELECT COUNT(*) FROM tb_pedido WHERE status IN ('APROVADO', 'APROVADO_PARCIALMENTE') AND data_aprovacao >= ? AND data_aprovacao < ?",
-                anterior.startTs(), anterior.endTs());
-
-        int rejeitados = scalarInt(con,
-                "SELECT COUNT(*) FROM tb_pedido WHERE status = 'NEGADO' AND data_aprovacao >= ? AND data_aprovacao < ?",
-                atual.startTs(), atual.endTs());
-        int rejeitadosAnterior = scalarInt(con,
-                "SELECT COUNT(*) FROM tb_pedido WHERE status = 'NEGADO' AND data_aprovacao >= ? AND data_aprovacao < ?",
-                anterior.startTs(), anterior.endTs());
-
-        int finalizados = scalarInt(con,
-                "SELECT COUNT(*) FROM tb_pedido WHERE status = 'FINALIZADO' AND data_abertura >= ? AND data_abertura < ?",
-                atual.startTs(), atual.endTs());
-
-        double valorComprado = scalarDouble(con,
-                "SELECT COALESCE(SUM(valor_total), 0) FROM tb_compra WHERE status = 'REALIZADA' AND data >= ? AND data < ?",
-                atual.startTs(), atual.endTs());
-        double valorCompradoAnterior = scalarDouble(con,
-                "SELECT COALESCE(SUM(valor_total), 0) FROM tb_compra WHERE status = 'REALIZADA' AND data >= ? AND data < ?",
-                anterior.startTs(), anterior.endTs());
-
-        double horasAprovacao = scalarDouble(con,
-                "SELECT COALESCE(AVG(TIMESTAMPDIFF(HOUR, data_abertura, data_aprovacao)), 0) FROM tb_pedido WHERE data_aprovacao IS NOT NULL");
+        // ── Query 3: horas aprovação→compra (JOIN necessário) ──────────────────────
         double horasAprovacaoCompra = scalarDouble(con,
                 "SELECT COALESCE(AVG(TIMESTAMPDIFF(HOUR, p.data_aprovacao, c.data)), 0) FROM tb_pedido p JOIN tb_compra c ON c.id_pedido = p.id_pedido WHERE p.data_aprovacao IS NOT NULL");
+
+        // ── Query 4: horas compra→recebimento (JOIN necessário) ────────────────────
         double horasCompraRecebimento = scalarDouble(con,
                 "SELECT COALESCE(AVG(TIMESTAMPDIFF(HOUR, c.data, nf.data_registro)), 0) FROM tb_compra c JOIN tb_notasfiscal nf ON nf.id_compra = c.id_compra");
 
-        int skus = scalarInt(con, "SELECT COUNT(*) FROM tb_produto WHERE status = 'ATIVO'");
-        double valorEstoque = scalarDouble(con,
-                "SELECT COALESCE(SUM(saldo * valor_estimado), 0) FROM tb_produto WHERE status = 'ATIVO'");
-        int abaixoMinimo = scalarInt(con,
-                "SELECT COUNT(*) FROM tb_produto WHERE status = 'ATIVO' AND saldo <= nivel_minimo");
+        // ── Query 5: tb_produto — 3 scalars → 1 query ──────────────────────────────
+        int skus, abaixoMinimo;
+        double valorEstoque;
+        try (PreparedStatement ps = con.prepareStatement("""
+                SELECT
+                  SUM(CASE WHEN status = 'ATIVO' THEN 1 ELSE 0 END)                                   AS skus,
+                  COALESCE(SUM(CASE WHEN status = 'ATIVO' THEN saldo * valor_estimado ELSE 0 END), 0)  AS valor_estoque,
+                  SUM(CASE WHEN status = 'ATIVO' AND saldo <= nivel_minimo THEN 1 ELSE 0 END)           AS abaixo_minimo
+                FROM tb_produto
+                """)) {
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            skus         = rs.getInt   ("skus");
+            valorEstoque = rs.getDouble("valor_estoque");
+            abaixoMinimo = rs.getInt   ("abaixo_minimo");
+        }
 
-        int entradas = scalarInt(con,
-                "SELECT COALESCE(SUM(CASE WHEN " + COL_TIPO_MOV + " LIKE 'ENTRADA%' THEN quantidade ELSE 0 END), 0) FROM tb_movimentacao WHERE data >= ? AND data < ?",
-                atual.startTs(), atual.endTs());
-        int saidas = scalarInt(con,
-                "SELECT COALESCE(SUM(CASE WHEN " + COL_TIPO_MOV + " LIKE 'SA%' THEN quantidade ELSE 0 END), 0) FROM tb_movimentacao WHERE data >= ? AND data < ?",
-                atual.startTs(), atual.endTs());
+        // ── Query 6: tb_movimentacao — 2 scalars → 1 query ─────────────────────────
+        int entradas, saidas;
+        try (PreparedStatement ps = con.prepareStatement(
+                "SELECT " +
+                "COALESCE(SUM(CASE WHEN " + COL_TIPO_MOV + " LIKE 'ENTRADA%' AND data >= ? AND data < ? THEN quantidade ELSE 0 END), 0) AS entradas, " +
+                "COALESCE(SUM(CASE WHEN " + COL_TIPO_MOV + " LIKE 'SA%'      AND data >= ? AND data < ? THEN quantidade ELSE 0 END), 0) AS saidas " +
+                "FROM tb_movimentacao")) {
+            ps.setTimestamp(1, atual.startTs()); ps.setTimestamp(2, atual.endTs());
+            ps.setTimestamp(3, atual.startTs()); ps.setTimestamp(4, atual.endTs());
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            entradas = rs.getInt("entradas");
+            saidas   = rs.getInt("saidas");
+        }
 
         DashboardData data = new DashboardData();
         data.setSourceLabel("Dados do banco - referencia: " + formatDate(referencia));
