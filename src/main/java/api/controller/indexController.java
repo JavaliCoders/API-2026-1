@@ -2,6 +2,7 @@ package api.controller;
 
 import api.DAO.notificacaoDAO;
 import api.model.SessaoUsuario;
+import api.util.LucideIconFactory;
 import api.util.PermissaoUtil;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -9,11 +10,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -28,6 +27,7 @@ public class indexController implements Initializable {
 
     @FXML private VBox sidebar;
 
+    @FXML private HBox menuDashboard;
     @FXML private HBox menuEstoque;
     @FXML private HBox menuFornecedores;
     @FXML private HBox menuPedidos;
@@ -38,6 +38,7 @@ public class indexController implements Initializable {
     // ── NOVO ──────────────────────────────────────────────────
     @FXML private HBox menuCentroCusto;
 
+    @FXML private Label textoDashboard;
     @FXML private Label textoEstoque;
     @FXML private Label textoFornecedores;
     @FXML private Label textoPedidos;
@@ -50,6 +51,7 @@ public class indexController implements Initializable {
     // ── NOVO ──────────────────────────────────────────────────
     @FXML private Label textoCentro;
 
+    @FXML private Label iconDashboard;
     @FXML private Label iconEstoque;
     @FXML private Label iconPedidos;
     @FXML private Label iconCotacoes;
@@ -59,6 +61,7 @@ public class indexController implements Initializable {
     @FXML private Label iconMenu;
     @FXML private Label iconNotificacoes;
     @FXML private Label badgeNotificacoes;
+    @FXML private Label iconUsuarios;
     // ── NOVO ──────────────────────────────────────────────────
     @FXML private Label iconCentro;
 
@@ -137,8 +140,8 @@ public class indexController implements Initializable {
             menuHistorico.setVisible(false); menuHistorico.setManaged(false);
         }
 
-        carregarTela("/view/estoque.fxml", "Controle e monitore seu inventário", "+ Novo Produto");
-        ativarMenu(menuEstoque);
+        carregarTela("/view/dashboard.fxml", "Dashboard de indicadores", "");
+        ativarMenu(menuDashboard);
         configurarHover();
         atualizarBadgeNotificacoes();
 
@@ -147,6 +150,7 @@ public class indexController implements Initializable {
                         e -> atualizarBadgeNotificacoes()));
         pollingTimeline.setCycleCount(Timeline.INDEFINITE);
         pollingTimeline.play();
+
     }
 
     // ── Badge ─────────────────────────────────────────────────
@@ -164,6 +168,40 @@ public class indexController implements Initializable {
         }
     }
 
+    private void configurarIconesSidebar() {
+        configurarIcone(iconMenu, "menu", 20, "#3b82f6");
+        atualizarIconesMenu(null);
+    }
+
+    private void atualizarIconesMenu(HBox menuAtivo) {
+        String ativo = "#ffffff";
+        String inativo = "#d2d2d8";
+
+        configurarIcone(iconDashboard, "layout-dashboard", 20, menuAtivo == menuDashboard ? ativo : inativo);
+        configurarIcone(iconEstoque, "package", 20, menuAtivo == menuEstoque ? ativo : inativo);
+        configurarIcone(iconPedidos, "shopping-cart", 20, menuAtivo == menuPedidos ? ativo : inativo);
+        configurarIcone(iconCotacoes, "file-text", 20, menuAtivo == menuCotacoes ? ativo : inativo);
+        configurarIcone(iconFornecedores, "building-2", 20, menuAtivo == menuFornecedores ? ativo : inativo);
+        configurarIcone(iconUsuarios, "users", 20, menuAtivo == menuUsuarios ? ativo : inativo);
+        configurarIcone(iconCompras, "banknote", 20, menuAtivo == menuCompras ? ativo : inativo);
+        configurarIcone(iconNotaFiscal, "file-text", 20, menuAtivo == menuNotaFiscal ? ativo : inativo);
+        configurarIcone(iconMovimentacao, "clock", 20, menuAtivo == menuMovimentacao ? ativo : inativo);
+        configurarIcone(iconSaida, "package-minus", 20, menuAtivo == menuSaida ? ativo : inativo);
+        configurarIcone(iconNotificacoes, "bell", 20, menuAtivo == menuNotificacoes ? ativo : inativo);
+        configurarIcone(iconSair, "log-out", 20, inativo);
+    }
+
+    private void configurarIcone(Label label, String iconKey, double size, String color) {
+        if (label == null) return;
+
+        label.setText("");
+        label.setGraphic(LucideIconFactory.create(iconKey, color, size));
+        label.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        label.setMinWidth(size + 2);
+        label.setPrefWidth(size + 2);
+    }
+
+
     // ── Toggle sidebar ────────────────────────────────────────
 
     @FXML private void toggleSidebar() {
@@ -179,14 +217,14 @@ public class indexController implements Initializable {
 
     // ── ATUALIZADO: inclui menuCentroCusto nos arrays ─────────
     private HBox[] todosMenus() {
-        return new HBox[]{menuEstoque, menuFornecedores, menuPedidos,
+        return new HBox[]{menuDashboard, menuEstoque, menuFornecedores, menuPedidos,
                 menuCotacoes, menuCompras, menuUsuarios, menuNotificacoes,
                 menuNotaFiscal, menuMovimentacao, menuSaida, menuCentroCusto, menuHistorico};
     }
 
     // ── ATUALIZADO: inclui textoCentro nos arrays ─────────────
     private Label[] todosTextos() {
-        return new Label[]{labelSistema, textoEstoque, textoFornecedores,
+        return new Label[]{labelSistema,  textoDashboard, textoEstoque, textoFornecedores,
                 textoPedidos, textoCotacoes, textoCompras, textoSair,
                 textoUsuarios, textoNotificacoes,
                 textoNotaFiscal, textoMovimentacao, textoSaida, textoCentro, textoHistorico};
@@ -263,6 +301,8 @@ public class indexController implements Initializable {
                 c.setAreaPrincipal(areaPrincipal);
             else if (controller instanceof historicoSistemaController c)
                 c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof dashboardController c)
+                c.setAreaPrincipal(areaPrincipal);
 
             AnchorPane.setTopAnchor   (tela, 0.0);
             AnchorPane.setBottomAnchor(tela, 0.0);
@@ -275,13 +315,14 @@ public class indexController implements Initializable {
 
             // Visibilidade do btnAcao por tela
             boolean mostraBotao = switch (fxmlPath) {
-                case "/view/estoque.fxml"      -> PermissaoUtil.temPermissao("FINANCEIRO");
+                case "/view/estoque.fxml" -> PermissaoUtil.temPermissao("FINANCEIRO");
                 case "/view/cotacao.fxml",
                      "/view/compra.fxml",
                      "/view/movimentacao.fxml",
                      "/view/saidaEstoque.fxml",
                      "/view/notaFiscal.fxml"   -> false;
                 case "/view/historicoSistema.fxml" -> false;
+                case "/view/dashboard.fxml" -> false;
                 default                        -> true;
 
             };
@@ -295,6 +336,10 @@ public class indexController implements Initializable {
     }
 
     // ── Handlers dos menus ────────────────────────────────────
+    @FXML private void onDashboardClicked() {
+        ativarMenu(menuDashboard);
+        carregarTela("/view/dashboard.fxml", "Dashboard de indicadores", "");
+    }
 
     @FXML private void onEstoqueClicked() {
         ativarMenu(menuEstoque);
@@ -390,7 +435,7 @@ public class indexController implements Initializable {
                 SessaoUsuario.getInstancia().encerrarSessao();
                 try {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/login.fxml"));
-                    AnchorPane root = loader.load();
+                    Parent root = loader.load();
                     Scene scene = new Scene(root, 900, 600);
                     try {
                         scene.getStylesheets().add(

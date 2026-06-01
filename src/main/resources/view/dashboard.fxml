@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="api.controller.dashboardController"
+           stylesheets="@/style/dashboardStyle.css"
+           styleClass="dashboard-root">
+
+    <ScrollPane fitToWidth="true"
+                hbarPolicy="NEVER"
+                vbarPolicy="AS_NEEDED"
+                styleClass="dashboard-scroll">
+        <VBox spacing="18" style="-fx-padding: 24;">
+
+            <HBox alignment="CENTER_LEFT" spacing="18" styleClass="dashboard-panel">
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Vis&#227;o geral de compras" styleClass="dashboard-title"/>
+                    <Label text="Indicadores atualizados automaticamente conforme novos registros. Clique em um indicador para ver detalhes."
+                           wrapText="true"
+                           styleClass="dashboard-subtitle"/>
+                    <Label fx:id="lblFonte" text="Dados de exemplo" styleClass="dashboard-source"/>
+                </VBox>
+
+                <VBox alignment="CENTER_RIGHT" spacing="8">
+                    <HBox alignment="CENTER_RIGHT" spacing="8">
+                        <Label text="PER&#205;ODO:" styleClass="filter-label"/>
+                        <HBox spacing="2" styleClass="segmented-control">
+                            <ToggleButton fx:id="periodoMes" text="M&#234;s" onAction="#onFiltroAlterado"/>
+                            <ToggleButton fx:id="periodoTrimestre" text="Trimestre" onAction="#onFiltroAlterado"/>
+                            <ToggleButton fx:id="periodoAno" text="Ano" onAction="#onFiltroAlterado"/>
+                        </HBox>
+                    </HBox>
+                    <HBox alignment="CENTER_RIGHT" spacing="8">
+                        <Label text="PERFIL:" styleClass="filter-label"/>
+                        <HBox spacing="2" styleClass="segmented-control">
+                            <ToggleButton fx:id="perfilDiretor" text="Diretor" onAction="#onFiltroAlterado"/>
+                            <ToggleButton fx:id="perfilFinanceiro" text="Financeiro / Compras" onAction="#onFiltroAlterado"/>
+                            <ToggleButton fx:id="perfilEstoque" text="Estoque / Operacional" onAction="#onFiltroAlterado"/>
+                        </HBox>
+                    </HBox>
+                </VBox>
+            </HBox>
+
+            <TilePane fx:id="kpiGrid"
+                      hgap="14"
+                      vgap="14"
+                      prefColumns="3"
+                      prefTileWidth="245"
+                      prefTileHeight="128"
+                      tileAlignment="TOP_LEFT"/>
+
+            <TilePane hgap="16" vgap="16" prefTileWidth="390" prefTileHeight="358">
+                <VBox spacing="10" styleClass="dashboard-card">
+                    <VBox spacing="2">
+                        <Label text="Compara&#231;&#227;o mensal" styleClass="section-title"/>
+                        <Label text="Pedidos aprovados, rejeitados e finalizados" styleClass="section-subtitle"/>
+                    </VBox>
+                    <StackPane fx:id="comparacaoChartBox" prefHeight="280" VBox.vgrow="ALWAYS"/>
+                </VBox>
+
+                <VBox spacing="10" styleClass="dashboard-card">
+                    <VBox spacing="2">
+                        <Label text="Evolu&#231;&#227;o do valor comprado" styleClass="section-title"/>
+                        <Label text="&#218;ltimos 5 meses" styleClass="section-subtitle"/>
+                    </VBox>
+                    <StackPane fx:id="valorCompradoChartBox" prefHeight="280" VBox.vgrow="ALWAYS"/>
+                </VBox>
+
+                <VBox spacing="10" styleClass="dashboard-card">
+                    <VBox spacing="2">
+                        <Label text="Status do estoque" styleClass="section-title"/>
+                        <Label text="Itens por situa&#231;&#227;o" styleClass="section-subtitle"/>
+                    </VBox>
+                    <StackPane fx:id="statusEstoqueChartBox" prefHeight="280" VBox.vgrow="ALWAYS"/>
+                </VBox>
+            </TilePane>
+
+            <TilePane hgap="16" vgap="16" prefTileWidth="390" prefTileHeight="358">
+                <VBox spacing="10" styleClass="dashboard-card">
+                    <VBox spacing="2">
+                        <Label text="Solicita&#231;&#245;es por setor" styleClass="section-title"/>
+                        <Label text="Volume do per&#237;odo selecionado" styleClass="section-subtitle"/>
+                    </VBox>
+                    <StackPane fx:id="setorChartBox" prefHeight="280" VBox.vgrow="ALWAYS"/>
+                </VBox>
+
+                <VBox spacing="10" styleClass="dashboard-card">
+                    <VBox spacing="2">
+                        <Label text="Solicita&#231;&#245;es por centro de custo" styleClass="section-title"/>
+                        <Label text="Distribui&#231;&#227;o percentual" styleClass="section-subtitle"/>
+                    </VBox>
+                    <StackPane fx:id="centroCustoChartBox" prefHeight="280" VBox.vgrow="ALWAYS"/>
+                </VBox>
+
+                <VBox spacing="10" styleClass="dashboard-card">
+                    <VBox spacing="2">
+                        <Label text="Valor comprado por fornecedor" styleClass="section-title"/>
+                        <Label text="Per&#237;odo selecionado" styleClass="section-subtitle"/>
+                    </VBox>
+                    <StackPane fx:id="fornecedorChartBox" prefHeight="280" VBox.vgrow="ALWAYS"/>
+                </VBox>
+
+                <VBox spacing="10" styleClass="dashboard-card">
+                    <VBox spacing="2">
+                        <Label text="Movimenta&#231;&#227;o de estoque" styleClass="section-title"/>
+                        <Label text="Entradas e sa&#237;das por m&#234;s" styleClass="section-subtitle"/>
+                    </VBox>
+                    <StackPane fx:id="movimentacaoChartBox" prefHeight="280" VBox.vgrow="ALWAYS"/>
+                </VBox>
+            </TilePane>
+
+            <TilePane hgap="16" vgap="16" prefTileWidth="250" prefTileHeight="286">
+                <VBox spacing="12" styleClass="dashboard-card">
+                    <VBox spacing="2">
+                        <Label text="Produtos que mais saem" styleClass="section-title"/>
+                        <Label text="Top 5 do per&#237;odo" styleClass="section-subtitle"/>
+                    </VBox>
+                    <VBox fx:id="listaMaisSaem" spacing="0"/>
+                </VBox>
+
+                <VBox spacing="12" styleClass="dashboard-card">
+                    <VBox spacing="2">
+                        <Label text="Produtos que menos saem" styleClass="section-title"/>
+                        <Label text="Baixo giro" styleClass="section-subtitle"/>
+                    </VBox>
+                    <VBox fx:id="listaMenosSaem" spacing="0"/>
+                </VBox>
+
+                <VBox spacing="12" styleClass="dashboard-card">
+                    <VBox spacing="2">
+                        <Label text="Usu&#225;rios que mais solicitam" styleClass="section-title"/>
+                        <Label text="Pedidos por solicitante" styleClass="section-subtitle"/>
+                    </VBox>
+                    <VBox fx:id="listaUsuarios" spacing="0"/>
+                </VBox>
+            </TilePane>
+        </VBox>
+    </ScrollPane>
+
+    <StackPane fx:id="overlayDetalhes"
+               visible="false"
+               managed="false"
+               styleClass="details-overlay">
+        <VBox maxWidth="1040"
+              maxHeight="720"
+              spacing="0"
+              styleClass="details-modal">
+
+            <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 22 28 12 28;">
+                <VBox spacing="8" HBox.hgrow="ALWAYS">
+                    <Label fx:id="detalheTitulo" text="Indicador" styleClass="details-title"/>
+                    <Label fx:id="detalheSubtitulo" text="Detalhamento do indicador selecionado"
+                           wrapText="true"
+                           styleClass="details-subtitle"/>
+                </VBox>
+                <Button fx:id="btnFecharDetalhes" text="&#215;" onAction="#fecharDetalhes" styleClass="details-close"/>
+            </HBox>
+
+            <HBox spacing="14" style="-fx-padding: 14 28 20 28;">
+                <VBox spacing="8" styleClass="details-summary-card" HBox.hgrow="ALWAYS">
+                    <Label text="PER&#205;ODO ATUAL" styleClass="details-summary-title"/>
+                    <Label fx:id="detalheAtual" text="0" styleClass="details-summary-value"/>
+                </VBox>
+                <VBox spacing="8" styleClass="details-summary-card" HBox.hgrow="ALWAYS">
+                    <Label text="PER&#205;ODO ANTERIOR" styleClass="details-summary-title"/>
+                    <Label fx:id="detalheAnterior" text="0" styleClass="details-summary-value muted"/>
+                </VBox>
+                <VBox fx:id="detalheVariacaoCard" spacing="8" styleClass="details-summary-card" HBox.hgrow="ALWAYS">
+                    <Label text="VARIA&#199;&#195;O" styleClass="details-summary-title"/>
+                    <Label fx:id="detalheVariacao" text="0%" styleClass="details-summary-value success"/>
+                </VBox>
+            </HBox>
+
+            <HBox alignment="CENTER_LEFT" spacing="16"
+                  style="-fx-padding: 0 28 0 28; -fx-border-color: transparent transparent #e5e7eb transparent; -fx-border-width: 1;">
+                <Button fx:id="tabComparacao" text="Compara&#231;&#227;o mensal" onAction="#onDetalheComparacao" styleClass="details-tab-selected"/>
+                <Button fx:id="tabAno" text="Por ano" onAction="#onDetalheAno" styleClass="details-tab"/>
+                <Button fx:id="tabRegistros" text="Registros detalhados" onAction="#onDetalheRegistros" styleClass="details-tab"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button fx:id="btnExportar" text="Exportar" onAction="#onExportarDetalhes" styleClass="details-export"/>
+            </HBox>
+
+            <StackPane fx:id="detalheConteudo"
+                       style="-fx-padding: 22 28 28 28;"
+                       VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </StackPane>
+</StackPane>
