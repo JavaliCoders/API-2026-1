@@ -89,17 +89,18 @@
     </VBox>
 
     <!-- ── CAMADA 2: Overlay de detalhes ─────────────────── -->
+    <!-- ── CAMADA 2: Overlay de detalhes ─────────────────── -->
     <StackPane fx:id="overlayDetalhes" visible="false" managed="false"
                style="-fx-background-color:rgba(0,0,0,0.45);">
 
-        <VBox spacing="0" maxWidth="620" maxHeight="520"
+        <VBox spacing="0" maxWidth="650" maxHeight="580"
               style="-fx-background-color:white; -fx-background-radius:16;
-                     -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.25),20,0,0,4);">
+                 -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.25),20,0,0,4);">
 
             <!-- Cabeçalho azul -->
             <HBox alignment="CENTER_LEFT" spacing="12"
                   style="-fx-background-color:#2563eb; -fx-background-radius:16 16 0 0;
-                         -fx-padding:20 20 16 20;">
+                     -fx-padding:20 20 16 20;">
                 <VBox HBox.hgrow="ALWAYS" spacing="4">
                     <Label text="Detalhes da Compra"
                            style="-fx-font-size:16px; -fx-font-weight:bold; -fx-text-fill:#bfdbfe;"/>
@@ -108,39 +109,22 @@
                 </VBox>
                 <Label fx:id="detalheStatus"
                        style="-fx-font-size:12px; -fx-font-weight:bold;
-                              -fx-background-radius:6; -fx-padding:4 12;"/>
+                          -fx-background-radius:6; -fx-padding:4 12;"/>
                 <Button text="✕" onAction="#fecharDetalhes"
                         style="-fx-background-color:rgba(255,255,255,0.2); -fx-text-fill:white;
-                               -fx-font-size:14px; -fx-background-radius:50; -fx-cursor:hand;
-                               -fx-border-color:transparent; -fx-padding:6 10;"/>
-                <VBox spacing="8" style="-fx-padding:16 0 0 0;">
-                    <Label text="PRODUTOS COMPRADOS"
-                           style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#94a3b8;"/>
-                    <TableView fx:id="tabelaItensDetalhe" prefHeight="180"
-                               style="-fx-background-color:#f8fafc; -fx-border-color:#e2e8f0;
-                      -fx-border-radius:8; -fx-background-radius:8; -fx-font-size:13px;">
-                        <columns>
-                            <TableColumn fx:id="colItemProduto"  text="Produto"    prefWidth="180"/>
-                            <TableColumn fx:id="colItemUnidade"  text="Un."        prefWidth="50"/>
-                            <TableColumn fx:id="colItemQtd"      text="Qtd"        prefWidth="70"/>
-                            <TableColumn fx:id="colItemValorUni" text="Vlr Unit."  prefWidth="90"/>
-                            <TableColumn fx:id="colItemTotal"    text="Total"      prefWidth="100"/>
-                        </columns>
-                        <placeholder>
-                            <Label text="—" style="-fx-text-fill:#94a3b8;"/>
-                        </placeholder>
-                    </TableView>
-                </VBox>
+                           -fx-font-size:14px; -fx-background-radius:50; -fx-cursor:hand;
+                           -fx-border-color:transparent; -fx-padding:6 10;"/>
             </HBox>
 
             <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
                         style="-fx-background-color:transparent; -fx-background:transparent;
-                               -fx-border-color:transparent;">
+                           -fx-border-color:transparent;">
                 <VBox spacing="0" style="-fx-padding:20;">
 
                     <!-- Linha 1: Fornecedor + Valor -->
                     <HBox spacing="24" style="-fx-padding:0 0 16 0;
-                          -fx-border-color:transparent transparent #f1f5f9 transparent; -fx-border-width:1;">
+                      -fx-border-color:transparent transparent #f1f5f9 transparent;
+                      -fx-border-width:1;">
                         <VBox spacing="3" HBox.hgrow="ALWAYS">
                             <Label text="FORNECEDOR"
                                    style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#94a3b8;"/>
@@ -157,7 +141,8 @@
 
                     <!-- Linha 2: Comprador + Data Compra -->
                     <HBox spacing="24" style="-fx-padding:16 0;
-                          -fx-border-color:transparent transparent #f1f5f9 transparent; -fx-border-width:1;">
+                      -fx-border-color:transparent transparent #f1f5f9 transparent;
+                      -fx-border-width:1;">
                         <VBox spacing="3" HBox.hgrow="ALWAYS">
                             <Label text="COMPRADOR"
                                    style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#94a3b8;"/>
@@ -173,7 +158,9 @@
                     </HBox>
 
                     <!-- Linha 3: Data Prevista -->
-                    <HBox spacing="24" style="-fx-padding:16 0 0 0;">
+                    <HBox spacing="24" style="-fx-padding:16 0;
+                      -fx-border-color:transparent transparent #f1f5f9 transparent;
+                      -fx-border-width:1;">
                         <VBox spacing="3" HBox.hgrow="ALWAYS">
                             <Label text="ENTREGA PREVISTA"
                                    style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#94a3b8;"/>
@@ -182,16 +169,43 @@
                         </VBox>
                     </HBox>
 
+                    <!-- Linha 4: Produtos comprados -->
+                    <VBox spacing="8" style="-fx-padding:16 0 0 0;">
+                        <Label text="PRODUTOS COMPRADOS"
+                               style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#94a3b8;"/>
+                        <TableView fx:id="tabelaItensDetalhe" prefHeight="180"
+                                   style="-fx-background-color:#f8fafc; -fx-border-color:#e2e8f0;
+                                      -fx-border-radius:8; -fx-background-radius:8;
+                                      -fx-font-size:13px;">
+                            <columns>
+                                <TableColumn fx:id="colItemProduto"  text="Produto"
+                                             prefWidth="180"/>
+                                <TableColumn fx:id="colItemUnidade"  text="Un."
+                                             prefWidth="50"/>
+                                <TableColumn fx:id="colItemQtd"      text="Qtd"
+                                             prefWidth="70"/>
+                                <TableColumn fx:id="colItemValorUni" text="Vlr Unit."
+                                             prefWidth="90"/>
+                                <TableColumn fx:id="colItemTotal"    text="Total"
+                                             prefWidth="100"/>
+                            </columns>
+                            <placeholder>
+                                <Label text="—" style="-fx-text-fill:#94a3b8;"/>
+                            </placeholder>
+                        </TableView>
+                    </VBox>
+
                 </VBox>
             </ScrollPane>
 
             <HBox alignment="CENTER_RIGHT"
                   style="-fx-padding:16 20;
-                         -fx-border-color:#f1f5f9 transparent transparent transparent; -fx-border-width:1;">
+                     -fx-border-color:#f1f5f9 transparent transparent transparent;
+                     -fx-border-width:1;">
                 <Button text="Fechar" onAction="#fecharDetalhes"
                         style="-fx-background-color:#f1f5f9; -fx-text-fill:#475569;
-                               -fx-font-size:13px; -fx-font-weight:bold; -fx-background-radius:8;
-                               -fx-padding:10 24; -fx-cursor:hand; -fx-border-color:transparent;"/>
+                           -fx-font-size:13px; -fx-font-weight:bold; -fx-background-radius:8;
+                           -fx-padding:10 24; -fx-cursor:hand; -fx-border-color:transparent;"/>
             </HBox>
         </VBox>
     </StackPane>

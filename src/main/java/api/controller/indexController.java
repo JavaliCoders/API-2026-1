@@ -275,6 +275,10 @@ public class indexController implements Initializable {
             AnchorPane.setRightAnchor(tela, 0.0);
 
             areaPrincipal.getChildren().setAll(tela);
+            javafx.application.Platform.runLater(() -> {
+                javafx.stage.Stage stage = (javafx.stage.Stage) areaPrincipal.getScene().getWindow();
+                if (stage != null && !stage.isMaximized()) stage.setMaximized(true);
+            });
             labelPagina.setText(subtitulo);
             btnAcao.setText(textoBotao);
 
