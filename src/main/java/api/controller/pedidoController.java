@@ -49,6 +49,7 @@ public class pedidoController implements Initializable {
     @FXML private ComboBox<String> filtroStatus;
     @FXML private DatePicker       filtroDataInicio;
     @FXML private DatePicker       filtroDataFim;
+    @FXML private TextField        searchProduto;
 
     // ── Overlay ───────────────────────────────────────────────
     @FXML private StackPane overlayDetalhes;
@@ -95,6 +96,8 @@ public class pedidoController implements Initializable {
     private final boolean podeGerenciar = isDiretor || isFinanceiro;
     private final int     idUsuarioLogado = SessaoUsuario.getInstancia().getIdUsuarioLogado();
 
+    private java.util.Set<Integer> idsPedidosComProduto = new java.util.HashSet<>();
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         configurarFiltros();
@@ -132,10 +135,25 @@ public class pedidoController implements Initializable {
         filtroStatus.valueProperty()    .addListener((o, a, n) -> aplicarFiltro());
         filtroDataInicio.valueProperty().addListener((o, a, n) -> aplicarFiltro());
         filtroDataFim.valueProperty()   .addListener((o, a, n) -> aplicarFiltro());
+        searchProduto.textProperty().addListener((o, a, n) -> {  // NOVO
+            atualizarCacheProduto(n == null ? "" : n.trim());
+            aplicarFiltro();
+        });
+    }
+
+
+    private void atualizarCacheProduto(String termo) {           // NOVO — método inteiro
+        idsPedidosComProduto.clear();
+        if (termo.isBlank()) return;
+        idsPedidosComProduto.addAll(pedidoDAO.buscarIdsPorProduto(termo));
     }
 
     @FXML private void onSearch(KeyEvent e) { aplicarFiltro(); }
-    @FXML private void onFiltroStatus()     { aplicarFiltro(); }
+    @FXML private void onFiltroStatus()     {
+        searchProduto.clear();       // NOVO
+        idsPedidosComProduto.clear();
+        aplicarFiltro();
+    }
 
     @FXML private void onLimparFiltros() {
         searchNum.clear(); searchSolicitante.clear();
@@ -150,6 +168,7 @@ public class pedidoController implements Initializable {
         LocalDate di = filtroDataInicio.getValue();
         LocalDate df = filtroDataFim.getValue();
 
+
         pedidosFiltrados.setPredicate(p -> {
             boolean okNum  = num.isEmpty()  || p.getNumPedido().toLowerCase().contains(num);
             boolean okSoli = soli.isEmpty() || p.getNomeSolicitante().toLowerCase().contains(soli);
@@ -157,7 +176,9 @@ public class pedidoController implements Initializable {
             LocalDate d = p.getDataAbertura().toLocalDate();
             boolean okDi = di == null || !d.isBefore(di);
             boolean okDf = df == null || !d.isAfter(df);
-            return okNum && okSoli && okStat && okDi && okDf;
+            boolean okProd = idsPedidosComProduto.isEmpty()
+                    || idsPedidosComProduto.contains(p.getIdPedido());
+            return okNum && okSoli && okStat && okDi && okDf && okProd;
         });
     }
 

@@ -348,4 +348,23 @@ public class pedidoDAO {
         }
         return lista;
     }
+
+    public static java.util.Set<Integer> buscarIdsPorProduto(String termo) {
+        java.util.Set<Integer> ids = new java.util.HashSet<>();
+        String sql = """
+            SELECT DISTINCT pp.id_pedido
+            FROM tb_pedido_produto pp
+            JOIN tb_produto pr ON pr.id_produto = pp.id_produto
+            WHERE pr.produto LIKE ?
+            """;
+        try (Connection con = ConexaoDB.getConexao();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, "%" + termo + "%");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) ids.add(rs.getInt(1));
+        } catch (SQLException e) {
+            System.err.println("Erro ao buscar IDs por produto: " + e.getMessage());
+        }
+        return ids;
+    }
 }

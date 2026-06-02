@@ -49,6 +49,8 @@ public class CotacaoController implements Initializable {
     @FXML private ComboBox<String> filtroStatus;
     @FXML private DatePicker filtroDataInicio;
     @FXML private DatePicker filtroDataFim;
+    @FXML private TextField searchProduto;
+
 
     // ── Banner filtro por pedido ──────────────────────────────
     @FXML private HBox  boxFiltradoPedido;
@@ -82,6 +84,9 @@ public class CotacaoController implements Initializable {
 
     private ObservableList<Cotacao> todasCotacoes;
     private FilteredList<Cotacao>   cotacoesFiltradas;
+
+    private java.util.Set<Integer> idsCotacoesComProduto = new java.util.HashSet<>();
+
 
     private static final DateTimeFormatter FMT =
             DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
@@ -166,34 +171,64 @@ public class CotacaoController implements Initializable {
         filtroStatus    .valueProperty().addListener((o, a, n) -> reaplicarFiltro());
         filtroDataInicio.valueProperty().addListener((o, a, n) -> reaplicarFiltro());
         filtroDataFim   .valueProperty().addListener((o, a, n) -> reaplicarFiltro());
+        searchProduto.textProperty().addListener((o, a, n) -> {
+            atualizarCacheProdutoCotacao(n == null ? "" : n.trim());
+            reaplicarFiltro();
+        });
+
+    }
+
+    private void atualizarCacheProdutoCotacao(String termo) {
+        idsCotacoesComProduto.clear();
+        if (termo.isBlank()) return;
+        String sql = """
+            SELECT DISTINCT ci.id_cotacao
+            FROM tb_cotacao_item ci
+            JOIN tb_pedido_produto pp ON pp.id_pedido_produto = ci.id_pedido_produto
+            JOIN tb_produto pr        ON pr.id_produto        = pp.id_produto
+            WHERE pr.produto LIKE ?
+            """;
+        try (java.sql.Connection con = api.connection.ConexaoDB.getConexao();
+             java.sql.PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, "%" + termo + "%");
+            java.sql.ResultSet rs = ps.executeQuery();
+            while (rs.next()) idsCotacoesComProduto.add(rs.getInt(1));
+        } catch (java.sql.SQLException e) {
+            System.err.println("Erro ao buscar cotações por produto: " + e.getMessage());
+        }
     }
 
     @FXML private void onLimparFiltro() {
         fieldBusca.clear();
         filtroStatus.setValue("Todos os status");
         filtroDataInicio.setValue(null);
-        filtroDataFim   .setValue(null);
+        filtroDataFim.setValue(null);
+        searchProduto.clear();
+        idsCotacoesComProduto.clear();
     }
 
     private void reaplicarFiltro() {
         if (cotacoesFiltradas == null) return;
-        String    busca  = fieldBusca.getText() == null ? "" : fieldBusca.getText().trim().toLowerCase();
+        String    busca  = fieldBusca.getText() == null ? ""
+                : fieldBusca.getText().trim().toLowerCase();
         String    status = filtroStatus.getValue();
         LocalDate di     = filtroDataInicio.getValue();
-        LocalDate df     = filtroDataFim   .getValue();
+        LocalDate df     = filtroDataFim.getValue();
 
         cotacoesFiltradas.setPredicate(c -> {
             if (pedidoFiltro != null && c.getIdPedido() != pedidoFiltro.getIdPedido())
                 return false;
             boolean okB = busca.isEmpty()
-                    || c.getNumPedido()   .toLowerCase().contains(busca)
+                    || c.getNumPedido().toLowerCase().contains(busca)
                     || c.getNomeFornecedor().toLowerCase().contains(busca);
             boolean okS = status == null || status.equals("Todos os status")
                     || c.getStatus().equals(status);
+            boolean okProd = idsCotacoesComProduto.isEmpty()   // ← novo
+                    || idsCotacoesComProduto.contains(c.getIdCotacao());
             LocalDate dataCot = c.getDataCriacao().toLocalDate();
             boolean okDi = di == null || !dataCot.isBefore(di);
             boolean okDf = df == null || !dataCot.isAfter(df);
-            return okB && okS && okDi && okDf;
+            return okB && okS && okProd && okDi && okDf;
         });
     }
 

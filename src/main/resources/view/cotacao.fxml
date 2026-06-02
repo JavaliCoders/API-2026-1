@@ -33,6 +33,12 @@
                            style="-fx-background-color:#f8fafc; -fx-border-color:#cbd5e1;
                                   -fx-border-radius:8; -fx-background-radius:8;
                                   -fx-padding:10 14; -fx-font-size:13px; -fx-text-fill:#0f172a;"/>
+                <TextField fx:id="searchProduto"
+                           promptText="Buscar por produto"
+                           prefWidth="190"
+                           style="-fx-background-color:#f8fafc; -fx-border-color:#cbd5e1;
+                  -fx-border-radius:8; -fx-background-radius:8;
+                  -fx-padding:10 14; -fx-font-size:13px; -fx-text-fill:#0f172a;"/>
                 <ComboBox fx:id="filtroStatus" promptText="Todos os status" prefWidth="170"
                           style="-fx-background-color:#f8fafc; -fx-border-color:#cbd5e1;
                                  -fx-border-radius:8; -fx-background-radius:8; -fx-font-size:13px;"/>

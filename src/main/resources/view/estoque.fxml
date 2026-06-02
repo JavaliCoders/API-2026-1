@@ -46,6 +46,11 @@
                           style="-fx-background-color: #f8fafc; -fx-border-color: #cbd5e1;
                                  -fx-border-radius: 8; -fx-background-radius: 8;
                                  -fx-font-size: 13px;"/>
+                <ComboBox fx:id="filtroNivel" promptText="Todos os níveis"
+                          prefWidth="180" onAction="#onFiltroNivel"
+                          style="-fx-background-color: #f8fafc; -fx-border-color: #cbd5e1;
+                 -fx-border-radius: 8; -fx-background-radius: 8;
+                 -fx-font-size: 13px;"/>
             </HBox>
 
             <!-- Tabela -->

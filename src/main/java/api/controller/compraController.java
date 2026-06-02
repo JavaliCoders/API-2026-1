@@ -1,6 +1,7 @@
 package api.controller;
 
 import api.DAO.compraDAO;
+import api.DAO.pedidoDAO;
 import api.model.*;
 import api.service.HistoricoService;
 import api.util.PermissaoUtil;
@@ -45,6 +46,7 @@ public class compraController implements Initializable {
     @FXML private ComboBox<String> filtroStatus;
     @FXML private DatePicker       filtroDataInicio;
     @FXML private DatePicker       filtroDataFim;
+    @FXML private TextField       searchProduto;
 
     // ── Banner filtro por pedido ──────────────────────────────
     @FXML private HBox   boxFiltradoPedido;
@@ -75,6 +77,7 @@ public class compraController implements Initializable {
     private FilteredList<Compra>   comprasFiltradas;
 
     private final boolean isFinanceiro = PermissaoUtil.temPermissao("FINANCEIRO");
+    private java.util.Set<Integer> idsPedidosComProduto = new java.util.HashSet<>();
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -151,6 +154,10 @@ public class compraController implements Initializable {
         filtroStatus    .valueProperty().addListener((o, a, n) -> reaplicarFiltro());
         filtroDataInicio.valueProperty().addListener((o, a, n) -> reaplicarFiltro());
         filtroDataFim   .valueProperty().addListener((o, a, n) -> reaplicarFiltro());
+        searchProduto.textProperty().addListener((o, a, n) -> {   // NOVO
+            atualizarCacheProduto(n == null ? "" : n.trim());
+            reaplicarFiltro();
+        });
     }
 
     @FXML private void onLimparFiltro() {
@@ -158,6 +165,8 @@ public class compraController implements Initializable {
         filtroStatus.setValue("Todos os status");
         filtroDataInicio.setValue(null);
         filtroDataFim   .setValue(null);
+        searchProduto.clear();        // NOVO
+        idsPedidosComProduto.clear();
     }
 
     private void reaplicarFiltro() {
@@ -175,10 +184,12 @@ public class compraController implements Initializable {
                     || c.getNomeFornecedor() .toLowerCase().contains(busca);
             boolean okS = status == null || status.equals("Todos os status")
                     || c.getStatus().equals(status);
+            boolean okProd = idsPedidosComProduto.isEmpty()            // NOVO
+                    || idsPedidosComProduto.contains(c.getPedido().getIdPedido());
             LocalDate dataCompra = c.getData().toLocalDate();
             boolean okDi = di == null || !dataCompra.isBefore(di);
             boolean okDf = df == null || !dataCompra.isAfter(df);
-            return okB && okS && okDi && okDf;
+            return okB && okS && okDi && okDf && okProd;
         });
     }
 
@@ -403,5 +414,11 @@ public class compraController implements Initializable {
     private void erro(String msg) {
         Alert a = new Alert(Alert.AlertType.ERROR);
         a.setTitle("Erro"); a.setHeaderText(null); a.setContentText(msg); a.showAndWait();
+    }
+
+    private void atualizarCacheProduto(String termo) {         // NOVO
+        idsPedidosComProduto.clear();
+        if (termo.isBlank()) return;
+        idsPedidosComProduto.addAll(pedidoDAO.buscarIdsPorProduto(termo));
     }
 }

@@ -266,6 +266,8 @@ public class indexController implements Initializable {
             else if (controller instanceof cadastroCentroCustoController c) c.setAreaPrincipal(areaPrincipal);
             else if (controller instanceof historicoSistemaController c)   c.setAreaPrincipal(areaPrincipal);
             else if (controller instanceof dashboardController c)          c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof cadastroMovimentacaoManualController c)
+                c.setAreaPrincipal(areaPrincipal);
 
             AnchorPane.setTopAnchor(tela, 0.0);
             AnchorPane.setBottomAnchor(tela, 0.0);
