@@ -4,7 +4,8 @@
 --  Projeto: JavaliCoders / API-2026-1
 -- ============================================================
 
-CREATE DATABASE IF NOT EXISTS bd_api;
+DROP DATABASE IF EXISTS bd_api;
+CREATE DATABASE bd_api;
 USE bd_api;
 
 -- ------------------------------------------------------------

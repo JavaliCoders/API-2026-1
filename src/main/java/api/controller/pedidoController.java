@@ -416,11 +416,6 @@ public class pedidoController implements Initializable {
 
         boolean temCotacao  = compraDAO.pedidoTemCotacaoAprovada(p.getIdPedido());
         boolean temPendente = compraDAO.pedidoTemItensPendentes(p.getIdPedido());
-
-        System.out.println("temCotacao: " + temCotacao);
-        System.out.println("temPendente: " + temPendente);
-        System.out.println("======================");
-
         return temCotacao && temPendente;
     }
 

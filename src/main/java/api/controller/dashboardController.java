@@ -2,6 +2,7 @@ package api.controller;
 
 import api.DAO.dashboardDAO;
 import api.model.DashboardData;
+import api.util.PermissaoUtil;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.PauseTransition;
@@ -39,6 +40,8 @@ import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
 import javafx.util.Duration;
 
+import javafx.concurrent.Task;
+
 import java.net.URL;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -65,12 +68,19 @@ public class dashboardController implements Initializable {
     @FXML private VBox listaUsuarios;
     @FXML private Label lblFonte;
 
+    @FXML private VBox cardComparacao;
+    @FXML private VBox cardValorComprado;
+    @FXML private VBox cardStatusEstoque;
+    @FXML private VBox cardSetor;
+    @FXML private VBox cardCentroCusto;
+    @FXML private VBox cardFornecedor;
+    @FXML private VBox cardMovimentacao;
+    @FXML private VBox cardMaisSaem;
+    @FXML private VBox cardMenosSaem;
+    @FXML private VBox cardUsuarios;
+
     @FXML private ToggleButton periodoMes;
-    @FXML private ToggleButton periodoTrimestre;
     @FXML private ToggleButton periodoAno;
-    @FXML private ToggleButton perfilDiretor;
-    @FXML private ToggleButton perfilFinanceiro;
-    @FXML private ToggleButton perfilEstoque;
     @FXML private StackPane overlayDetalhes;
     @FXML private StackPane detalheConteudo;
     @FXML private VBox detalheVariacaoCard;
@@ -189,31 +199,21 @@ public class dashboardController implements Initializable {
     private void configurarToggleGroups() {
         ToggleGroup grupoPeriodo = new ToggleGroup();
         periodoMes.setToggleGroup(grupoPeriodo);
-        periodoTrimestre.setToggleGroup(grupoPeriodo);
         periodoAno.setToggleGroup(grupoPeriodo);
         periodoMes.setSelected(true);
-
-        ToggleGroup grupoPerfil = new ToggleGroup();
-        perfilDiretor.setToggleGroup(grupoPerfil);
-        perfilFinanceiro.setToggleGroup(grupoPerfil);
-        perfilEstoque.setToggleGroup(grupoPerfil);
-        perfilDiretor.setSelected(true);
-
         atualizarEstiloToggles();
     }
 
     private void garantirSelecao() {
-        if (!periodoMes.isSelected() && !periodoTrimestre.isSelected() && !periodoAno.isSelected()) {
+        if (!periodoMes.isSelected()  && !periodoAno.isSelected()) {
             periodoMes.setSelected(true);
         }
-        if (!perfilDiretor.isSelected() && !perfilFinanceiro.isSelected() && !perfilEstoque.isSelected()) {
-            perfilDiretor.setSelected(true);
-        }
+
         atualizarEstiloToggles();
     }
 
     private void atualizarEstiloToggles() {
-        ToggleButton[] toggles = {periodoMes, periodoTrimestre, periodoAno, perfilDiretor, perfilFinanceiro, perfilEstoque};
+        ToggleButton[] toggles = {periodoMes, periodoAno};
         for (ToggleButton toggle : toggles) {
             toggle.setStyle(toggle.isSelected() ? TOGGLE_SELECTED : TOGGLE_DEFAULT);
         }
@@ -221,22 +221,65 @@ public class dashboardController implements Initializable {
 
     private void carregarDashboard() {
         atualizarEstiloToggles();
-        dashboardData = dashboardDAO.carregar(periodoSelecionado());
-        lblFonte.setText(dashboardData.getSourceLabel());
-        renderKpis();
-        renderCharts();
-        renderLists();
+        String periodo = periodoSelecionado();
+
+        Task<DashboardData> task = new Task<>() {
+            @Override
+            protected DashboardData call() {
+                return dashboardDAO.carregar(periodo);
+            }
+        };
+
+        task.setOnSucceeded(e -> {
+            dashboardData = task.getValue();
+            lblFonte.setText(dashboardData.getSourceLabel());
+            renderKpis();
+            renderCharts();
+            renderLists();
+        });
+
+        Thread t = new Thread(task);
+        t.setDaemon(true);
+        t.start();
     }
 
     private String periodoSelecionado() {
         if (periodoAno.isSelected()) return "ANO";
-        if (periodoTrimestre.isSelected()) return "TRIMESTRE";
         return "MES";
     }
 
+    private List<LegendaItem> criarLegendaComPercentual(List<DashboardData.NameValue> values) {
+        double total = values.stream().mapToDouble(DashboardData.NameValue::getValue).sum();
+        List<LegendaItem> itens = new ArrayList<>();
+        for (int i = 0; i < values.size(); i++) {
+            DashboardData.NameValue v = values.get(i);
+            String rotulo = total > 0
+                    ? String.format("%s (%.1f%%)", v.getName(), (v.getValue() / total) * 100)
+                    : v.getName();
+            itens.add(new LegendaItem(rotulo, corGrafico(i)));
+        }
+        return itens;
+    }
+
+    private Node criarPieChartComPercentual(List<DashboardData.NameValue> values) {
+        PieChart chart = new PieChart();
+        chart.getStyleClass().add("dashboard-chart");
+        chart.setAnimated(true);
+        chart.setLegendVisible(false);
+        chart.setLabelsVisible(false);
+        chart.setMinHeight(220);
+        chart.setPrefHeight(230);
+        for (DashboardData.NameValue value : values) {
+            chart.getData().add(new PieChart.Data(value.getName(), value.getValue()));
+        }
+        return criarGraficoComLegenda(chart, criarLegendaComPercentual(values));
+    }
+
     private String perfilSelecionado() {
-        if (perfilFinanceiro.isSelected()) return "FINANCEIRO";
-        if (perfilEstoque.isSelected()) return "ESTOQUE";
+        if (PermissaoUtil.temPermissaoExata("DIRETOR"))    return "DIRETOR";
+        if (PermissaoUtil.temPermissaoExata("FINANCEIRO")) return "FINANCEIRO";
+        if (PermissaoUtil.temPermissaoExata("ESTOQUE"))    return "ESTOQUE";
+        if (PermissaoUtil.temPermissaoExata("SOLICITANTE")) return "SOLICITANTE";
         return "DIRETOR";
     }
 
@@ -309,14 +352,60 @@ public class dashboardController implements Initializable {
         };
     }
 
+    private void mostrarCard(VBox card, boolean visivel) {
+        card.setVisible(visivel);
+        card.setManaged(visivel);
+    }
+
     private void renderCharts() {
-        comparacaoChartBox.getChildren().setAll(criarComparacaoMensal());
-        valorCompradoChartBox.getChildren().setAll(criarEvolucaoValor());
-        statusEstoqueChartBox.getChildren().setAll(criarPieChart(dashboardData.getStockStatus()));
-        setorChartBox.getChildren().setAll(criarBarChartSimples("Setor", "Solicita\u00e7\u00f5es", dashboardData.getRequestsBySector()));
-        centroCustoChartBox.getChildren().setAll(criarPieChart(dashboardData.getRequestsByCostCenter()));
-        fornecedorChartBox.getChildren().setAll(criarHorizontalBarChart(dashboardData.getPurchasedBySupplier()));
-        movimentacaoChartBox.getChildren().setAll(criarMovimentacaoChart());
+        String perfil = perfilSelecionado();
+        boolean isDiretor     = "DIRETOR".equals(perfil);
+        boolean isFinanceiro  = "FINANCEIRO".equals(perfil);
+        boolean isEstoque     = "ESTOQUE".equals(perfil);
+        boolean isSolicitante = "SOLICITANTE".equals(perfil);
+
+        // Comparação mensal — DIRETOR, FINANCEIRO, ESTOQUE
+        boolean verComparacao = isDiretor || isFinanceiro || isEstoque;
+        mostrarCard(cardComparacao, verComparacao);
+        if (verComparacao)
+            comparacaoChartBox.getChildren().setAll(criarComparacaoMensal());
+
+        // Evolução valor — DIRETOR, FINANCEIRO
+        boolean verValor = isDiretor || isFinanceiro;
+        mostrarCard(cardValorComprado, verValor);
+        if (verValor)
+            valorCompradoChartBox.getChildren().setAll(criarEvolucaoValor());
+
+        // Status estoque — DIRETOR, FINANCEIRO, ESTOQUE
+        boolean verEstoque = isDiretor || isFinanceiro || isEstoque;
+        mostrarCard(cardStatusEstoque, verEstoque);
+        if (verEstoque)
+            statusEstoqueChartBox.getChildren().setAll(
+                    criarPieChartComPercentual(dashboardData.getStockStatus()));
+
+        // Setor — todos
+        mostrarCard(cardSetor, true);
+        setorChartBox.getChildren().setAll(
+                criarBarChartSimples("Setor", "Solicita\u00e7\u00f5es",
+                        dashboardData.getRequestsBySector()));
+
+        // Centro de custo — todos
+        mostrarCard(cardCentroCusto, true);
+        centroCustoChartBox.getChildren().setAll(
+                criarPieChartComPercentual(dashboardData.getRequestsByCostCenter()));
+
+        // Fornecedor — DIRETOR, FINANCEIRO
+        boolean verFornecedor = isDiretor || isFinanceiro;
+        mostrarCard(cardFornecedor, verFornecedor);
+        if (verFornecedor)
+            fornecedorChartBox.getChildren().setAll(
+                    criarHorizontalBarChart(dashboardData.getPurchasedBySupplier()));
+
+        // Movimentação — DIRETOR, FINANCEIRO, ESTOQUE
+        boolean verMovimentacao = isDiretor || isFinanceiro || isEstoque;
+        mostrarCard(cardMovimentacao, verMovimentacao);
+        if (verMovimentacao)
+            movimentacaoChartBox.getChildren().setAll(criarMovimentacaoChart());
     }
 
     private Node criarComparacaoMensal() {
@@ -518,11 +607,21 @@ public class dashboardController implements Initializable {
     }
 
     private void renderLists() {
+        String perfil = perfilSelecionado();
+        boolean isDiretor = "DIRETOR".equals(perfil);
+
+        // Produtos mais/menos saem — todos
+        mostrarCard(cardMaisSaem, true);
+        mostrarCard(cardMenosSaem, true);
         preencherListaRanking(listaMaisSaem, dashboardData.getTopOutgoingProducts(), false,
                 "Produtos que mais saem", "Top 5 do periodo selecionado");
         preencherListaRanking(listaMenosSaem, dashboardData.getLowOutgoingProducts(), true,
                 "Produtos que menos saem", "Itens com baixo giro");
-        preencherListaUsuarios();
+
+        // Usuários — só DIRETOR
+        mostrarCard(cardUsuarios, isDiretor);
+        if (isDiretor) preencherListaUsuarios();
+        else listaUsuarios.getChildren().clear();
     }
 
     private void preencherListaRanking(VBox destino, List<DashboardData.NameValue> values, boolean muted,

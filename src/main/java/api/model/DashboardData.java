@@ -20,95 +20,110 @@ public class DashboardData {
 
     private String sourceLabel = "Dados de exemplo";
 
-    public List<Metric> getMetrics() {
-        return metrics;
-    }
+    public List<Metric> getMetrics() { return metrics; }
 
     public List<Metric> getMetricsForProfile(String profile) {
-        if ("DIRETOR".equals(profile)) {
-            return metrics;
-        }
-
+        if (profile == null) return metrics;
+        String p = profile.toUpperCase();
+        if ("DIRETOR".equals(p)) return metrics;
         List<Metric> filtered = new ArrayList<>();
-        for (Metric metric : metrics) {
-            if (metric.isVisibleFor(profile)) {
-                filtered.add(metric);
-            }
+        for (Metric m : metrics) {
+            if (m.isVisibleFor(p)) filtered.add(m);
         }
         return filtered.isEmpty() ? metrics : filtered;
     }
 
-    public List<SeriesPoint> getMonthlyComparison() {
-        return monthlyComparison;
-    }
+    public List<SeriesPoint> getMonthlyComparison()         { return monthlyComparison; }
+    public List<NameValue>   getPurchasedValueEvolution()   { return purchasedValueEvolution; }
+    public List<NameValue>   getStockStatus()               { return stockStatus; }
+    public List<NameValue>   getRequestsBySector()          { return requestsBySector; }
+    public List<NameValue>   getRequestsByCostCenter()      { return requestsByCostCenter; }
+    public List<NameValue>   getPurchasedBySupplier()       { return purchasedBySupplier; }
+    public List<SeriesPoint> getStockMovement()             { return stockMovement; }
+    public List<NameValue>   getTopOutgoingProducts()       { return topOutgoingProducts; }
+    public List<NameValue>   getLowOutgoingProducts()       { return lowOutgoingProducts; }
+    public List<NameValue>   getTopRequestingUsers()        { return topRequestingUsers; }
+    public String            getSourceLabel()               { return sourceLabel; }
+    public void              setSourceLabel(String s)       { this.sourceLabel = s; }
 
-    public List<NameValue> getPurchasedValueEvolution() {
-        return purchasedValueEvolution;
-    }
-
-    public List<NameValue> getStockStatus() {
-        return stockStatus;
-    }
-
-    public List<NameValue> getRequestsBySector() {
-        return requestsBySector;
-    }
-
-    public List<NameValue> getRequestsByCostCenter() {
-        return requestsByCostCenter;
-    }
-
-    public List<NameValue> getPurchasedBySupplier() {
-        return purchasedBySupplier;
-    }
-
-    public List<SeriesPoint> getStockMovement() {
-        return stockMovement;
-    }
-
-    public List<NameValue> getTopOutgoingProducts() {
-        return topOutgoingProducts;
-    }
-
-    public List<NameValue> getLowOutgoingProducts() {
-        return lowOutgoingProducts;
-    }
-
-    public List<NameValue> getTopRequestingUsers() {
-        return topRequestingUsers;
-    }
-
-    public String getSourceLabel() {
-        return sourceLabel;
-    }
-
-    public void setSourceLabel(String sourceLabel) {
-        this.sourceLabel = sourceLabel;
-    }
-
-    public void addMetric(String title, String value, String detail, String variant, String icon, String... profiles) {
+    public void addMetric(String title, String value, String detail,
+                          String variant, String icon, String... profiles) {
         metrics.add(new Metric(title, value, detail, variant, icon, profiles));
     }
 
+    // ── Perfis por área ──────────────────────────────────────────────────────
+    // DIRETOR       → tudo
+    // FINANCEIRO    → tudo exceto usuários
+    // ESTOQUE       → estoque, movimentação, produtos, entradas/saídas, tempos, setor/cc, abaixo mínimo
+    // SOLICITANTE   → tempos aprovação, setor/cc, produtos mais/menos saem, abaixo mínimo
+
     public static DashboardData exemploLovable() {
         DashboardData data = new DashboardData();
-        data.setSourceLabel("Dados de exemplo do painel Lovable");
+        data.setSourceLabel("Dados de exemplo");
 
-        data.addMetric("Valor total solicita\u00e7\u00f5es", "R$ 284.350,00", "+12,4% vs m\u00eas ant.", "primary", "banknote", "DIRETOR", "FINANCEIRO");
-        data.addMetric("Total de solicita\u00e7\u00f5es", "187", "+8,1%", "info", "shopping-cart", "DIRETOR", "FINANCEIRO", "ESTOQUE", "OPERACIONAL");
-        data.addMetric("Aguardando aprova\u00e7\u00e3o", "14", "Mais antiga h\u00e1 3 dias", "warning", "clock-4", "DIRETOR", "FINANCEIRO", "ESTOQUE", "OPERACIONAL");
-        data.addMetric("Aprovados no m\u00eas", "54", "+14,9%", "success", "circle-check", "DIRETOR", "FINANCEIRO");
-        data.addMetric("Rejeitados no m\u00eas", "8", "+2 pedidos", "danger", "circle-x", "DIRETOR", "FINANCEIRO");
-        data.addMetric("Tempo m\u00e9dio aprova\u00e7\u00e3o", "1d 8h", "Meta: at\u00e9 2 dias", "neutral", "timer", "DIRETOR", "FINANCEIRO");
-        data.addMetric("Finalizados no m\u00eas", "49", "", "success", "package-check", "DIRETOR", "FINANCEIRO", "ESTOQUE", "OPERACIONAL");
-        data.addMetric("Valor comprado no m\u00eas", "R$ 73.500,00", "+19,8%", "primary", "trending-up", "DIRETOR", "FINANCEIRO");
-        data.addMetric("Aprova\u00e7\u00e3o -> Compra", "2d 4h", "Tempo m\u00e9dio", "info", "timer", "DIRETOR", "FINANCEIRO");
-        data.addMetric("Compra -> Recebimento", "5d 11h", "Tempo m\u00e9dio", "info", "timer", "DIRETOR", "ESTOQUE");
-        data.addMetric("Total de itens (SKUs)", "197", "", "neutral", "boxes", "DIRETOR", "ESTOQUE");
-        data.addMetric("Valor do estoque", "R$ 412.900,00", "", "primary", "banknote", "DIRETOR", "ESTOQUE");
-        data.addMetric("Abaixo do m\u00ednimo", "17", "Reposi\u00e7\u00e3o necess\u00e1ria", "warning", "triangle-alert", "DIRETOR", "ESTOQUE");
-        data.addMetric("Entradas no m\u00eas", "1.284", "", "success", "package", "DIRETOR", "ESTOQUE");
-        data.addMetric("Sa\u00eddas no m\u00eas", "1.106", "", "neutral", "package-minus", "DIRETOR", "ESTOQUE", "OPERACIONAL");
+        // Valor total solicitações — DIRETOR, FINANCEIRO
+        data.addMetric("Valor total solicita\u00e7\u00f5es", "R$ 284.350,00", "+12,4% vs m\u00eas ant.",
+                "primary", "banknote", "DIRETOR", "FINANCEIRO");
+
+        // Total solicitações — todos exceto SOLICITANTE (ele não precisa ver o total geral)
+        data.addMetric("Total de solicita\u00e7\u00f5es", "187", "+8,1%",
+                "info", "shopping-cart", "DIRETOR", "FINANCEIRO", "ESTOQUE");
+
+        // Aguardando aprovação — todos
+        data.addMetric("Aguardando aprova\u00e7\u00e3o", "14", "Mais antiga h\u00e1 3 dias",
+                "warning", "clock-4", "DIRETOR", "FINANCEIRO", "ESTOQUE", "SOLICITANTE");
+
+        // Aprovados — DIRETOR, FINANCEIRO
+        data.addMetric("Aprovados no m\u00eas", "54", "+14,9%",
+                "success", "circle-check", "DIRETOR", "FINANCEIRO");
+
+        // Rejeitados — DIRETOR, FINANCEIRO
+        data.addMetric("Rejeitados no m\u00eas", "8", "+2 pedidos",
+                "danger", "circle-x", "DIRETOR", "FINANCEIRO");
+
+        // Tempo médio aprovação — todos
+        data.addMetric("Tempo m\u00e9dio aprova\u00e7\u00e3o", "1d 8h", "Meta: at\u00e9 2 dias",
+                "neutral", "timer", "DIRETOR", "FINANCEIRO", "ESTOQUE", "SOLICITANTE");
+
+        // Finalizados — DIRETOR, FINANCEIRO, ESTOQUE
+        data.addMetric("Finalizados no m\u00eas", "49", "",
+                "success", "package-check", "DIRETOR", "FINANCEIRO", "ESTOQUE");
+
+        // Valor comprado — DIRETOR, FINANCEIRO
+        data.addMetric("Valor comprado no m\u00eas", "R$ 73.500,00", "+19,8%",
+                "primary", "trending-up", "DIRETOR", "FINANCEIRO");
+
+        // Aprovação → Compra — todos
+        data.addMetric("Aprova\u00e7\u00e3o -> Compra", "2d 4h", "Tempo m\u00e9dio",
+                "info", "timer", "DIRETOR", "FINANCEIRO", "ESTOQUE", "SOLICITANTE");
+
+        // Compra → Recebimento — DIRETOR, FINANCEIRO, ESTOQUE
+        data.addMetric("Compra -> Recebimento", "5d 11h", "Tempo m\u00e9dio",
+                "info", "timer", "DIRETOR", "FINANCEIRO", "ESTOQUE");
+
+        // Total SKUs — DIRETOR, FINANCEIRO, ESTOQUE
+        data.addMetric("Total de itens (SKUs)", "197", "",
+                "neutral", "boxes", "DIRETOR", "FINANCEIRO", "ESTOQUE");
+
+        // Valor estoque — DIRETOR, FINANCEIRO, ESTOQUE
+        data.addMetric("Valor do estoque", "R$ 412.900,00", "",
+                "primary", "banknote", "DIRETOR", "FINANCEIRO", "ESTOQUE");
+
+        // Abaixo do mínimo — todos
+        data.addMetric("Abaixo do m\u00ednimo", "17", "Reposi\u00e7\u00e3o necess\u00e1ria",
+                "warning", "triangle-alert", "DIRETOR", "FINANCEIRO", "ESTOQUE", "SOLICITANTE");
+
+        // Entradas — DIRETOR, FINANCEIRO, ESTOQUE
+        data.addMetric("Entradas no m\u00eas", "1.284", "",
+                "success", "package", "DIRETOR", "FINANCEIRO", "ESTOQUE");
+
+        // Saídas — DIRETOR, FINANCEIRO, ESTOQUE
+        data.addMetric("Sa\u00eddas no m\u00eas", "1.106", "",
+                "neutral", "package-minus", "DIRETOR", "FINANCEIRO", "ESTOQUE");
+
+        // Usuários que mais solicitam — apenas DIRETOR
+        data.addMetric("Top solicitantes", "Daniel Souza", "24 pedidos",
+                "info", "users", "DIRETOR");
 
         data.monthlyComparison.add(new SeriesPoint("Jan", 38, 5, 34));
         data.monthlyComparison.add(new SeriesPoint("Fev", 42, 7, 36));
@@ -166,76 +181,48 @@ public class DashboardData {
         return data;
     }
 
+    // ── Inner classes ────────────────────────────────────────────────────────
+
     public static class Metric {
-        private final String title;
-        private final String value;
-        private final String detail;
-        private final String variant;
-        private final String icon;
+        private final String title, value, detail, variant, icon;
         private final List<String> profiles;
 
-        public Metric(String title, String value, String detail, String variant, String icon, String... profiles) {
-            this.title = title;
-            this.value = value;
-            this.detail = detail == null ? "" : detail;
+        public Metric(String title, String value, String detail,
+                      String variant, String icon, String... profiles) {
+            this.title   = title;
+            this.value   = value;
+            this.detail  = detail == null ? "" : detail;
             this.variant = variant;
-            this.icon = icon;
+            this.icon    = icon;
             this.profiles = Arrays.asList(profiles);
         }
 
-        public String getTitle() {
-            return title;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public String getDetail() {
-            return detail;
-        }
-
-        public String getVariant() {
-            return variant;
-        }
-
-        public String getIcon() {
-            return icon;
-        }
+        public String  getTitle()   { return title; }
+        public String  getValue()   { return value; }
+        public String  getDetail()  { return detail; }
+        public String  getVariant() { return variant; }
+        public String  getIcon()    { return icon; }
 
         public boolean isVisibleFor(String profile) {
-            return profiles.isEmpty() || profiles.contains(profile);
+            return profiles.isEmpty() || profiles.contains(profile.toUpperCase());
         }
     }
 
     public static class SeriesPoint {
         private final String label;
-        private final double first;
-        private final double second;
-        private final double third;
+        private final double first, second, third;
 
         public SeriesPoint(String label, double first, double second, double third) {
-            this.label = label;
-            this.first = first;
+            this.label  = label;
+            this.first  = first;
             this.second = second;
-            this.third = third;
+            this.third  = third;
         }
 
-        public String getLabel() {
-            return label;
-        }
-
-        public double getFirst() {
-            return first;
-        }
-
-        public double getSecond() {
-            return second;
-        }
-
-        public double getThird() {
-            return third;
-        }
+        public String getLabel()  { return label; }
+        public double getFirst()  { return first; }
+        public double getSecond() { return second; }
+        public double getThird()  { return third; }
     }
 
     public static class NameValue {
@@ -243,16 +230,11 @@ public class DashboardData {
         private final double value;
 
         public NameValue(String name, double value) {
-            this.name = name;
+            this.name  = name;
             this.value = value;
         }
 
-        public String getName() {
-            return name;
-        }
-
-        public double getValue() {
-            return value;
-        }
+        public String getName()  { return name; }
+        public double getValue() { return value; }
     }
 }

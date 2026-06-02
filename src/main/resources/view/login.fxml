@@ -12,16 +12,18 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.effect.GaussianBlur?>
 
-<StackPane prefHeight="720.0" prefWidth="1092.0"
+<StackPane minWidth="800" minHeight="500"
+           fx:id="root"
+           style="-fx-background-color: #050d1a;
+                  -fx-background-image: url('@../images/login-background.png');
+                  -fx-background-size: cover;
+                  -fx-background-position: center center;"
            xmlns="http://javafx.com/javafx/17"
            xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="api.controller.LoginController"
-           style="-fx-background-color: #050d1a;">
+           fx:controller="api.controller.LoginController">
 
     <!-- Imagem de fundo desfocada -->
-    <ImageView fitWidth="1092" fitHeight="720"
-               preserveRatio="false" pickOnBounds="false"
-               opacity="0.38">
+    <ImageView preserveRatio="false" pickOnBounds="false" opacity="0.38">
         <image>
             <Image url="@../images/login-background.png"/>
         </image>
@@ -31,15 +33,16 @@
     </ImageView>
 
     <!-- Gradiente azul sobre o fundo -->
-    <Region prefWidth="1092" prefHeight="720"
-            style="-fx-background-color:
-                linear-gradient(to bottom right,
-                    rgba(4, 10, 30, 0.75) 0%,
-                    rgba(8, 30, 90, 0.65) 50%,
-                    rgba(15, 55, 160, 0.50) 100%);"/>
+    <Region maxWidth="Infinity" maxHeight="Infinity"
+            style="-fx-background-color: linear-gradient(rgba(10,20,50,0.8), rgba(20,60,140,0.75));"/>
 
     <!-- Layout: branding esquerda + card direita -->
-    <HBox alignment="CENTER" spacing="80">
+    <HBox alignment="CENTER"
+          spacing="80"
+          style="
+          -fx-background-color: transparent;
+          -fx-border-color: transparent;
+      ">
 
         <!-- Branding esquerdo -->
         <VBox alignment="CENTER_LEFT" spacing="14" maxWidth="360">
@@ -57,7 +60,7 @@
                           -fx-font-family: 'Segoe UI Black', Arial;
                           -fx-font-size: 34px; -fx-font-weight: 900;
                           -fx-padding: -10 0 0 0;"/>
-            <Region prefHeight="6"/>
+
             <Label text="Sistema de Gestão de Compras"
                    style="-fx-text-fill: rgba(180,210,255,0.65);
                           -fx-font-size: 13px; -fx-font-family: 'Segoe UI';"/>

@@ -29,16 +29,7 @@
                         <Label text="PER&#205;ODO:" styleClass="filter-label"/>
                         <HBox spacing="2" styleClass="segmented-control">
                             <ToggleButton fx:id="periodoMes" text="M&#234;s" onAction="#onFiltroAlterado"/>
-                            <ToggleButton fx:id="periodoTrimestre" text="Trimestre" onAction="#onFiltroAlterado"/>
                             <ToggleButton fx:id="periodoAno" text="Ano" onAction="#onFiltroAlterado"/>
-                        </HBox>
-                    </HBox>
-                    <HBox alignment="CENTER_RIGHT" spacing="8">
-                        <Label text="PERFIL:" styleClass="filter-label"/>
-                        <HBox spacing="2" styleClass="segmented-control">
-                            <ToggleButton fx:id="perfilDiretor" text="Diretor" onAction="#onFiltroAlterado"/>
-                            <ToggleButton fx:id="perfilFinanceiro" text="Financeiro / Compras" onAction="#onFiltroAlterado"/>
-                            <ToggleButton fx:id="perfilEstoque" text="Estoque / Operacional" onAction="#onFiltroAlterado"/>
                         </HBox>
                     </HBox>
                 </VBox>
@@ -52,8 +43,8 @@
                       prefTileHeight="128"
                       tileAlignment="TOP_LEFT"/>
 
-            <TilePane hgap="16" vgap="16" prefTileWidth="390" prefTileHeight="358">
-                <VBox spacing="10" styleClass="dashboard-card">
+            <TilePane fx:id="tileGraficos1" hgap="16" vgap="16" prefTileWidth="390" prefTileHeight="358">
+                <VBox fx:id="cardComparacao" spacing="10" styleClass="dashboard-card">
                     <VBox spacing="2">
                         <Label text="Compara&#231;&#227;o mensal" styleClass="section-title"/>
                         <Label text="Pedidos aprovados, rejeitados e finalizados" styleClass="section-subtitle"/>
@@ -61,7 +52,7 @@
                     <StackPane fx:id="comparacaoChartBox" prefHeight="280" VBox.vgrow="ALWAYS"/>
                 </VBox>
 
-                <VBox spacing="10" styleClass="dashboard-card">
+                <VBox fx:id="cardValorComprado" spacing="10" styleClass="dashboard-card">
                     <VBox spacing="2">
                         <Label text="Evolu&#231;&#227;o do valor comprado" styleClass="section-title"/>
                         <Label text="&#218;ltimos 5 meses" styleClass="section-subtitle"/>
@@ -69,7 +60,7 @@
                     <StackPane fx:id="valorCompradoChartBox" prefHeight="280" VBox.vgrow="ALWAYS"/>
                 </VBox>
 
-                <VBox spacing="10" styleClass="dashboard-card">
+                <VBox fx:id="cardStatusEstoque" spacing="10" styleClass="dashboard-card">
                     <VBox spacing="2">
                         <Label text="Status do estoque" styleClass="section-title"/>
                         <Label text="Itens por situa&#231;&#227;o" styleClass="section-subtitle"/>
@@ -78,8 +69,8 @@
                 </VBox>
             </TilePane>
 
-            <TilePane hgap="16" vgap="16" prefTileWidth="390" prefTileHeight="358">
-                <VBox spacing="10" styleClass="dashboard-card">
+            <TilePane fx:id="tileGraficos2" hgap="16" vgap="16" prefTileWidth="390" prefTileHeight="358">
+                <VBox fx:id="cardSetor" spacing="10" styleClass="dashboard-card">
                     <VBox spacing="2">
                         <Label text="Solicita&#231;&#245;es por setor" styleClass="section-title"/>
                         <Label text="Volume do per&#237;odo selecionado" styleClass="section-subtitle"/>
@@ -87,7 +78,7 @@
                     <StackPane fx:id="setorChartBox" prefHeight="280" VBox.vgrow="ALWAYS"/>
                 </VBox>
 
-                <VBox spacing="10" styleClass="dashboard-card">
+                <VBox fx:id="cardCentroCusto" spacing="10" styleClass="dashboard-card">
                     <VBox spacing="2">
                         <Label text="Solicita&#231;&#245;es por centro de custo" styleClass="section-title"/>
                         <Label text="Distribui&#231;&#227;o percentual" styleClass="section-subtitle"/>
@@ -95,7 +86,7 @@
                     <StackPane fx:id="centroCustoChartBox" prefHeight="280" VBox.vgrow="ALWAYS"/>
                 </VBox>
 
-                <VBox spacing="10" styleClass="dashboard-card">
+                <VBox fx:id="cardFornecedor" spacing="10" styleClass="dashboard-card">
                     <VBox spacing="2">
                         <Label text="Valor comprado por fornecedor" styleClass="section-title"/>
                         <Label text="Per&#237;odo selecionado" styleClass="section-subtitle"/>
@@ -103,7 +94,7 @@
                     <StackPane fx:id="fornecedorChartBox" prefHeight="280" VBox.vgrow="ALWAYS"/>
                 </VBox>
 
-                <VBox spacing="10" styleClass="dashboard-card">
+                <VBox fx:id="cardMovimentacao" spacing="10" styleClass="dashboard-card">
                     <VBox spacing="2">
                         <Label text="Movimenta&#231;&#227;o de estoque" styleClass="section-title"/>
                         <Label text="Entradas e sa&#237;das por m&#234;s" styleClass="section-subtitle"/>
@@ -112,8 +103,8 @@
                 </VBox>
             </TilePane>
 
-            <TilePane hgap="16" vgap="16" prefTileWidth="250" prefTileHeight="286">
-                <VBox spacing="12" styleClass="dashboard-card">
+            <TilePane fx:id="tileListas" hgap="16" vgap="16" prefTileWidth="250" prefTileHeight="286">
+                <VBox fx:id="cardMaisSaem" spacing="12" styleClass="dashboard-card">
                     <VBox spacing="2">
                         <Label text="Produtos que mais saem" styleClass="section-title"/>
                         <Label text="Top 5 do per&#237;odo" styleClass="section-subtitle"/>
@@ -121,7 +112,7 @@
                     <VBox fx:id="listaMaisSaem" spacing="0"/>
                 </VBox>
 
-                <VBox spacing="12" styleClass="dashboard-card">
+                <VBox fx:id="cardMenosSaem" spacing="12" styleClass="dashboard-card">
                     <VBox spacing="2">
                         <Label text="Produtos que menos saem" styleClass="section-title"/>
                         <Label text="Baixo giro" styleClass="section-subtitle"/>
@@ -129,7 +120,7 @@
                     <VBox fx:id="listaMenosSaem" spacing="0"/>
                 </VBox>
 
-                <VBox spacing="12" styleClass="dashboard-card">
+                <VBox fx:id="cardUsuarios" spacing="12" styleClass="dashboard-card">
                     <VBox spacing="2">
                         <Label text="Usu&#225;rios que mais solicitam" styleClass="section-title"/>
                         <Label text="Pedidos por solicitante" styleClass="section-subtitle"/>
@@ -137,6 +128,7 @@
                     <VBox fx:id="listaUsuarios" spacing="0"/>
                 </VBox>
             </TilePane>
+
         </VBox>
     </ScrollPane>
 
@@ -188,4 +180,5 @@
                        VBox.vgrow="ALWAYS"/>
         </VBox>
     </StackPane>
+
 </StackPane>
