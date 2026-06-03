@@ -60,13 +60,13 @@ A plataforma desenvolvida pela equipe JavaliCoders centraliza todo o ciclo de co
 
 | Rank | Prioridade | User Story | Story Points | Sprint | Status |
 |------|------------|------------|--------------|--------|--------|
-| 20   | Média | Como funcionário, quero filtrar os produtos do estoque de acordo com a quantidade, para facilitar a visualização de produtos que precisam ser comprados. | 2            | 3 | ⏳ |
-| 21   | Média | Como diretor/financeiro, quero poder acessar pedidos, cotações e compras pesquisando por um produto, para facilitar o acesso ao histórico de compra de um produto. | 3            | 3 | ⏳ |
-| 22   | Média | Como operador de estoque, quero registrar manualmente a entrada de material no estoque, para corrigir ou ajustar o saldo quando houver reposição ou erro de contagem. | 2            | 3 | ⏳ |
-| 23   | Média | Como operador de estoque, quero registrar manualmente a saída de um produto do estoque, para manter o controle correto do saldo de estoque. | 2            | 3 | ⏳ |
+| 20   | Média | Como funcionário, quero filtrar os produtos do estoque de acordo com a quantidade, para facilitar a visualização de produtos que precisam ser comprados. | 2            | 3 | ✅ |
+| 21   | Média | Como diretor/financeiro, quero poder acessar pedidos, cotações e compras pesquisando por um produto, para facilitar o acesso ao histórico de compra de um produto. | 3            | 3 | ✅ |
+| 22   | Média | Como operador de estoque, quero registrar manualmente a entrada de material no estoque, para corrigir ou ajustar o saldo quando houver reposição ou erro de contagem. | 2            | 3 | ✅ |
+| 23   | Média | Como operador de estoque, quero registrar manualmente a saída de um produto do estoque, para manter o controle correto do saldo de estoque. | 2            | 3 | ✅ |
 | 24   | Alta | Como funcionário, quero visualizar o histórico de movimentações do estoque, para acompanhar entradas, saídas e ajustes realizados. | 5            | 3 | ✅ |
-| 25   | Alta | Como diretor/administrador, quero visualizar um dashboard visual com indicadores, para acompanhar o desempenho das compras e do funcionamento dos processos. | 8            | 3 | ⏳ |
-| 26   | Média | Como funcionário, quero visualizar o histórico de ações do sistema, para acompanhar o processo de compras e ações realizadas por cada usuário. | 8       | 3 | ⏳ |
+| 25   | Alta | Como diretor/administrador, quero visualizar um dashboard visual com indicadores, para acompanhar o desempenho das compras e do funcionamento dos processos. | 8            | 3 | ✅ |
+| 26   | Média | Como funcionário, quero visualizar o histórico de ações do sistema, para acompanhar o processo de compras e ações realizadas por cada usuário. | 8       | 3 | ✅ |
 
 ---
 
@@ -99,11 +99,10 @@ A plataforma desenvolvida pela equipe JavaliCoders centraliza todo o ciclo de co
 - **Período**: 16/03 a 05/04
 - **Objetivo Principal**: Estruturar autenticação, cadastros base (usuários, produtos, fornecedores) e criação de pedidos
 - **Principais Entregas**:
-  - ⏳ Cadastro e login de usuários
-  - ⏳ Cadastro de produtos e fornecedores
-  - ⏳ Visualização de estoque
-  - ⏳ Criação e listagem de pedidos de compra
-- **Documentação Detalhada**: <!-- TODO: [Sprint 1 Docs](link) -->
+  -  Cadastro e login de usuários
+  - ✅ Cadastro de produtos e fornecedores
+  - ✅ Visualização de estoque
+  - ✅ Criação e listagem de pedidos de compra
 
 ---
 
@@ -113,27 +112,25 @@ A plataforma desenvolvida pela equipe JavaliCoders centraliza todo o ciclo de co
 - **Período**: 13/04 a 03/05
 - **Objetivo Principal**: Implementar fluxo completo de aprovação, cotação, recebimento e entrega
 - **Principais Entregas**:
-  - ⏳ Aprovação/negação de pedidos
-  - ⏳ Registro de cotações com aprovação da diretoria
-  - ⏳ Conferência de recebimento e registro de divergências
-  - ⏳ Finalização do pedido
-- **Documentação Detalhada**: <!-- TODO: [Sprint 2 Docs](link) -->
-
+  - ✅ Aprovação/negação de pedidos
+  - ✅ Registro de cotações com aprovação da diretoria
+  - ✅ Conferência de recebimento e registro de divergências
+  - ✅ Finalização do pedido
+  
 ---
 
 #### 🎯 Sprint 3 - Inteligência e Valor Agregado
 
-- **Status**: ⏳ Em andamento
+- **Status**: ✅ Concluída
 - **Período**: 11/05 a 31/05
 - **Objetivo Principal**: Adicionar filtros avançados, movimentações manuais de estoque e dashboard gerencial
 - **Principais Entregas**:
-  - ⏳ Filtros de estoque e fornecedores
-  - ⏳ Movimentações manuais (entrada/saída)
-  - ⏳ Histórico de movimentações
-  - ⏳ Dashboard com indicadores
-  - ⏳ Gerenciamento de usuários pelo diretor
-- **Documentação Detalhada**: <!-- TODO: [Sprint 3 Docs](link) -->
-
+  - ✅ Filtros de estoque e fornecedores
+  - ✅ Movimentações manuais (entrada/saída)
+  - ✅ Histórico de movimentações
+  - ✅ Dashboard com indicadores
+  - ✅ Gerenciamento de usuários pelo diretor
+  
 ---
 
 ## 📅 Cronograma de Sprints <a name="sprint"></a>

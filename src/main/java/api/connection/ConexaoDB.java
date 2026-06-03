@@ -11,9 +11,21 @@ import java.util.Properties;
 
 public class ConexaoDB {
 
-    private static final String URL     = "jdbc:mysql://localhost:3306/bd_api";
-    private static final String USUARIO = "root";
-    private static final String SENHA   = "0511";
+    private static final String URL;
+    private static final String USUARIO;
+    private static final String SENHA;
+
+    static {
+        Properties props = new Properties();
+        try (InputStream input = ConexaoDB.class.getResourceAsStream("/config.properties")) {
+            props.load(input);
+            URL     = props.getProperty("db.url");
+            USUARIO = props.getProperty("db.usuario");
+            SENHA   = props.getProperty("db.senha");
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao carregar config.properties", e);
+        }
+    }
 
     private ConexaoDB() {}
 
