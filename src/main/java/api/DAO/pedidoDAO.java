@@ -59,8 +59,9 @@ public class pedidoDAO {
         ObservableList<Pedido> lista = FXCollections.observableArrayList();
         String sql = """
                 SELECT p.*, u.nome AS nome_usuario,
-                       cc.centro_custo, s.setor,
-                       ap.nome AS nome_aprovador
+                        cc.centro_custo, cc.status AS cc_status,
+                s.setor,
+                        ap.nome AS nome_aprovador
                 FROM tb_pedido p
                 JOIN tb_usuario u       ON p.id_solicitante = u.id_usuario
                 JOIN tb_centrocusto cc  ON p.id_centrocusto = cc.id_centrocusto
@@ -256,7 +257,11 @@ public class pedidoDAO {
         Usuario solicitante = new Usuario(
                 rs.getInt("id_solicitante"), rs.getString("nome_usuario"),
                 "", "", "", "ATIVO", new Perfil());
-        CentroCusto cc  = new CentroCusto(rs.getInt("id_centrocusto"), rs.getString("centro_custo"));
+        CentroCusto cc = new CentroCusto(
+                rs.getInt("id_centrocusto"),
+                rs.getString("centro_custo"),
+                rs.getString("cc_status")
+        );
         Setor setor     = new Setor(rs.getInt("id_setor"), rs.getString("setor"));
         Pedido pedido   = new Pedido(
                 rs.getInt("id_pedido"), rs.getString("num_pedido"),
@@ -342,5 +347,24 @@ public class pedidoDAO {
             e.printStackTrace();
         }
         return lista;
+    }
+
+    public static java.util.Set<Integer> buscarIdsPorProduto(String termo) {
+        java.util.Set<Integer> ids = new java.util.HashSet<>();
+        String sql = """
+            SELECT DISTINCT pp.id_pedido
+            FROM tb_pedido_produto pp
+            JOIN tb_produto pr ON pr.id_produto = pp.id_produto
+            WHERE pr.produto LIKE ?
+            """;
+        try (Connection con = ConexaoDB.getConexao();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, "%" + termo + "%");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) ids.add(rs.getInt(1));
+        } catch (SQLException e) {
+            System.err.println("Erro ao buscar IDs por produto: " + e.getMessage());
+        }
+        return ids;
     }
 }

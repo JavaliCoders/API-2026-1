@@ -4,7 +4,8 @@
 --  Projeto: JavaliCoders / API-2026-1
 -- ============================================================
 
-CREATE DATABASE IF NOT EXISTS bd_api;
+DROP DATABASE IF EXISTS bd_api;
+CREATE DATABASE bd_api;
 USE bd_api;
 
 -- ------------------------------------------------------------
@@ -43,11 +44,12 @@ INSERT INTO tb_setor (setor) VALUES
 CREATE TABLE tb_centrocusto (
   id_centrocusto INT AUTO_INCREMENT NOT NULL,
   centro_custo VARCHAR(80) NOT NULL,
+  status enum ("ATIVO", "INATIVO"),
   PRIMARY KEY (id_centrocusto)
 );
 
-INSERT INTO tb_centrocusto (centro_custo) VALUES
-('Manutenção'),('Limpeza'),('Administrativo'),('Informática'),('Infraestrutura');
+INSERT INTO tb_centrocusto (centro_custo, status) VALUES
+('Manutenção', "ATIVO"),('Limpeza', "ATIVO"),('Administrativo', "ATIVO"),('Informática', "ATIVO"),('Infraestrutura', "ATIVO");
 -- IDs: 1=Manut, 2=Limpeza, 3=Admin, 4=Info, 5=Infra
 
 CREATE TABLE tb_produto (
@@ -144,6 +146,23 @@ CREATE TABLE tb_cotacao (
   FOREIGN KEY (id_fornecedor) REFERENCES tb_fornecedor (id_fornecedor),
   FOREIGN KEY (id_anexo)      REFERENCES tb_anexo (id_anexo)
 );
+
+CREATE TABLE tb_cotacao_item (
+  id_cotacao_item  INT AUTO_INCREMENT NOT NULL,
+  id_cotacao       INT NOT NULL,
+  id_pedido_produto INT NOT NULL,
+  qtd_cotada       INT NOT NULL,
+  valor_unitario   DECIMAL(8,2) NOT NULL,
+  valor_total      DECIMAL(8,2) NOT NULL,
+  PRIMARY KEY (id_cotacao_item),
+  FOREIGN KEY (id_cotacao)        REFERENCES tb_cotacao (id_cotacao),
+  FOREIGN KEY (id_pedido_produto) REFERENCES tb_pedido_produto (id_pedido_produto)
+);
+
+-- Adicionar coluna id_cadastrador em tb_cotacao
+ALTER TABLE tb_cotacao
+  ADD COLUMN id_cadastrador INT NULL AFTER id_aprovador,
+  ADD FOREIGN KEY (id_cadastrador) REFERENCES tb_usuario (id_usuario);
 
 CREATE TABLE tb_compra (
   id_compra INT AUTO_INCREMENT NOT NULL,

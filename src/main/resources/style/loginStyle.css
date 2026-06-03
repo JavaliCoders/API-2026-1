@@ -1,6 +1,106 @@
-.subtitle {
+.login-root {
+    -fx-background-color: transparent;
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.background-shade {
+    -fx-background-color: transparent;
+}
+
+.hero-title {
+    -fx-text-fill: #f2f2f4;
+    -fx-font-family: "Arial Black", "Segoe UI Black", Arial, sans-serif;
+    -fx-font-size: 43px;
+    -fx-font-weight: 900;
+    -fx-line-spacing: 4px;
+    -fx-alignment: top-left;
+    -fx-padding: 0;
+}
+
+.login-card {
+    -fx-background-color: transparent;
+}
+
+.form-image-clip {
+    -fx-background-color: transparent;
+}
+
+.form-tint {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.logo-panel {
+    -fx-background-color: #e3e3e3;
+    -fx-background-radius: 0 0 16 16;
+}
+
+.slot-pill {
+    -fx-background-color:
+        linear-gradient(to bottom, rgba(218, 114, 78, 0.66), rgba(180, 82, 50, 0.46));
+    -fx-background-radius: 24;
+    -fx-border-color: rgba(255, 255, 255, 0.18);
+    -fx-border-radius: 24;
+    -fx-border-width: 1;
+}
+
+.top-notch {
+    -fx-background-color: #d9d9d9;
+    -fx-background-radius: 0 0 35 35;
+}
+
+.label-icon {
+    -fx-fill: #eeeeee;
+}
+
+.key-ring {
+    -fx-fill: transparent;
+    -fx-stroke: #eeeeee;
+    -fx-stroke-width: 3;
+}
+
+.key-fill {
+    -fx-fill: #eeeeee;
+}
+
+.field-label {
+    -fx-text-fill: #eeeeee;
+    -fx-font-family: "Segoe UI Black", "Arial Black", Arial, sans-serif;
+    -fx-font-size: 21px;
+    -fx-font-weight: 900;
+}
+
+.input-field {
+    -fx-background-color: #e5e5e5;
+    -fx-background-radius: 24;
+    -fx-border-color: transparent;
+    -fx-border-radius: 24;
+    -fx-background-insets: 0;
+    -fx-padding: 0 18 0 18;
+    -fx-text-fill: #4e4e4e;
+    -fx-prompt-text-fill: #a7a7a7;
     -fx-font-size: 14px;
-    -fx-text-fill: #333;
-    -fx-font-weight: bold;
-    /* -fx-text-alignment: center; */
+    -fx-font-weight: 800;
+}
+
+.input-field:focused {
+    -fx-border-color: rgba(255, 255, 255, 0.8);
+    -fx-border-width: 2;
+}
+
+.login-button {
+    -fx-background-color: #e5e5e5;
+    -fx-background-radius: 26;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+    -fx-text-fill: #1551b4;
+    -fx-font-family: "Segoe UI Black", "Arial Black", Arial, sans-serif;
+    -fx-font-size: 24px;
+    -fx-font-weight: 900;
+    -fx-alignment: center;
+    -fx-cursor: hand;
+}
+
+.login-button:hover {
+    -fx-background-color: #f0f0f0;
 }

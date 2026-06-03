@@ -21,7 +21,7 @@ public class Compra {
     // ── Construtor completo (usado ao carregar do BD) ─────────────────────────
     public Compra(int idCompra, Pedido pedido, Fornecedor fornecedor,
                   LocalDateTime data, Usuario comprador, double valorTotal,
-                  LocalDateTime dataPrevista, String status) {
+                  LocalDateTime dataPrevista, String status) { // ← String status adicionado
         this.idCompra     = new SimpleIntegerProperty(idCompra);
         this.pedido       = new SimpleObjectProperty<>(pedido);
         this.fornecedor   = new SimpleObjectProperty<>(fornecedor);
@@ -29,38 +29,38 @@ public class Compra {
         this.comprador    = new SimpleObjectProperty<>(comprador);
         this.valorTotal   = new SimpleDoubleProperty(valorTotal);
         this.dataPrevista = new SimpleObjectProperty<>(dataPrevista);
-        this.status       = new SimpleStringProperty(status);
+        this.status       = new SimpleStringProperty(status); // ← agora recebe String corretamente
     }
 
-    // ── Construtor para nova compra com todos os campos ───────────────────────
+    // ── Construtor para nova compra (status padrão REALIZADA) ─────────────────
     public Compra(Pedido pedido, Fornecedor fornecedor, LocalDateTime data,
                   Usuario comprador, double valorTotal, LocalDateTime dataPrevista) {
         this(0, pedido, fornecedor, data, comprador, valorTotal, dataPrevista, "REALIZADA");
     }
 
-    // ── Construtor sem args (para controller setar via setters) ──────────────
+    // ── Construtor sem args ───────────────────────────────────────────────────
     public Compra() {
         this(0, null, null, null, null, 0, null, "REALIZADA");
     }
 
     // ── Setters ──────────────────────────────────────────────────────────────
-    public void setPedido(Pedido p)           { pedido.set(p); }
-    public void setFornecedor(Fornecedor f)   { fornecedor.set(f); }
-    public void setData(LocalDateTime d)      { data.set(d); }
-    public void setComprador(Usuario u)       { comprador.set(u); }
-    public void setValorTotal(double v)       { valorTotal.set(v); }
+    public void setPedido(Pedido p)              { pedido.set(p); }
+    public void setFornecedor(Fornecedor f)      { fornecedor.set(f); }
+    public void setData(LocalDateTime d)         { data.set(d); }
+    public void setComprador(Usuario u)          { comprador.set(u); }
+    public void setValorTotal(double v)          { valorTotal.set(v); }
     public void setDataPrevista(LocalDateTime d) { dataPrevista.set(d); }
-    public void setStatus(String s)           { status.set(s); }
+    public void setStatus(String s)              { status.set(s); }
 
     // ── Getters ──────────────────────────────────────────────────────────────
-    public int           getIdCompra()      { return idCompra.get(); }
-    public Pedido        getPedido()        { return pedido.get(); }
-    public Fornecedor    getFornecedor()    { return fornecedor.get(); }
-    public LocalDateTime getData()          { return data.get(); }
-    public Usuario       getComprador()     { return comprador.get(); }
-    public double        getValorTotal()    { return valorTotal.get(); }
-    public LocalDateTime getDataPrevista()  { return dataPrevista.get(); }
-    public String        getStatus()        { return status.get(); }
+    public int           getIdCompra()     { return idCompra.get(); }
+    public Pedido        getPedido()       { return pedido.get(); }
+    public Fornecedor    getFornecedor()   { return fornecedor.get(); }
+    public LocalDateTime getData()         { return data.get(); }
+    public Usuario       getComprador()    { return comprador.get(); }
+    public double        getValorTotal()   { return valorTotal.get(); }
+    public LocalDateTime getDataPrevista() { return dataPrevista.get(); }
+    public String        getStatus()       { return status.get(); }
 
     // ── Auxiliares para TableView ─────────────────────────────────────────────
     public String getNumPedido() {

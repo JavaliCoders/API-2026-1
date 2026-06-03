@@ -66,7 +66,7 @@ public class editarPedidoController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         fieldSetor.setItems(SetorDAO.listarTodos());
-        fieldCentroCusto.setItems(centroCustoDAO.listarTodos());
+        fieldCentroCusto.setItems(centroCustoDAO.listarAtivos());
 
         todosProdutos = produtoDAO.listarTodos()
                 .filtered(p -> p.getStatus().equals("ATIVO"));

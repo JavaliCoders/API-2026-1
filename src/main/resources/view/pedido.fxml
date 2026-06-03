@@ -8,7 +8,6 @@
            fx:controller="api.controller.pedidoController"
            style="-fx-background-color: #f0f2f5;">
 
-    <!-- ── CAMADA 1: Tabela ───────────────────────────────── -->
     <VBox spacing="24" style="-fx-padding: 24;">
         <VBox style="-fx-background-color: white; -fx-background-radius: 12;
                      -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 10, 0, 0, 2);
@@ -21,14 +20,20 @@
                        style="-fx-font-size: 13px; -fx-text-fill: #475569;"/>
             </VBox>
 
-            <HBox spacing="12" style="-fx-padding: 0 0 20 0;" alignment="CENTER_LEFT">
-                <TextField fx:id="searchNum" promptText="🔍  Buscar por número"
-                           prefWidth="170" onKeyReleased="#onSearch"
+            <!-- Linha 1 de filtros -->
+            <HBox spacing="12" style="-fx-padding: 0 0 10 0;" alignment="CENTER_LEFT">
+                <TextField fx:id="searchNum" promptText="Buscar por número"
+                           prefWidth="160" onKeyReleased="#onSearch"
                            style="-fx-background-color:#f8fafc; -fx-border-color:#cbd5e1;
                                   -fx-border-radius:8; -fx-background-radius:8;
                                   -fx-padding:10 14; -fx-font-size:13px; -fx-text-fill:#0f172a;"/>
-                <TextField fx:id="searchSolicitante" promptText="🔍  Buscar por solicitante"
-                           prefWidth="200" onKeyReleased="#onSearch"
+                <TextField fx:id="searchSolicitante" promptText="Buscar por solicitante"
+                           prefWidth="190" onKeyReleased="#onSearch"
+                           style="-fx-background-color:#f8fafc; -fx-border-color:#cbd5e1;
+                                  -fx-border-radius:8; -fx-background-radius:8;
+                                  -fx-padding:10 14; -fx-font-size:13px; -fx-text-fill:#0f172a;"/>
+                <TextField fx:id="searchProduto" promptText="Buscar por produto"
+                           prefWidth="190" onKeyReleased="#onSearch"
                            style="-fx-background-color:#f8fafc; -fx-border-color:#cbd5e1;
                                   -fx-border-radius:8; -fx-background-radius:8;
                                   -fx-padding:10 14; -fx-font-size:13px; -fx-text-fill:#0f172a;"/>
@@ -71,15 +76,12 @@
         </VBox>
     </VBox>
 
-    <!-- ── CAMADA 2: Overlay de detalhes ─────────────────── -->
+    <!-- Overlay de detalhes — igual ao original, não alterado -->
     <StackPane fx:id="overlayDetalhes" visible="false" managed="false"
                style="-fx-background-color: rgba(0,0,0,0.45);">
-
         <VBox spacing="0" maxWidth="820" maxHeight="820"
               style="-fx-background-color:white; -fx-background-radius:16;
                      -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.25),20,0,0,4);">
-
-            <!-- Cabeçalho azul -->
             <HBox alignment="CENTER_LEFT" spacing="12"
                   style="-fx-background-color:#2563eb; -fx-background-radius:16 16 0 0;
                          -fx-padding:20 20 16 20;">
@@ -97,53 +99,38 @@
                                -fx-font-size:14px; -fx-background-radius:50; -fx-cursor:hand;
                                -fx-border-color:transparent; -fx-padding:6 10;"/>
             </HBox>
-
             <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
-                        style="-fx-background-color:transparent; -fx-background:transparent;
-                               -fx-border-color:transparent;">
+                        style="-fx-background-color:transparent; -fx-background:transparent; -fx-border-color:transparent;">
                 <VBox spacing="0" style="-fx-padding:20;">
-
-                    <!-- Linha 1: data / solicitante / valor -->
                     <HBox spacing="24" style="-fx-padding:0 0 16 0;
                           -fx-border-color:transparent transparent #f1f5f9 transparent; -fx-border-width:1;">
                         <VBox spacing="3" HBox.hgrow="ALWAYS">
-                            <Label text="DATA DE ABERTURA"
-                                   style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#94a3b8;"/>
+                            <Label text="DATA DE ABERTURA" style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#94a3b8;"/>
                             <Label fx:id="detalheData" style="-fx-font-size:14px; -fx-text-fill:#0f172a;"/>
                         </VBox>
                         <VBox spacing="3" HBox.hgrow="ALWAYS">
-                            <Label text="SOLICITANTE"
-                                   style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#94a3b8;"/>
+                            <Label text="SOLICITANTE" style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#94a3b8;"/>
                             <Label fx:id="detalheSolicitante" style="-fx-font-size:14px; -fx-text-fill:#0f172a;"/>
                         </VBox>
                         <VBox spacing="3" HBox.hgrow="ALWAYS">
-                            <Label text="VALOR TOTAL"
-                                   style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#94a3b8;"/>
-                            <Label fx:id="detalheValor"
-                                   style="-fx-font-size:14px; -fx-font-weight:bold; -fx-text-fill:#0f172a;"/>
+                            <Label text="VALOR TOTAL" style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#94a3b8;"/>
+                            <Label fx:id="detalheValor" style="-fx-font-size:14px; -fx-font-weight:bold; -fx-text-fill:#0f172a;"/>
                         </VBox>
                     </HBox>
-
-                    <!-- Linha 2: setor / centro -->
                     <HBox spacing="24" style="-fx-padding:16 0;
                           -fx-border-color:transparent transparent #f1f5f9 transparent; -fx-border-width:1;">
                         <VBox spacing="3" HBox.hgrow="ALWAYS">
-                            <Label text="SETOR"
-                                   style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#94a3b8;"/>
+                            <Label text="SETOR" style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#94a3b8;"/>
                             <Label fx:id="detalheSetor" style="-fx-font-size:14px; -fx-text-fill:#0f172a;"/>
                         </VBox>
                         <VBox spacing="3" HBox.hgrow="ALWAYS">
-                            <Label text="CENTRO DE CUSTO"
-                                   style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#94a3b8;"/>
+                            <Label text="CENTRO DE CUSTO" style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#94a3b8;"/>
                             <Label fx:id="detalheCentro" style="-fx-font-size:14px; -fx-text-fill:#0f172a;"/>
                         </VBox>
                     </HBox>
-
-                    <!-- Produtos -->
                     <VBox spacing="8" style="-fx-padding:16 0;
                           -fx-border-color:transparent transparent #f1f5f9 transparent; -fx-border-width:1;">
-                        <Label text="PRODUTOS DO PEDIDO"
-                               style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#94a3b8;"/>
+                        <Label text="PRODUTOS DO PEDIDO" style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#94a3b8;"/>
                         <TableView fx:id="tabelaItensPedido" prefHeight="170"
                                    style="-fx-background-color:#f8fafc; -fx-border-color:#e2e8f0;
                                           -fx-border-radius:8; -fx-background-radius:8; -fx-font-size:13px;">
@@ -155,48 +142,33 @@
                                 <TableColumn fx:id="colItemValorUnit"  text="Vlr Unit."   prefWidth="90"/>
                                 <TableColumn fx:id="colItemValorTotal" text="Vlr Total"   prefWidth="90"/>
                             </columns>
-                            <placeholder>
-                                <Label text="Sem produtos." style="-fx-text-fill:#94a3b8;"/>
-                            </placeholder>
+                            <placeholder><Label text="Sem produtos." style="-fx-text-fill:#94a3b8;"/></placeholder>
                         </TableView>
                     </VBox>
-
-                    <!-- ── Seção aprovação — SEMPRE visível (managed/visible sempre true) ── -->
                     <VBox fx:id="secaoAprovacao" spacing="0"
-                          style="-fx-padding:16 0;
-                                 -fx-border-color:transparent transparent #f1f5f9 transparent; -fx-border-width:1;">
+                          style="-fx-padding:16 0; -fx-border-color:transparent transparent #f1f5f9 transparent; -fx-border-width:1;">
                         <Label text="RESULTADO DA APROVAÇÃO"
-                               style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#94a3b8;
-                                      -fx-padding:0 0 10 0;"/>
+                               style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#94a3b8; -fx-padding:0 0 10 0;"/>
                         <HBox spacing="24" style="-fx-padding:0 0 12 0;
                               -fx-border-color:transparent transparent #f1f5f9 transparent; -fx-border-width:1;">
                             <VBox spacing="3" HBox.hgrow="ALWAYS">
-                                <Label text="DECISÃO POR"
-                                       style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#94a3b8;"/>
+                                <Label text="DECISÃO POR" style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#94a3b8;"/>
                                 <Label fx:id="detalheAprovador" style="-fx-font-size:14px; -fx-text-fill:#0f172a;"/>
                             </VBox>
                             <VBox spacing="3" HBox.hgrow="ALWAYS">
-                                <Label text="DATA DA DECISÃO"
-                                       style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#94a3b8;"/>
+                                <Label text="DATA DA DECISÃO" style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#94a3b8;"/>
                                 <Label fx:id="detalheDataAprovacao" style="-fx-font-size:14px; -fx-text-fill:#0f172a;"/>
                             </VBox>
                         </HBox>
                         <VBox spacing="3" style="-fx-padding:12 0 0 0;">
-                            <Label text="PARECER"
-                                   style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#94a3b8;"/>
-                            <Label fx:id="detalheParecer" wrapText="true"
-                                   style="-fx-font-size:14px; -fx-text-fill:#374151;"/>
+                            <Label text="PARECER" style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#94a3b8;"/>
+                            <Label fx:id="detalheParecer" wrapText="true" style="-fx-font-size:14px; -fx-text-fill:#374151;"/>
                         </VBox>
                     </VBox>
-
-                    <!-- ── Seção compras — visível para TODOS ── -->
-                    <VBox fx:id="secaoCompras" spacing="8" visible="false" managed="false"
-                          style="-fx-padding:16 0 0 0;">
+                    <VBox fx:id="secaoCompras" spacing="8" visible="false" managed="false" style="-fx-padding:16 0 0 0;">
                         <HBox alignment="CENTER_LEFT" spacing="8">
-                            <Label text="COMPRAS DO PEDIDO"
-                                   style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#94a3b8;"/>
-                            <Label text="(realizadas e canceladas)"
-                                   style="-fx-font-size:11px; -fx-text-fill:#cbd5e1;"/>
+                            <Label text="COMPRAS DO PEDIDO" style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#94a3b8;"/>
+                            <Label text="(realizadas e canceladas)" style="-fx-font-size:11px; -fx-text-fill:#cbd5e1;"/>
                         </HBox>
                         <TableView fx:id="tabelaComprasDetalhes" prefHeight="160"
                                    style="-fx-background-color:#f8fafc; -fx-border-color:#e2e8f0;
@@ -209,18 +181,13 @@
                                 <TableColumn fx:id="colCompraComprador"  text="Comprador"        prefWidth="130"/>
                                 <TableColumn fx:id="colCompraStatus"     text="Status"           prefWidth="95"/>
                             </columns>
-                            <placeholder>
-                                <Label text="—" style="-fx-text-fill:#94a3b8;"/>
-                            </placeholder>
+                            <placeholder><Label text="—" style="-fx-text-fill:#94a3b8;"/></placeholder>
                         </TableView>
                     </VBox>
-
                 </VBox>
             </ScrollPane>
-
             <HBox alignment="CENTER_RIGHT"
-                  style="-fx-padding:16 20;
-                         -fx-border-color:#f1f5f9 transparent transparent transparent; -fx-border-width:1;">
+                  style="-fx-padding:16 20; -fx-border-color:#f1f5f9 transparent transparent transparent; -fx-border-width:1;">
                 <Button text="Fechar" onAction="#fecharDetalhes"
                         style="-fx-background-color:#f1f5f9; -fx-text-fill:#475569;
                                -fx-font-size:13px; -fx-font-weight:bold; -fx-background-radius:8;

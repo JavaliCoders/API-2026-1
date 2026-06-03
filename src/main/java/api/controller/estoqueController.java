@@ -31,6 +31,7 @@ public class estoqueController implements Initializable {
     @FXML private TextField searchCod;
     @FXML private TextField searchDescricao;
     @FXML private ComboBox<String> filtroStatus;
+    @FXML private ComboBox<String> filtroNivel;
 
     // ── Tabela e colunas ──────────────────────────────────────
     @FXML private TableView<Produto>            tabelaProdutos;
@@ -86,6 +87,41 @@ public class estoqueController implements Initializable {
         filtroStatus.setItems(FXCollections.observableArrayList(
                 "Todos os status", "ATIVO", "INATIVO"));
         filtroStatus.setValue("Todos os status");
+        filtroNivel.setItems(FXCollections.observableArrayList(
+                "Todos os níveis", "Acima do mínimo", "No nível mínimo", "Abaixo do mínimo"));
+        filtroNivel.setValue("Todos os níveis");
+
+// Colorir as células do ComboBox
+        filtroNivel.setCellFactory(lv -> new ListCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) { setText(null); setStyle(""); return; }
+                setText(item);
+                setStyle(switch (item) {
+                    case "Acima do mínimo"  -> "-fx-text-fill: #16a34a; -fx-font-weight: bold;";
+                    case "No nível mínimo"  -> "-fx-text-fill: #d97706; -fx-font-weight: bold;";
+                    case "Abaixo do mínimo" -> "-fx-text-fill: #dc2626; -fx-font-weight: bold;";
+                    default                 -> "-fx-text-fill: #0f172a;";
+                });
+            }
+        });
+
+// Colorir o item selecionado também
+        filtroNivel.setButtonCell(new ListCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) { setText(null); setStyle(""); return; }
+                setText(item);
+                setStyle(switch (item) {
+                    case "Acima do mínimo"  -> "-fx-text-fill: #16a34a; -fx-font-weight: bold;";
+                    case "No nível mínimo"  -> "-fx-text-fill: #d97706; -fx-font-weight: bold;";
+                    case "Abaixo do mínimo" -> "-fx-text-fill: #dc2626; -fx-font-weight: bold;";
+                    default                 -> "-fx-text-fill: #0f172a;";
+                });
+            }
+        });
     }
 
     // ── Colunas ───────────────────────────────────────────────
@@ -307,12 +343,14 @@ public class estoqueController implements Initializable {
         searchCod.textProperty().addListener((obs, a, n)       -> aplicarFiltros());
         searchDescricao.textProperty().addListener((obs, a, n) -> aplicarFiltros());
         filtroStatus.valueProperty().addListener((obs, a, n)   -> aplicarFiltros());
+        filtroNivel.valueProperty().addListener((obs, a, n) -> aplicarFiltros());
     }
 
     private void aplicarFiltros() {
-        String cod       = searchCod.getText() == null       ? "" : searchCod.getText().toLowerCase();
-        String descricao = searchDescricao.getText() == null  ? "" : searchDescricao.getText().toLowerCase();
+        String cod       = searchCod.getText() == null      ? "" : searchCod.getText().toLowerCase();
+        String descricao = searchDescricao.getText() == null ? "" : searchDescricao.getText().toLowerCase();
         String status    = filtroStatus.getValue();
+        String nivel     = filtroNivel.getValue(); // ← novo
 
         produtosFiltrados.setPredicate(p -> {
             boolean matchCod      = cod.isEmpty()
@@ -323,10 +361,20 @@ public class estoqueController implements Initializable {
             boolean matchStatus   = status == null
                     || status.equals("Todos os status")
                     || p.getStatus().equals(status);
-            return matchCod && matchDescricao && matchStatus;
+
+            // ── Filtro de nível ──────────────────────────────
+            boolean matchNivel = switch (nivel == null ? "" : nivel) {
+                case "Acima do mínimo"  -> p.getSaldo() > p.getNivelMinimo();
+                case "No nível mínimo"  -> p.getSaldo() == p.getNivelMinimo();
+                case "Abaixo do mínimo" -> p.getSaldo() < p.getNivelMinimo();
+                default                 -> true;
+            };
+
+            return matchCod && matchDescricao && matchStatus && matchNivel;
         });
     }
 
     @FXML private void onSearch()       { aplicarFiltros(); }
     @FXML private void onFiltroStatus() { aplicarFiltros(); }
+    @FXML private void onFiltroNivel() { aplicarFiltros(); }
 }

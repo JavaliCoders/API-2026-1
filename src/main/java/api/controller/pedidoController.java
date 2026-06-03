@@ -49,6 +49,7 @@ public class pedidoController implements Initializable {
     @FXML private ComboBox<String> filtroStatus;
     @FXML private DatePicker       filtroDataInicio;
     @FXML private DatePicker       filtroDataFim;
+    @FXML private TextField        searchProduto;
 
     // ── Overlay ───────────────────────────────────────────────
     @FXML private StackPane overlayDetalhes;
@@ -95,6 +96,8 @@ public class pedidoController implements Initializable {
     private final boolean podeGerenciar = isDiretor || isFinanceiro;
     private final int     idUsuarioLogado = SessaoUsuario.getInstancia().getIdUsuarioLogado();
 
+    private java.util.Set<Integer> idsPedidosComProduto = new java.util.HashSet<>();
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         configurarFiltros();
@@ -132,10 +135,25 @@ public class pedidoController implements Initializable {
         filtroStatus.valueProperty()    .addListener((o, a, n) -> aplicarFiltro());
         filtroDataInicio.valueProperty().addListener((o, a, n) -> aplicarFiltro());
         filtroDataFim.valueProperty()   .addListener((o, a, n) -> aplicarFiltro());
+        searchProduto.textProperty().addListener((o, a, n) -> {  // NOVO
+            atualizarCacheProduto(n == null ? "" : n.trim());
+            aplicarFiltro();
+        });
+    }
+
+
+    private void atualizarCacheProduto(String termo) {           // NOVO — método inteiro
+        idsPedidosComProduto.clear();
+        if (termo.isBlank()) return;
+        idsPedidosComProduto.addAll(pedidoDAO.buscarIdsPorProduto(termo));
     }
 
     @FXML private void onSearch(KeyEvent e) { aplicarFiltro(); }
-    @FXML private void onFiltroStatus()     { aplicarFiltro(); }
+    @FXML private void onFiltroStatus()     {
+        searchProduto.clear();       // NOVO
+        idsPedidosComProduto.clear();
+        aplicarFiltro();
+    }
 
     @FXML private void onLimparFiltros() {
         searchNum.clear(); searchSolicitante.clear();
@@ -150,6 +168,7 @@ public class pedidoController implements Initializable {
         LocalDate di = filtroDataInicio.getValue();
         LocalDate df = filtroDataFim.getValue();
 
+
         pedidosFiltrados.setPredicate(p -> {
             boolean okNum  = num.isEmpty()  || p.getNumPedido().toLowerCase().contains(num);
             boolean okSoli = soli.isEmpty() || p.getNomeSolicitante().toLowerCase().contains(soli);
@@ -157,7 +176,9 @@ public class pedidoController implements Initializable {
             LocalDate d = p.getDataAbertura().toLocalDate();
             boolean okDi = di == null || !d.isBefore(di);
             boolean okDf = df == null || !d.isAfter(df);
-            return okNum && okSoli && okStat && okDi && okDf;
+            boolean okProd = idsPedidosComProduto.isEmpty()
+                    || idsPedidosComProduto.contains(p.getIdPedido());
+            return okNum && okSoli && okStat && okDi && okDf && okProd;
         });
     }
 
@@ -416,11 +437,6 @@ public class pedidoController implements Initializable {
 
         boolean temCotacao  = compraDAO.pedidoTemCotacaoAprovada(p.getIdPedido());
         boolean temPendente = compraDAO.pedidoTemItensPendentes(p.getIdPedido());
-
-        System.out.println("temCotacao: " + temCotacao);
-        System.out.println("temPendente: " + temPendente);
-        System.out.println("======================");
-
         return temCotacao && temPendente;
     }
 
@@ -555,16 +571,33 @@ public class pedidoController implements Initializable {
     }
 
     private String estiloBadge(String s) {
-        String b = "-fx-background-radius:6; -fx-padding:4 10; -fx-font-size:11px; -fx-font-weight:bold;";
+        String b = "-fx-background-radius:6; -fx-padding:4 10;" +
+                "-fx-font-size:11px; -fx-font-weight:bold;";
         return b + switch (s) {
-            case "EM_APROVACAO"          -> "-fx-background-color:#fef9c3; -fx-text-fill:#854d0e;";
-            case "APROVADO"              -> "-fx-background-color:#dcfce7; -fx-text-fill:#166534;";
-            case "APROVADO_PARCIALMENTE" -> "-fx-background-color:#d1fae5; -fx-text-fill:#065f46;";
-            case "NEGADO"                -> "-fx-background-color:#fee2e2; -fx-text-fill:#991b1b;";
-            case "EM_COTACAO"            -> "-fx-background-color:#dbeafe; -fx-text-fill:#1e40af;";
-            case "EM_COMPRA"             -> "-fx-background-color:#ede9fe; -fx-text-fill:#5b21b6;";
-            case "FINALIZADO"            -> "-fx-background-color:#d1fae5; -fx-text-fill:#065f46;";
-            default                      -> "-fx-background-color:#f3f4f6; -fx-text-fill:#6b7280;";
+            case "EM_APROVACAO"          ->
+                    "-fx-background-color:#fef9c3; -fx-text-fill:#854d0e;";   // amarelo
+            case "APROVADO"              ->
+                    "-fx-background-color:#dcfce7; -fx-text-fill:#166534;";   // verde
+            case "APROVADO_PARCIALMENTE" ->
+                    "-fx-background-color:#d1fae5; -fx-text-fill:#065f46;";   // verde escuro
+            case "NEGADO"                ->
+                    "-fx-background-color:#fee2e2; -fx-text-fill:#991b1b;";   // vermelho
+            case "EM_COTACAO"            ->
+                    "-fx-background-color:#dbeafe; -fx-text-fill:#1e40af;";   // azul
+            case "EM_COMPRA"             ->
+                    "-fx-background-color:#ede9fe; -fx-text-fill:#5b21b6;";   // roxo
+            case "RECEBIDO_PARCIAL"      ->
+                    "-fx-background-color:#ffedd5; -fx-text-fill:#c2410c;";   // laranja
+            case "RECEBIDO"              ->
+                    "-fx-background-color:#cffafe; -fx-text-fill:#0e7490;";   // ciano
+            case "ATENDIDO_PARCIAL"      ->
+                    "-fx-background-color:#fce7f3; -fx-text-fill:#9d174d;";   // rosa
+            case "FINALIZADO"            ->
+                    "-fx-background-color:#f3f4f6; -fx-text-fill:#6b7280;";   // cinza
+            case "CANCELADO"             ->
+                    "-fx-background-color:#fecaca; -fx-text-fill:#7f1d1d;";   // vermelho escuro
+            default                      ->
+                    "-fx-background-color:#f3f4f6; -fx-text-fill:#374151;";
         };
     }
 }

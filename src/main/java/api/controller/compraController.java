@@ -1,6 +1,7 @@
 package api.controller;
 
 import api.DAO.compraDAO;
+import api.DAO.pedidoDAO;
 import api.model.*;
 import api.service.HistoricoService;
 import api.util.PermissaoUtil;
@@ -45,6 +46,7 @@ public class compraController implements Initializable {
     @FXML private ComboBox<String> filtroStatus;
     @FXML private DatePicker       filtroDataInicio;
     @FXML private DatePicker       filtroDataFim;
+    @FXML private TextField       searchProduto;
 
     // ── Banner filtro por pedido ──────────────────────────────
     @FXML private HBox   boxFiltradoPedido;
@@ -61,6 +63,13 @@ public class compraController implements Initializable {
     @FXML private Label     detalheDataPrevista;
     @FXML private Label     detalheStatus;
 
+    @FXML private TableView<CompraItem>           tabelaItensDetalhe;
+    @FXML private TableColumn<CompraItem, String> colItemProduto;
+    @FXML private TableColumn<CompraItem, String> colItemUnidade;
+    @FXML private TableColumn<CompraItem, String> colItemQtd;
+    @FXML private TableColumn<CompraItem, String> colItemValorUni;
+    @FXML private TableColumn<CompraItem, String> colItemTotal;
+
     private AnchorPane areaPrincipal;
     private Pedido     pedidoFiltro;
 
@@ -68,12 +77,14 @@ public class compraController implements Initializable {
     private FilteredList<Compra>   comprasFiltradas;
 
     private final boolean isFinanceiro = PermissaoUtil.temPermissao("FINANCEIRO");
+    private java.util.Set<Integer> idsPedidosComProduto = new java.util.HashSet<>();
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         configurarFiltros();
         configurarColunas();
         carregarCompras();
+        configurarTabelaItens();
 
         tabelaCompras.getSelectionModel().selectedItemProperty()
                 .addListener((obs, a, c) -> { if (c != null) abrirOverlay(c); });
@@ -104,6 +115,34 @@ public class compraController implements Initializable {
         reaplicarFiltro();
     }
 
+    private void configurarTabelaItens() {
+        colItemProduto .setCellValueFactory(d ->
+                new SimpleStringProperty(d.getValue().getNomeProduto()));
+        colItemUnidade .setCellValueFactory(d ->
+                new SimpleStringProperty(d.getValue().getUnidade()));
+        colItemQtd     .setCellValueFactory(d ->
+                new SimpleStringProperty(
+                        String.valueOf((int) d.getValue().getQtdComprada())));
+        colItemValorUni.setCellValueFactory(d ->
+                new SimpleStringProperty(formatarMoeda(d.getValue().getValorUni())));
+        colItemTotal   .setCellValueFactory(d ->
+                new SimpleStringProperty(formatarMoeda(d.getValue().getValorTotal())));
+
+        for (TableColumn<CompraItem, String> col : new TableColumn[]{
+                colItemProduto, colItemUnidade, colItemQtd,
+                colItemValorUni, colItemTotal}) {
+            col.setCellFactory(c -> new TableCell<>() {
+                @Override protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) { setText(null); return; }
+                    setText(item);
+                    setFont(Font.font("Segoe UI", 13));
+                    setStyle("-fx-text-fill:#0f172a;");
+                }
+            });
+        }
+    }
+
     // ── Filtros ───────────────────────────────────────────────
 
     private void configurarFiltros() {
@@ -115,6 +154,10 @@ public class compraController implements Initializable {
         filtroStatus    .valueProperty().addListener((o, a, n) -> reaplicarFiltro());
         filtroDataInicio.valueProperty().addListener((o, a, n) -> reaplicarFiltro());
         filtroDataFim   .valueProperty().addListener((o, a, n) -> reaplicarFiltro());
+        searchProduto.textProperty().addListener((o, a, n) -> {   // NOVO
+            atualizarCacheProduto(n == null ? "" : n.trim());
+            reaplicarFiltro();
+        });
     }
 
     @FXML private void onLimparFiltro() {
@@ -122,6 +165,8 @@ public class compraController implements Initializable {
         filtroStatus.setValue("Todos os status");
         filtroDataInicio.setValue(null);
         filtroDataFim   .setValue(null);
+        searchProduto.clear();        // NOVO
+        idsPedidosComProduto.clear();
     }
 
     private void reaplicarFiltro() {
@@ -139,10 +184,12 @@ public class compraController implements Initializable {
                     || c.getNomeFornecedor() .toLowerCase().contains(busca);
             boolean okS = status == null || status.equals("Todos os status")
                     || c.getStatus().equals(status);
+            boolean okProd = idsPedidosComProduto.isEmpty()            // NOVO
+                    || idsPedidosComProduto.contains(c.getPedido().getIdPedido());
             LocalDate dataCompra = c.getData().toLocalDate();
             boolean okDi = di == null || !dataCompra.isBefore(di);
             boolean okDf = df == null || !dataCompra.isAfter(df);
-            return okB && okS && okDi && okDf;
+            return okB && okS && okDi && okDf && okProd;
         });
     }
 
@@ -160,6 +207,9 @@ public class compraController implements Initializable {
 
         overlayDetalhes.setVisible(true);
         overlayDetalhes.setManaged(true);
+        ObservableList<CompraItem> itens =
+                compraDAO.listarItensPorCompra(c.getIdCompra());
+        tabelaItensDetalhe.setItems(itens);
     }
 
     @FXML private void fecharDetalhes() {
@@ -364,5 +414,11 @@ public class compraController implements Initializable {
     private void erro(String msg) {
         Alert a = new Alert(Alert.AlertType.ERROR);
         a.setTitle("Erro"); a.setHeaderText(null); a.setContentText(msg); a.showAndWait();
+    }
+
+    private void atualizarCacheProduto(String termo) {         // NOVO
+        idsPedidosComProduto.clear();
+        if (termo.isBlank()) return;
+        idsPedidosComProduto.addAll(pedidoDAO.buscarIdsPorProduto(termo));
     }
 }
