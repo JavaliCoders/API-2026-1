@@ -107,43 +107,41 @@ public class indexController implements Initializable {
         pollingTimeline.play();
     }
 
-    // ── Permissões por perfil ─────────────────────────────────────────────────
+    // ── Permissões ────────────────────────────────────────────────────────────
 
     private void aplicarPermissoesMenu() {
-        boolean isDiretor    = PermissaoUtil.temPermissaoExata("DIRETOR");
-        boolean isFinanceiro = PermissaoUtil.temPermissaoExata("FINANCEIRO");
-        boolean isEstoque    = PermissaoUtil.temPermissaoExata("ESTOQUE");
+        boolean isDiretor     = PermissaoUtil.temPermissaoExata("DIRETOR");
+        boolean isFinanceiro  = PermissaoUtil.temPermissaoExata("FINANCEIRO");
+        boolean isEstoque     = PermissaoUtil.temPermissaoExata("ESTOQUE");
         boolean isSolicitante = PermissaoUtil.temPermissaoExata("SOLICITANTE");
 
-        // Dashboard — todos exceto SOLICITANTE
-        if (isSolicitante) {
-            esconder(menuDashboard);
-        }
-
         // Usuários — só DIRETOR
-        if (!isDiretor) {
-            esconder(menuUsuarios);
-        }
+        if (!isDiretor) esconder(menuUsuarios);
 
-        // Fornecedores, Compras, Cotações, Centro Custo — DIRETOR e FINANCEIRO
-        if (!isDiretor && !isFinanceiro) {
-            esconder(menuFornecedores);
-            esconder(menuCompras);
-            esconder(menuCotacoes);
-            esconder(menuCentroCusto);
-        }
+        // Fornecedores — DIRETOR e FINANCEIRO
+        if (!isDiretor && !isFinanceiro) esconder(menuFornecedores);
 
-        // Nota Fiscal, Movimentação, Saída — DIRETOR, FINANCEIRO, ESTOQUE
-        if (isSolicitante) {
-            esconder(menuNotaFiscal);
-            esconder(menuMovimentacao);
-            esconder(menuSaida);
-        }
+        // Cotações — DIRETOR e FINANCEIRO
+        if (!isDiretor && !isFinanceiro) esconder(menuCotacoes);
 
-        // Histórico — só DIRETOR
-        if (!isDiretor) {
-            esconder(menuHistorico);
-        }
+        // Compras — DIRETOR e FINANCEIRO
+        if (!isDiretor && !isFinanceiro) esconder(menuCompras);
+
+        // Centro de Custo — DIRETOR e FINANCEIRO
+        if (!isDiretor && !isFinanceiro) esconder(menuCentroCusto);
+
+        // Nota Fiscal — só FINANCEIRO e ESTOQUE
+        if (!isFinanceiro && !isEstoque) esconder(menuNotaFiscal);
+
+        // Saída de Estoque — só FINANCEIRO e ESTOQUE
+        if (!isFinanceiro && !isEstoque) esconder(menuSaida);
+
+        // Dashboard — todos têm acesso (ninguém esconde)
+        // Estoque — todos têm acesso (botão controlado no mostraBotao)
+        // Pedidos — todos têm acesso
+        // Movimentação — todos têm acesso (botão controlado no mostraBotao)
+        // Histórico — todos têm acesso
+        // Notificações — todos têm acesso
     }
 
     private void esconder(HBox menu) {
@@ -154,14 +152,8 @@ public class indexController implements Initializable {
     }
 
     private void carregarTelaInicial() {
-        boolean isSolicitante = PermissaoUtil.temPermissaoExata("SOLICITANTE");
-        if (isSolicitante) {
-            carregarTela("/view/pedido.fxml", "Acompanhe seus pedidos", "+ Novo Pedido");
-            ativarMenu(menuPedidos);
-        } else {
-            carregarTela("/view/dashboard.fxml", "Dashboard de indicadores", "");
-            ativarMenu(menuDashboard);
-        }
+        carregarTela("/view/dashboard.fxml", "Dashboard de indicadores", "");
+        ativarMenu(menuDashboard);
     }
 
     // ── Badge ─────────────────────────────────────────────────────────────────
@@ -247,52 +239,72 @@ public class indexController implements Initializable {
             Node tela = loader.load();
             Object controller = loader.getController();
 
-            if (controller instanceof estoqueController c)           c.setAreaPrincipal(areaPrincipal);
-            else if (controller instanceof cadastroProdutoController c)    c.setAreaPrincipal(areaPrincipal);
-            else if (controller instanceof fornecedorController c)         c.setAreaPrincipal(areaPrincipal);
-            else if (controller instanceof cadastroFornecedorController c) c.setAreaPrincipal(areaPrincipal);
-            else if (controller instanceof usuarioController c)            c.setAreaPrincipal(areaPrincipal);
-            else if (controller instanceof cadastroUsuarioController c)    c.setAreaPrincipal(areaPrincipal);
-            else if (controller instanceof pedidoController c)             c.setAreaPrincipal(areaPrincipal);
-            else if (controller instanceof cadastroPedidoController c)     c.setAreaPrincipal(areaPrincipal);
-            else if (controller instanceof editarPedidoController c)       c.setAreaPrincipal(areaPrincipal);
-            else if (controller instanceof compraController c)             c.setAreaPrincipal(areaPrincipal);
-            else if (controller instanceof cadastroCompraController c)     c.setAreaPrincipal(areaPrincipal);
-            else if (controller instanceof CotacaoController c)            c.setAreaPrincipal(areaPrincipal);
-            else if (controller instanceof notaFiscalController c)         c.setAreaPrincipal(areaPrincipal);
-            else if (controller instanceof movimentacaoController c)       c.setAreaPrincipal(areaPrincipal);
-            else if (controller instanceof saidaEstoqueController c)       c.setAreaPrincipal(areaPrincipal);
-            else if (controller instanceof centroCustoController c)        c.setAreaPrincipal(areaPrincipal);
-            else if (controller instanceof cadastroCentroCustoController c) c.setAreaPrincipal(areaPrincipal);
-            else if (controller instanceof historicoSistemaController c)   c.setAreaPrincipal(areaPrincipal);
-            else if (controller instanceof dashboardController c)          c.setAreaPrincipal(areaPrincipal);
-            else if (controller instanceof cadastroMovimentacaoManualController c)
-                c.setAreaPrincipal(areaPrincipal);
+            if      (controller instanceof estoqueController c)                    c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof cadastroProdutoController c)            c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof fornecedorController c)                 c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof cadastroFornecedorController c)         c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof usuarioController c)                    c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof cadastroUsuarioController c)            c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof pedidoController c)                     c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof cadastroPedidoController c)             c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof editarPedidoController c)               c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof compraController c)                     c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof cadastroCompraController c)             c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof CotacaoController c)                    c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof notaFiscalController c)                 c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof movimentacaoController c)               c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof saidaEstoqueController c)               c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof centroCustoController c)                c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof cadastroCentroCustoController c)        c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof historicoSistemaController c)           c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof dashboardController c)                  c.setAreaPrincipal(areaPrincipal);
+            else if (controller instanceof cadastroMovimentacaoManualController c) c.setAreaPrincipal(areaPrincipal);
 
-            AnchorPane.setTopAnchor(tela, 0.0);
+            AnchorPane.setTopAnchor   (tela, 0.0);
             AnchorPane.setBottomAnchor(tela, 0.0);
-            AnchorPane.setLeftAnchor(tela, 0.0);
-            AnchorPane.setRightAnchor(tela, 0.0);
+            AnchorPane.setLeftAnchor  (tela, 0.0);
+            AnchorPane.setRightAnchor (tela, 0.0);
 
             areaPrincipal.getChildren().setAll(tela);
+
             javafx.application.Platform.runLater(() -> {
                 javafx.stage.Stage stage = (javafx.stage.Stage) areaPrincipal.getScene().getWindow();
                 if (stage != null && !stage.isMaximized()) stage.setMaximized(true);
             });
+
             labelPagina.setText(subtitulo);
             btnAcao.setText(textoBotao);
 
+            boolean isDiretor    = PermissaoUtil.temPermissaoExata("DIRETOR");
+            boolean isFinanceiro = PermissaoUtil.temPermissaoExata("FINANCEIRO");
+            boolean isEstoque    = PermissaoUtil.temPermissaoExata("ESTOQUE");
+
             boolean mostraBotao = switch (fxmlPath) {
-                case "/view/estoque.fxml"          -> PermissaoUtil.temPermissao("FINANCEIRO");
-                case "/view/cotacao.fxml",
-                     "/view/compra.fxml",
-                     "/view/movimentacao.fxml",
-                     "/view/saidaEstoque.fxml",
-                     "/view/notaFiscal.fxml",
+                // Estoque: só FINANCEIRO cadastra produto
+                case "/view/estoque.fxml"        -> isFinanceiro;
+                // Fornecedor: só FINANCEIRO cadastra
+                case "/view/fornecedor.fxml"     -> isFinanceiro;
+                // Pedidos: todos cadastram
+                case "/view/pedido.fxml"         -> true;
+                // Cotações: só FINANCEIRO cadastra, DIRETOR só visualiza
+                case "/view/cotacao.fxml"        -> isFinanceiro;
+                // Compras: só FINANCEIRO cadastra, DIRETOR só visualiza
+                case "/view/compra.fxml"         -> isFinanceiro;
+                // Nota Fiscal: FINANCEIRO e ESTOQUE cadastram
+                case "/view/notaFiscal.fxml"     -> isFinanceiro || isEstoque;
+                // Movimentação: FINANCEIRO e ESTOQUE cadastram (botão abre cadastro manual)
+                case "/view/movimentacao.fxml"   -> isFinanceiro || isEstoque;
+                // Centro de Custo: DIRETOR e FINANCEIRO cadastram
+                case "/view/centroCusto.fxml"    -> isDiretor || isFinanceiro;
+                // Usuários: só DIRETOR cadastra
+                case "/view/usuario.fxml"        -> isDiretor;
+                // Sem botão
+                case "/view/saidaEstoque.fxml",
                      "/view/historicoSistema.fxml",
-                     "/view/dashboard.fxml"        -> false;
-                default                            -> true;
+                     "/view/dashboard.fxml"      -> false;
+                default                          -> false;
             };
+
             btnAcao.setVisible(mostraBotao);
             btnAcao.setManaged(mostraBotao);
 
@@ -311,7 +323,6 @@ public class indexController implements Initializable {
 
     @FXML private void onEstoqueClicked() {
         ativarMenu(menuEstoque);
-        // SOLICITANTE só visualiza — botão de novo produto não aparece (controlado pelo mostraBotao)
         carregarTela("/view/estoque.fxml", "Controle e monitore seu inventário", "+ Novo Produto");
     }
 
@@ -327,17 +338,17 @@ public class indexController implements Initializable {
 
     @FXML private void onCotacoesClicked() {
         ativarMenu(menuCotacoes);
-        carregarTela("/view/cotacao.fxml", "Cota\u00e7\u00f5es de pedidos", "");
+        carregarTela("/view/cotacao.fxml", "Cotações de pedidos", "");
     }
 
     @FXML private void onUsuariosClicked() {
         ativarMenu(menuUsuarios);
-        carregarTela("/view/usuario.fxml", "Usu\u00e1rios cadastrados", "+ Novo Usu\u00e1rio");
+        carregarTela("/view/usuario.fxml", "Usuários cadastrados", "+ Novo Usuário");
     }
 
     @FXML private void onComprasClicked() {
         ativarMenu(menuCompras);
-        carregarTela("/view/compra.fxml", "Hist\u00f3rico de compras realizadas", "");
+        carregarTela("/view/compra.fxml", "Histórico de compras realizadas", "");
     }
 
     @FXML private void onNotaFiscalClicked() {
@@ -347,12 +358,12 @@ public class indexController implements Initializable {
 
     @FXML private void onMovimentacaoClicked() {
         ativarMenu(menuMovimentacao);
-        carregarTela("/view/movimentacao.fxml", "Movimenta\u00e7\u00f5es de Estoque", "");
+        carregarTela("/view/movimentacao.fxml", "Movimentações de Estoque", "");
     }
 
     @FXML private void onSaidaClicked() {
         ativarMenu(menuSaida);
-        carregarTela("/view/saidaEstoque.fxml", "Sa\u00edda de Estoque \u2014 Atendimento", "");
+        carregarTela("/view/saidaEstoque.fxml", "Saída de Estoque — Atendimento", "");
     }
 
     @FXML private void onCentroCustoClicked() {
@@ -362,7 +373,7 @@ public class indexController implements Initializable {
 
     @FXML private void onHistoricoClicked() {
         ativarMenu(menuHistorico);
-        carregarTela("/view/historicoSistema.fxml", "Hist\u00f3rico de a\u00e7\u00f5es do sistema", "");
+        carregarTela("/view/historicoSistema.fxml", "Histórico de ações do sistema", "");
     }
 
     @FXML private void onNotificacoesClicked() {
@@ -374,19 +385,19 @@ public class indexController implements Initializable {
             ctrl.setAreaPrincipal(areaPrincipal);
             ctrl.setIndexController(this);
 
-            AnchorPane.setTopAnchor(tela, 0.0);
+            AnchorPane.setTopAnchor   (tela, 0.0);
             AnchorPane.setBottomAnchor(tela, 0.0);
-            AnchorPane.setLeftAnchor(tela, 0.0);
-            AnchorPane.setRightAnchor(tela, 0.0);
+            AnchorPane.setLeftAnchor  (tela, 0.0);
+            AnchorPane.setRightAnchor (tela, 0.0);
 
             areaPrincipal.getChildren().setAll(tela);
-            labelPagina.setText("Notifica\u00e7\u00f5es");
+            labelPagina.setText("Notificações");
             btnAcao.setVisible(false);
             btnAcao.setManaged(false);
             atualizarBadgeNotificacoes();
 
         } catch (IOException e) {
-            System.err.println("Erro ao abrir notifica\u00e7\u00f5es: " + e.getMessage());
+            System.err.println("Erro ao abrir notificações: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -408,7 +419,7 @@ public class indexController implements Initializable {
                         scene.getStylesheets().add(
                                 getClass().getResource("/style/loginStyle.css").toExternalForm());
                     } catch (Exception e) {
-                        System.out.println("CSS n\u00e3o encontrado.");
+                        System.out.println("CSS não encontrado.");
                     }
                     Stage stage = (Stage) sidebar.getScene().getWindow();
                     stage.setScene(scene);
@@ -426,12 +437,12 @@ public class indexController implements Initializable {
     @FXML private void onBtnAcao() {
         String texto = btnAcao.getText();
         switch (texto) {
-            case "+ Novo Fornecedor"      -> carregarTela("/view/cadastroFornecedor.fxml",   "Cadastro de Fornecedor",        "+ Novo Fornecedor");
-            case "+ Novo Usu\u00e1rio"   -> carregarTela("/view/cadastroUsuario.fxml",       "Cadastro de Usu\u00e1rio",      "+ Novo Usu\u00e1rio");
-            case "+ Novo Pedido"         -> carregarTela("/view/cadastroPedido.fxml",         "Novo Pedido",                   "+ Novo Pedido");
-            case "+ Nova Nota Fiscal"    -> carregarTela("/view/registroNotaFiscal.fxml",    "Registrar Nota Fiscal",         "+ Nova Nota Fiscal");
-            case "+ Novo Centro de Custo"-> carregarTela("/view/cadastroCentroCusto.fxml",   "Cadastro de Centro de Custo",   "+ Novo Centro de Custo");
-            default                      -> carregarTela("/view/cadastroProduto.fxml",        "Cadastro de Produto",           "+ Novo Produto");
+            case "+ Novo Fornecedor"       -> carregarTela("/view/cadastroFornecedor.fxml",  "Cadastro de Fornecedor",       "+ Novo Fornecedor");
+            case "+ Novo Usuário"          -> carregarTela("/view/cadastroUsuario.fxml",     "Cadastro de Usuário",          "+ Novo Usuário");
+            case "+ Novo Pedido"           -> carregarTela("/view/cadastroPedido.fxml",      "Novo Pedido",                  "+ Novo Pedido");
+            case "+ Nova Nota Fiscal"      -> carregarTela("/view/registroNotaFiscal.fxml",  "Registrar Nota Fiscal",        "+ Nova Nota Fiscal");
+            case "+ Novo Centro de Custo"  -> carregarTela("/view/cadastroCentroCusto.fxml", "Cadastro de Centro de Custo",  "+ Novo Centro de Custo");
+            default                        -> carregarTela("/view/cadastroProduto.fxml",     "Cadastro de Produto",          "+ Novo Produto");
         }
     }
 
@@ -439,23 +450,20 @@ public class indexController implements Initializable {
 
     private void ativarMenu(HBox menuAtivo) {
         for (HBox m : todosMenus()) {
-            if (m != null && m.isManaged()) {
+            if (m != null && m.isManaged())
                 m.setStyle(sidebarExpandida ? MENU_INATIVO : MENU_INATIVO_MINI);
-            }
         }
-        if (menuAtivo != null) {
+        if (menuAtivo != null)
             menuAtivo.setStyle(sidebarExpandida ? MENU_ATIVO : MENU_ATIVO_MINI);
-        }
     }
 
     private void configurarHover() {
         for (HBox menu : todosMenus()) {
             if (menu == null) continue;
             menu.setOnMouseEntered(e -> {
-                if (!menu.getStyle().contains("#2563eb")) {
+                if (!menu.getStyle().contains("#2563eb"))
                     menu.setStyle((sidebarExpandida ? MENU_INATIVO : MENU_INATIVO_MINI)
                             + " -fx-background-color: #1e1e35;");
-                }
             });
             menu.setOnMouseExited(e -> {
                 if (!menu.getStyle().contains("#2563eb"))
